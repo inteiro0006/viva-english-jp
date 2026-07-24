@@ -1,0 +1,11 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
+import { Placeholder } from "@/components/Placeholder";
+
+export const Route = createFileRoute("/admin/courses/$courseId")({
+  component: () => {
+    const { courseId } = Route.useParams();
+    const { t } = useTranslation();
+    return <Placeholder title={`${t("admin.courses")} #${courseId}`} />;
+  },
+});

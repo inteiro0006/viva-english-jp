@@ -1,0 +1,143 @@
+{
+  "brand": {
+    "name": "Eigo Michi",
+    "tagline": "日本人のための本格英語オンライン講座"
+  },
+  "nav": {
+    "home": "ホーム",
+    "course": "コース紹介",
+    "pricing": "料金",
+    "login": "ログイン",
+    "register": "新規登録",
+    "dashboard": "ダッシュボード",
+    "profile": "プロフィール",
+    "support": "サポート",
+    "logout": "ログアウト",
+    "admin": "管理"
+  },
+  "language": {
+    "label": "言語",
+    "ja": "日本語",
+    "en": "English"
+  },
+  "common": {
+    "loading": "読み込み中…",
+    "error": "エラーが発生しました",
+    "retry": "もう一度試す",
+    "empty": "まだデータがありません",
+    "comingSoon": "近日公開",
+    "backHome": "ホームへ戻る",
+    "getStarted": "今すぐ始める",
+    "learnMore": "詳しく見る",
+    "continue": "続ける",
+    "save": "保存",
+    "cancel": "キャンセル"
+  },
+  "landing": {
+    "heroTitle": "英語を、あなたのペースで。",
+    "heroHighlight": "本気の英語学習",
+    "heroSubtitle": "日本語で丁寧に導く、実践的なオンライン英語プログラム。",
+    "cta": "無料で体験する",
+    "benefits": {
+      "title": "選ばれる理由",
+      "items": {
+        "method": {
+          "title": "体系的なメソッド",
+          "desc": "初級から上級まで、段階的に進む6ステップ設計。"
+        },
+        "pace": {
+          "title": "自分のペース",
+          "desc": "24時間いつでも、あなたのリズムで学べます。"
+        },
+        "support": {
+          "title": "日本語サポート",
+          "desc": "つまずいたら、日本語でサポートを受けられます。"
+        }
+      }
+    },
+    "stages": {
+      "title": "6つの学習ステージ",
+      "subtitle": "基礎から実践的な会話・執筆までを一貫して習得。"
+    },
+    "faq": {
+      "title": "よくある質問"
+    },
+    "finalCta": {
+      "title": "英語を、今日から。",
+      "subtitle": "一度きりのお支払いで、すべてのレッスンにアクセスできます。",
+      "action": "コースを見る"
+    }
+  },
+  "course": {
+    "title": "コースについて",
+    "subtitle": "本コースの概要と学習ロードマップ。",
+    "modulesTitle": "モジュール構成",
+    "moduleCount": "モジュール",
+    "lessonCount": "レッスン"
+  },
+  "pricing": {
+    "title": "シンプルな料金体系",
+    "subtitle": "一度のお支払いで、生涯アクセス。",
+    "planTitle": "フルアクセスプラン",
+    "planDesc": "すべての教材・アップデート・サポートを含みます。",
+    "cta": "購入手続きへ"
+  },
+  "auth": {
+    "loginTitle": "ログイン",
+    "registerTitle": "新規登録",
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "name": "お名前",
+    "forgotPassword": "パスワードをお忘れですか？",
+    "resetTitle": "パスワード再設定",
+    "resetSubtitle": "登録済みのメールアドレスを入力してください。",
+    "newPassword": "新しいパスワード",
+    "haveAccount": "アカウントをお持ちですか？",
+    "noAccount": "アカウントをお持ちでない方",
+    "submit": "送信"
+  },
+  "checkout": {
+    "title": "お支払い",
+    "subtitle": "安全な決済でコースにアクセス。"
+  },
+  "payment": {
+    "successTitle": "お支払いが完了しました",
+    "successBody": "ご購入ありがとうございます。ダッシュボードから学習を始められます。",
+    "cancelTitle": "お支払いがキャンセルされました",
+    "cancelBody": "いつでもやり直すことができます。"
+  },
+  "legal": {
+    "termsTitle": "利用規約",
+    "privacyTitle": "プライバシーポリシー"
+  },
+  "student": {
+    "welcome": "ようこそ",
+    "progress": "学習進捗",
+    "continueLearning": "学習を続ける",
+    "myCourse": "マイコース",
+    "stages": "ステージ",
+    "modules": "モジュール",
+    "lessons": "レッスン",
+    "profileTitle": "プロフィール",
+    "supportTitle": "サポート"
+  },
+  "admin": {
+    "title": "管理パネル",
+    "overview": "概要",
+    "courses": "コース",
+    "modules": "モジュール",
+    "lessons": "レッスン",
+    "videos": "動画",
+    "students": "受講生",
+    "orders": "注文",
+    "settings": "設定"
+  },
+  "footer": {
+    "rights": "無断複製を禁じます。",
+    "terms": "利用規約",
+    "privacy": "プライバシーポリシー"
+  },
+  "placeholder": {
+    "note": "この画面は準備中です。次のステップで実装されます。"
+  }
+}
