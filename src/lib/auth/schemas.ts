@@ -40,7 +40,7 @@ export function makeRegisterSchema(t: TFunction) {
       accept_terms: z.literal(true, {
         errorMap: () => ({ message: t("auth.errors.termsRequired") }),
       }),
-      marketing_consent: z.boolean().default(false),
+      marketing_consent: z.boolean(),
       preferred_language: z.enum(["ja", "en"]),
     })
     .refine((v) => v.password === v.confirm_password, {
@@ -53,7 +53,7 @@ export function makeLoginSchema(t: TFunction) {
   return z.object({
     email: emailField().transform((v) => v.toLowerCase()),
     password: z.string().min(1, t("auth.errors.passwordRequired")),
-    remember_email: z.boolean().default(false),
+    remember_email: z.boolean(),
   });
 }
 

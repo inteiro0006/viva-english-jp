@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as StudentRouteImport } from './routes/student'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -40,6 +41,11 @@ import { Route as StudentLessonLessonIdRouteImport } from './routes/student.less
 import { Route as StudentCourseCourseSlugRouteImport } from './routes/student.course.$courseSlug'
 import { Route as AdminCoursesCourseIdRouteImport } from './routes/admin.courses.$courseId'
 
+const VerifyEmailRoute = VerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -205,6 +211,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/student': typeof StudentRouteWithChildren
   '/terms': typeof TermsRoute
+  '/verify-email': typeof VerifyEmailRoute
   '/admin/courses': typeof AdminCoursesRouteWithChildren
   '/admin/lessons': typeof AdminLessonsRoute
   '/admin/modules': typeof AdminModulesRoute
@@ -235,6 +242,7 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/terms': typeof TermsRoute
+  '/verify-email': typeof VerifyEmailRoute
   '/admin/courses': typeof AdminCoursesRouteWithChildren
   '/admin/lessons': typeof AdminLessonsRoute
   '/admin/modules': typeof AdminModulesRoute
@@ -268,6 +276,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/student': typeof StudentRouteWithChildren
   '/terms': typeof TermsRoute
+  '/verify-email': typeof VerifyEmailRoute
   '/admin/courses': typeof AdminCoursesRouteWithChildren
   '/admin/lessons': typeof AdminLessonsRoute
   '/admin/modules': typeof AdminModulesRoute
@@ -302,6 +311,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/student'
     | '/terms'
+    | '/verify-email'
     | '/admin/courses'
     | '/admin/lessons'
     | '/admin/modules'
@@ -332,6 +342,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/terms'
+    | '/verify-email'
     | '/admin/courses'
     | '/admin/lessons'
     | '/admin/modules'
@@ -364,6 +375,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/student'
     | '/terms'
+    | '/verify-email'
     | '/admin/courses'
     | '/admin/lessons'
     | '/admin/modules'
@@ -397,12 +409,20 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   StudentRoute: typeof StudentRouteWithChildren
   TermsRoute: typeof TermsRoute
+  VerifyEmailRoute: typeof VerifyEmailRoute
   PaymentCancelRoute: typeof PaymentCancelRoute
   PaymentSuccessRoute: typeof PaymentSuccessRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/verify-email': {
+      id: '/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof VerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -687,6 +707,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   StudentRoute: StudentRouteWithChildren,
   TermsRoute: TermsRoute,
+  VerifyEmailRoute: VerifyEmailRoute,
   PaymentCancelRoute: PaymentCancelRoute,
   PaymentSuccessRoute: PaymentSuccessRoute,
 }
