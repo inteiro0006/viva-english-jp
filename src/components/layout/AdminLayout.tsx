@@ -17,7 +17,12 @@ import { Button } from "@/components/ui/button";
 export function AdminLayout({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
 
-  const nav = [
+  const nav: Array<{
+    to: string;
+    label: string;
+    icon: typeof Gauge;
+    exact?: boolean;
+  }> = [
     { to: "/admin", label: t("admin.overview"), icon: Gauge, exact: true },
     { to: "/admin/courses", label: t("admin.courses"), icon: BookMarked },
     { to: "/admin/modules", label: t("admin.modules"), icon: Layers },
@@ -26,7 +31,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
     { to: "/admin/students", label: t("admin.students"), icon: Users },
     { to: "/admin/orders", label: t("admin.orders"), icon: Receipt },
     { to: "/admin/settings", label: t("admin.settings"), icon: Settings },
-  ] as const;
+  ];
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
