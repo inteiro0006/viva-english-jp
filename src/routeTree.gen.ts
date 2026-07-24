@@ -18,6 +18,7 @@ import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as CourseRouteImport } from './routes/course'
+import { Route as CommercialRouteImport } from './routes/commercial'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
@@ -82,6 +83,11 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
 const CourseRoute = CourseRouteImport.update({
   id: '/course',
   path: '/course',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommercialRoute = CommercialRouteImport.update({
+  id: '/commercial',
+  path: '/commercial',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutRoute = CheckoutRouteImport.update({
@@ -189,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/checkout': typeof CheckoutRoute
+  '/commercial': typeof CommercialRoute
   '/course': typeof CourseRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
@@ -219,6 +226,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
+  '/commercial': typeof CommercialRoute
   '/course': typeof CourseRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
@@ -250,6 +258,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/checkout': typeof CheckoutRoute
+  '/commercial': typeof CommercialRoute
   '/course': typeof CourseRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
@@ -283,6 +292,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/checkout'
+    | '/commercial'
     | '/course'
     | '/forgot-password'
     | '/login'
@@ -313,6 +323,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/checkout'
+    | '/commercial'
     | '/course'
     | '/forgot-password'
     | '/login'
@@ -343,6 +354,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/checkout'
+    | '/commercial'
     | '/course'
     | '/forgot-password'
     | '/login'
@@ -375,6 +387,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
   CheckoutRoute: typeof CheckoutRoute
+  CommercialRoute: typeof CommercialRoute
   CourseRoute: typeof CourseRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
@@ -451,6 +464,13 @@ declare module '@tanstack/react-router' {
       path: '/course'
       fullPath: '/course'
       preLoaderRoute: typeof CourseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/commercial': {
+      id: '/commercial'
+      path: '/commercial'
+      fullPath: '/commercial'
+      preLoaderRoute: typeof CommercialRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout': {
@@ -657,6 +677,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
   CheckoutRoute: CheckoutRoute,
+  CommercialRoute: CommercialRoute,
   CourseRoute: CourseRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
