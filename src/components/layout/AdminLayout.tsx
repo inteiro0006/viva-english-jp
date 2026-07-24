@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
 import {
@@ -10,12 +10,26 @@ import {
   Users,
   Receipt,
   Settings,
+  LogOut,
 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
+import { signOut } from "@/lib/auth/use-session";
 
 export function AdminLayout({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  async function handleSignOut() {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await signOut();
+    router.invalidate();
+    await navigate({ to: "/", replace: true });
+  }
 
   const nav: Array<{
     to: string;
@@ -65,8 +79,9 @@ export function AdminLayout({ children }: { children: ReactNode }) {
           <span className="font-semibold lg:hidden">{t("admin.title")}</span>
           <div className="flex flex-1 items-center justify-end gap-2">
             <LanguageSwitcher />
-            <Button asChild variant="outline" size="sm">
-              <Link to="/">{t("common.backHome")}</Link>
+            <Button variant="outline" size="sm" onClick={handleSignOut}>
+              <LogOut className="size-4" aria-hidden />
+              <span className="hidden sm:inline">{t("nav.logout")}</span>
             </Button>
           </div>
         </header>
