@@ -1,0 +1,143 @@
+{
+  "brand": {
+    "name": "Eigo Michi",
+    "tagline": "Serious English learning, designed for Japanese speakers"
+  },
+  "nav": {
+    "home": "Home",
+    "course": "Course",
+    "pricing": "Pricing",
+    "login": "Log in",
+    "register": "Sign up",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "support": "Support",
+    "logout": "Log out",
+    "admin": "Admin"
+  },
+  "language": {
+    "label": "Language",
+    "ja": "日本語",
+    "en": "English"
+  },
+  "common": {
+    "loading": "Loading…",
+    "error": "Something went wrong",
+    "retry": "Try again",
+    "empty": "Nothing here yet",
+    "comingSoon": "Coming soon",
+    "backHome": "Back to home",
+    "getStarted": "Get started",
+    "learnMore": "Learn more",
+    "continue": "Continue",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "landing": {
+    "heroTitle": "English, at your own pace.",
+    "heroHighlight": "Real English learning",
+    "heroSubtitle": "A practical online program taught in Japanese, built to make English click.",
+    "cta": "Try it for free",
+    "benefits": {
+      "title": "Why learners choose us",
+      "items": {
+        "method": {
+          "title": "Structured method",
+          "desc": "A six-stage program that moves from foundations to fluency."
+        },
+        "pace": {
+          "title": "Your own pace",
+          "desc": "Study anytime, on any device, on your schedule."
+        },
+        "support": {
+          "title": "Japanese support",
+          "desc": "Get help in Japanese whenever you get stuck."
+        }
+      }
+    },
+    "stages": {
+      "title": "Six learning stages",
+      "subtitle": "From foundations to real conversation and writing."
+    },
+    "faq": {
+      "title": "Frequently asked questions"
+    },
+    "finalCta": {
+      "title": "Start today.",
+      "subtitle": "One payment, lifetime access to every lesson.",
+      "action": "See the course"
+    }
+  },
+  "course": {
+    "title": "About the course",
+    "subtitle": "An overview of the curriculum and roadmap.",
+    "modulesTitle": "Modules",
+    "moduleCount": "Modules",
+    "lessonCount": "Lessons"
+  },
+  "pricing": {
+    "title": "Simple pricing",
+    "subtitle": "Pay once, learn forever.",
+    "planTitle": "Full access plan",
+    "planDesc": "All lessons, future updates, and support included.",
+    "cta": "Go to checkout"
+  },
+  "auth": {
+    "loginTitle": "Log in",
+    "registerTitle": "Create an account",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "forgotPassword": "Forgot your password?",
+    "resetTitle": "Reset your password",
+    "resetSubtitle": "Enter the email you used to register.",
+    "newPassword": "New password",
+    "haveAccount": "Already have an account?",
+    "noAccount": "Don't have an account?",
+    "submit": "Submit"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "subtitle": "Secure payment to unlock the course."
+  },
+  "payment": {
+    "successTitle": "Payment complete",
+    "successBody": "Thanks for your purchase. Head to your dashboard to start learning.",
+    "cancelTitle": "Payment canceled",
+    "cancelBody": "No worries — you can try again anytime."
+  },
+  "legal": {
+    "termsTitle": "Terms of service",
+    "privacyTitle": "Privacy policy"
+  },
+  "student": {
+    "welcome": "Welcome",
+    "progress": "Overall progress",
+    "continueLearning": "Continue learning",
+    "myCourse": "My course",
+    "stages": "Stages",
+    "modules": "Modules",
+    "lessons": "Lessons",
+    "profileTitle": "Profile",
+    "supportTitle": "Support"
+  },
+  "admin": {
+    "title": "Admin panel",
+    "overview": "Overview",
+    "courses": "Courses",
+    "modules": "Modules",
+    "lessons": "Lessons",
+    "videos": "Videos",
+    "students": "Students",
+    "orders": "Orders",
+    "settings": "Settings"
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "terms": "Terms",
+    "privacy": "Privacy"
+  },
+  "placeholder": {
+    "note": "This screen is scaffolded. Full implementation is coming in the next step."
+  }
+}
