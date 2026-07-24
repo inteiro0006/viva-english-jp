@@ -1,12 +1,25 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
-import { LayoutDashboard, BookOpen, User, LifeBuoy } from "lucide-react";
+import { LayoutDashboard, BookOpen, User, LifeBuoy, LogOut } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
+import { signOut } from "@/lib/auth/use-session";
 
 export function StudentLayout({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  async function handleSignOut() {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await signOut();
+    router.invalidate();
+    await navigate({ to: "/", replace: true });
+  }
 
   const nav = [
     { to: "/student/dashboard", label: t("nav.dashboard"), icon: LayoutDashboard },
@@ -27,8 +40,9 @@ export function StudentLayout({ children }: { children: ReactNode }) {
           </Link>
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
-            <Button asChild variant="outline" size="sm">
-              <Link to="/">{t("nav.logout")}</Link>
+            <Button variant="outline" size="sm" onClick={handleSignOut}>
+              <LogOut className="size-4" aria-hidden />
+              <span className="hidden sm:inline">{t("nav.logout")}</span>
             </Button>
           </div>
         </div>

@@ -388,17 +388,75 @@
   },
   "auth": {
     "loginTitle": "Log in",
+    "loginSubtitle": "Pick up where you left off.",
     "registerTitle": "Create an account",
+    "registerSubtitle": "Sign up for free and start your trial.",
     "email": "Email",
     "password": "Password",
-    "name": "Name",
+    "confirmPassword": "Confirm password",
+    "name": "Full name",
     "forgotPassword": "Forgot your password?",
     "resetTitle": "Reset your password",
     "resetSubtitle": "Enter the email you used to register.",
     "newPassword": "New password",
     "haveAccount": "Already have an account?",
     "noAccount": "Don't have an account?",
-    "submit": "Submit"
+    "submit": "Submit",
+    "rememberEmail": "Remember this email on this device",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "marketingConsent": "Send me learning tips and occasional updates (optional)",
+    "acceptTerms": {
+      "prefix": "I agree to the",
+      "and": "and",
+      "suffix": ""
+    },
+    "rules": {
+      "length": "At least 8 characters",
+      "lower": "One lowercase letter",
+      "upper": "One uppercase letter",
+      "digit": "One number"
+    },
+    "errors": {
+      "nameRequired": "Please enter your name.",
+      "nameTooLong": "That name is too long.",
+      "passwordRequired": "Please enter your password.",
+      "passwordMismatch": "Passwords do not match.",
+      "termsRequired": "You must accept the terms to continue.",
+      "invalidCredentials": "Email or password is incorrect.",
+      "emailNotConfirmed": "Please confirm your email before signing in.",
+      "emailTaken": "That email is already registered.",
+      "rateLimited": "Too many attempts. Please try again later.",
+      "weakPassword": "That password isn't safe. Choose a stronger one.",
+      "network": "Network error. Check your connection and try again.",
+      "linkExpired": "This link is invalid or has expired.",
+      "generic": "Something went wrong. Please try again."
+    },
+    "messages": {
+      "loginSuccess": "Signed in.",
+      "registerSuccess": "Confirmation email sent.",
+      "resetSent": "If an account exists, we sent a password reset email.",
+      "resetSuccess": "Your password has been updated.",
+      "resent": "Confirmation email re-sent."
+    },
+    "verify": {
+      "title": "Check your inbox",
+      "subtitle": "One more step to activate your account.",
+      "checkInbox": "Registered email",
+      "instructions": "Click the link in the email to activate your account. If you don't see it, check your spam folder.",
+      "resend": "Resend confirmation email",
+      "doneTitle": "Email confirmed",
+      "doneBody": "Your account is active. Head to the dashboard to start learning."
+    },
+    "shell": {
+      "title": "Serious English, at your own pace.",
+      "subtitle": "A practical online program taught in Japanese.",
+      "bullets": {
+        "access": "One payment, lifetime access",
+        "pace": "Study anywhere on any device",
+        "support": "Support in Japanese"
+      }
+    }
   },
   "checkout": {
     "title": "Checkout",

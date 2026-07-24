@@ -388,9 +388,12 @@
   },
   "auth": {
     "loginTitle": "ログイン",
+    "loginSubtitle": "学習の続きから始めましょう。",
     "registerTitle": "新規登録",
+    "registerSubtitle": "無料でアカウントを作成し、体験を始めましょう。",
     "email": "メールアドレス",
     "password": "パスワード",
+    "confirmPassword": "パスワード（確認）",
     "name": "お名前",
     "forgotPassword": "パスワードをお忘れですか？",
     "resetTitle": "パスワード再設定",
@@ -398,7 +401,62 @@
     "newPassword": "新しいパスワード",
     "haveAccount": "アカウントをお持ちですか？",
     "noAccount": "アカウントをお持ちでない方",
-    "submit": "送信"
+    "submit": "送信",
+    "rememberEmail": "このメールアドレスを次回も表示",
+    "showPassword": "パスワードを表示",
+    "hidePassword": "パスワードを非表示",
+    "marketingConsent": "お得な情報や学習のヒントを受け取る（任意）",
+    "acceptTerms": {
+      "prefix": "",
+      "and": "と",
+      "suffix": "に同意します"
+    },
+    "rules": {
+      "length": "8文字以上",
+      "lower": "小文字を含む",
+      "upper": "大文字を含む",
+      "digit": "数字を含む"
+    },
+    "errors": {
+      "nameRequired": "お名前を入力してください。",
+      "nameTooLong": "お名前が長すぎます。",
+      "passwordRequired": "パスワードを入力してください。",
+      "passwordMismatch": "パスワードが一致しません。",
+      "termsRequired": "利用規約に同意してください。",
+      "invalidCredentials": "メールアドレスまたはパスワードが正しくありません。",
+      "emailNotConfirmed": "メールアドレスがまだ確認されていません。受信箱をご確認ください。",
+      "emailTaken": "このメールアドレスはすでに登録されています。",
+      "rateLimited": "しばらく時間をおいてから、もう一度お試しください。",
+      "weakPassword": "パスワードが安全ではありません。より強いパスワードを設定してください。",
+      "network": "通信エラーが発生しました。接続をご確認ください。",
+      "linkExpired": "このリンクは無効か、期限が切れています。",
+      "generic": "処理を完了できませんでした。もう一度お試しください。"
+    },
+    "messages": {
+      "loginSuccess": "ログインしました。",
+      "registerSuccess": "確認メールを送信しました。",
+      "resetSent": "パスワード再設定のメールを送信しました（登録がある場合）。",
+      "resetSuccess": "パスワードを更新しました。",
+      "resent": "確認メールを再送しました。"
+    },
+    "verify": {
+      "title": "メールを確認してください",
+      "subtitle": "アカウントの有効化はあと一歩です。",
+      "checkInbox": "登録されたメール",
+      "instructions": "受信メールのリンクをクリックしてアカウントを有効化してください。届かない場合は迷惑メールもご確認ください。",
+      "resend": "確認メールを再送",
+      "doneTitle": "メールを確認しました",
+      "doneBody": "アカウントが有効になりました。ダッシュボードから学習を始めましょう。"
+    },
+    "shell": {
+      "title": "本気で学ぶ、あなたの英語。",
+      "subtitle": "日本語で丁寧に導く、実践的なオンライン英語プログラム。",
+      "bullets": {
+        "access": "一度きりのお支払いで生涯アクセス",
+        "pace": "スマートフォンでも自分のペースで学習",
+        "support": "日本語でのサポートあり"
+      }
+    }
   },
   "checkout": {
     "title": "お支払い",
