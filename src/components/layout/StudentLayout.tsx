@@ -39,7 +39,7 @@ export function StudentLayout({ children }: { children: ReactNode }) {
           {nav.map((item) => (
             <Link
               key={item.to}
-              to={item.to}
+              to={item.to as never}
               activeOptions={{ exact: false }}
               activeProps={{
                 className:

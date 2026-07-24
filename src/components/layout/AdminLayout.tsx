@@ -46,7 +46,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
           {nav.map((item) => (
             <Link
               key={item.to}
-              to={item.to}
+              to={item.to as never}
               activeOptions={{ exact: item.exact ?? false }}
               activeProps={{
                 className: "bg-accent text-accent-foreground",
