@@ -1,19 +1,27 @@
 {
   "brand": {
     "name": "Eigo Michi",
-    "tagline": "Serious English learning, designed for Japanese speakers"
+    "tagline": "Serious English learning, designed for Japanese speakers",
+    "logoMark": "英"
   },
   "nav": {
     "home": "Home",
+    "features": "Features",
+    "method": "Method",
+    "content": "Course",
     "course": "Course",
     "pricing": "Pricing",
+    "faq": "FAQ",
     "login": "Log in",
     "register": "Sign up",
+    "buy": "Buy the course",
     "dashboard": "Dashboard",
     "profile": "Profile",
     "support": "Support",
     "logout": "Log out",
-    "admin": "Admin"
+    "admin": "Admin",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "language": {
     "label": "Language",
@@ -31,41 +39,337 @@
     "learnMore": "Learn more",
     "continue": "Continue",
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "available": "Available",
+    "demoLabel": "Demo"
   },
   "landing": {
-    "heroTitle": "English, at your own pace.",
-    "heroHighlight": "Real English learning",
-    "heroSubtitle": "A practical online program taught in Japanese, built to make English click.",
-    "cta": "Try it for free",
-    "benefits": {
-      "title": "Why learners choose us",
+    "meta": {
+      "title": "Eigo Michi — Serious English learning for Japanese speakers",
+      "description": "A practical online English program designed for Japanese learners. Study at your own pace and build English you can use at work, in travel, and in everyday life."
+    },
+    "hero": {
+      "eyebrow": "Designed for Japanese learners",
+      "title": "End the days when English feels out of reach — starting today.",
+      "subtitle": "A practical online English course designed for Japanese learners. Study at your own pace and build English you can actually use.",
+      "ctaPrimary": "Start the course now",
+      "ctaSecondary": "See what's inside",
+      "note": "One-time payment · No hidden fees · Immediate access after checkout",
+      "mockup": {
+        "title": "Today's lesson",
+        "lesson": "Stage 2 — Forming questions",
+        "progressLabel": "Overall progress",
+        "moduleLabel": "Module",
+        "streakLabel": "Streak",
+        "days": "days"
+      }
+    },
+    "trust": {
+      "items": [
+        "One-time payment",
+        "Learn at your pace",
+        "Mobile ready",
+        "Progress auto-saved",
+        "Japanese support"
+      ]
+    },
+    "problem": {
+      "title": "Why English still feels out of reach.",
+      "subtitle": "The reason you're stuck isn't a lack of effort.",
       "items": {
-        "method": {
-          "title": "Structured method",
-          "desc": "A six-stage program that moves from foundations to fluency."
+        "years": {
+          "title": "Years of study, still can't speak",
+          "desc": "What you learned at school doesn't come out in real conversation."
         },
-        "pace": {
-          "title": "Your own pace",
-          "desc": "Study anytime, on any device, on your schedule."
+        "fear": {
+          "title": "Afraid to make mistakes",
+          "desc": "Worrying about grammar and pronunciation freezes your speech."
         },
-        "support": {
-          "title": "Japanese support",
-          "desc": "Get help in Japanese whenever you get stuck."
+        "consistency": {
+          "title": "Can't stay consistent",
+          "desc": "Busy days and fatigue break the habit before it forms."
+        },
+        "materials": {
+          "title": "Materials that don't connect",
+          "desc": "Books, apps and videos never form a coherent path."
+        },
+        "listening": {
+          "title": "Natives are too fast",
+          "desc": "You can read English but can't follow the speed of real speech."
+        },
+        "needs": {
+          "title": "You need it for work, travel, TOEIC",
+          "desc": "Real situations demand usable English — now, not someday."
         }
       }
     },
-    "stages": {
-      "title": "Six learning stages",
-      "subtitle": "From foundations to real conversation and writing."
+    "transformation": {
+      "title": "Change how you study, change the outcome.",
+      "subtitle": "From scattered study to a compounding learning system.",
+      "beforeTitle": "The old way",
+      "afterTitle": "With Eigo Michi",
+      "before": [
+        "Disconnected materials",
+        "Low confidence",
+        "No clear direction",
+        "Hard to keep going",
+        "No practice opportunity",
+        "Invisible progress"
+      ],
+      "after": [
+        "A structured learning track",
+        "Practical, applied lessons",
+        "Visible progress",
+        "Automated review",
+        "Confidence built step by step",
+        "Works on phone, tablet, and PC"
+      ]
+    },
+    "how": {
+      "title": "Get started in four steps.",
+      "subtitle": "From account creation to your first lesson in minutes.",
+      "steps": {
+        "signup": {
+          "title": "Create an account",
+          "desc": "Sign up for free with your email."
+        },
+        "pay": {
+          "title": "One-time payment",
+          "desc": "Complete a secure checkout."
+        },
+        "unlock": {
+          "title": "Course unlocked",
+          "desc": "Get instant access to every stage."
+        },
+        "learn": {
+          "title": "Learn and track progress",
+          "desc": "Study at your own pace, progress saved automatically."
+        }
+      }
+    },
+    "method": {
+      "title": "Seven pillars of learning.",
+      "subtitle": "Every skill needed to actually speak, balanced into one system.",
+      "pillars": {
+        "comprehension": {
+          "title": "Comprehension",
+          "desc": "Understand how English works — explained clearly in Japanese."
+        },
+        "pronunciation": {
+          "title": "Pronunciation",
+          "desc": "Build intelligible pronunciation and intonation through practice."
+        },
+        "vocabulary": {
+          "title": "Vocabulary",
+          "desc": "Learn high-frequency words in usable, natural contexts."
+        },
+        "sentence": {
+          "title": "Sentence building",
+          "desc": "Assemble what you want to say into real English sentences."
+        },
+        "listening": {
+          "title": "Listening",
+          "desc": "Train your ear for the speed of natural English."
+        },
+        "conversation": {
+          "title": "Conversation practice",
+          "desc": "Role-play real situations to speak with confidence."
+        },
+        "review": {
+          "title": "Spaced review",
+          "desc": "Review before you forget, so knowledge sticks."
+        }
+      }
+    },
+    "curriculum": {
+      "title": "Six stages to speaking English.",
+      "subtitle": "A single path from foundations to real communication.",
+      "modulesLabel": "modules",
+      "lessonsLabel": "lessons",
+      "sampleLabel": "Sample lessons",
+      "objectiveLabel": "Goal",
+      "stages": {
+        "s1": {
+          "title": "Stage 1 — Foundations",
+          "objective": "Understand the shape of English and build simple sentences.",
+          "modules": 6,
+          "lessons": 24,
+          "samples": ["Be-verbs & action verbs", "Statements, negatives, questions", "Core tenses"],
+          "status": "available"
+        },
+        "s2": {
+          "title": "Stage 2 — Sentence building",
+          "objective": "Express what you want to say clearly and accurately.",
+          "modules": 6,
+          "lessons": 26,
+          "samples": ["Past, future, perfect", "Conjunctions & relative clauses", "Natural word order"],
+          "status": "available"
+        },
+        "s3": {
+          "title": "Stage 3 — Real-life English",
+          "objective": "Handle travel, shopping and everyday conversation.",
+          "modules": 5,
+          "lessons": 22,
+          "samples": ["Ordering at a café", "Asking for directions", "Making reservations"],
+          "status": "available"
+        },
+        "s4": {
+          "title": "Stage 4 — Listening & pronunciation",
+          "objective": "Catch natural English and respond intelligibly.",
+          "modules": 5,
+          "lessons": 20,
+          "samples": ["Linking & reductions", "Shadowing", "Rhythm & stress"],
+          "status": "available"
+        },
+        "s5": {
+          "title": "Stage 5 — English at work",
+          "objective": "Handle email, meetings and calls in English.",
+          "modules": 4,
+          "lessons": 18,
+          "samples": ["Polite requests", "Speaking up in meetings", "Presentation patterns"],
+          "status": "coming_soon"
+        },
+        "s6": {
+          "title": "Stage 6 — Consolidation",
+          "objective": "Integrate everything and make English your own.",
+          "modules": 4,
+          "lessons": 16,
+          "samples": ["Discussion", "Extended self-introduction", "Full review"],
+          "status": "coming_soon"
+        }
+      },
+      "status": {
+        "available": "Available",
+        "coming_soon": "Coming soon"
+      }
+    },
+    "platform": {
+      "title": "A platform built to keep you learning.",
+      "subtitle": "Dashboard, progress, history, mobile — everything set up so you can focus on English.",
+      "features": {
+        "dashboard": {
+          "title": "Dashboard",
+          "desc": "Today's lesson and overall progress at a glance."
+        },
+        "modules": {
+          "title": "Modules",
+          "desc": "Every lesson organised into a clear structure."
+        },
+        "current": {
+          "title": "Resume where you left off",
+          "desc": "Pick up automatically from your last lesson."
+        },
+        "progress": {
+          "title": "Progress bar",
+          "desc": "See completion rate for every stage."
+        },
+        "history": {
+          "title": "Learning history",
+          "desc": "Your study log, recorded automatically."
+        },
+        "mobile": {
+          "title": "Mobile ready",
+          "desc": "Comfortable to use on a phone, anytime."
+        }
+      },
+      "mockup": {
+        "greeting": "Welcome back",
+        "todayLesson": "Today's lesson",
+        "resume": "Resume",
+        "modules": "Modules",
+        "history": "History"
+      }
+    },
+    "audience": {
+      "forTitle": "Who this is for",
+      "notForTitle": "Who this may not fit",
+      "for": {
+        "beginners": "Beginners restarting English",
+        "professionals": "Professionals who need English at work",
+        "travelers": "Travelers who want to enjoy going abroad",
+        "students": "Students preparing for TOEIC or exams",
+        "interview": "Anyone facing an English interview",
+        "communication": "People who want to speak with colleagues and friends overseas"
+      },
+      "notFor": {
+        "instant": "Anyone expecting fluency overnight with no practice",
+        "advanced": "Advanced speakers who no longer need structure",
+        "shortcut": "Anyone looking purely for shortcuts"
+      }
+    },
+    "offer": {
+      "title": "Simple, honest pricing.",
+      "subtitle": "One payment, lifetime access.",
+      "planName": "Full-access plan",
+      "priceComingSoon": "Pricing coming soon",
+      "oneTime": "One-time payment",
+      "includedTitle": "What's included",
+      "included": [
+        "Access to every stage and module",
+        "Automatic progress tracking",
+        "Phone, tablet and PC support",
+        "Japanese-language study guide",
+        "Access to content updates",
+        "Customer support"
+      ],
+      "cta": "Buy the course",
+      "notice": "Update and support scope follows the admin configuration."
+    },
+    "testimonials": {
+      "title": "What students say",
+      "subtitle": "Impressions from learners going through the course (demo content shown).",
+      "demoBanner": "The cards below are demo placeholders — not real student data."
     },
     "faq": {
-      "title": "Frequently asked questions"
+      "title": "Frequently asked questions",
+      "items": {
+        "beginner": {
+          "q": "Can beginners follow the course?",
+          "a": "Yes. Stage 1 starts from foundations, so it works for anyone restarting from school-level English."
+        },
+        "payment": {
+          "q": "What payment methods are available?",
+          "a": "Credit cards and any other methods shown at checkout."
+        },
+        "subscription": {
+          "q": "Is there a monthly fee?",
+          "a": "No. The course is a one-time payment. There are no recurring charges."
+        },
+        "mobile": {
+          "q": "Can I take the course on a smartphone?",
+          "a": "Yes. The platform works on phone, tablet and PC."
+        },
+        "expiry": {
+          "q": "Does access expire?",
+          "a": "There is no expiry at this time. See the terms of service for details."
+        },
+        "download": {
+          "q": "Can I download the videos?",
+          "a": "To protect copyright, videos are streaming-only and cannot be downloaded."
+        },
+        "password": {
+          "q": "What if I forget my password?",
+          "a": "Use \"Forgot your password?\" on the login screen to reset via your registered email."
+        },
+        "start": {
+          "q": "When can I start after paying?",
+          "a": "As soon as your payment is confirmed, all content is unlocked."
+        },
+        "receipt": {
+          "q": "Can I get a receipt?",
+          "a": "Yes. You can download a receipt from your account page."
+        },
+        "support": {
+          "q": "Is there any support?",
+          "a": "Yes. Japanese-language customer support is available."
+        }
+      }
     },
     "finalCta": {
-      "title": "Start today.",
-      "subtitle": "One payment, lifetime access to every lesson.",
-      "action": "See the course"
+      "title": "Not just learning English — becoming someone who uses it.",
+      "subtitle": "Today's step is next year's version of you.",
+      "cta": "Buy the course",
+      "secondary": "See what's inside"
     }
   },
   "course": {
@@ -108,7 +412,8 @@
   },
   "legal": {
     "termsTitle": "Terms of service",
-    "privacyTitle": "Privacy policy"
+    "privacyTitle": "Privacy policy",
+    "commercial": "Commercial policy"
   },
   "student": {
     "welcome": "Welcome",
@@ -133,9 +438,14 @@
     "settings": "Settings"
   },
   "footer": {
+    "tagline": "A practical online English course for Japanese learners.",
     "rights": "All rights reserved.",
     "terms": "Terms",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "commercial": "Commercial policy",
+    "support": "Support",
+    "navTitle": "Navigation",
+    "legalTitle": "Legal"
   },
   "placeholder": {
     "note": "This screen is scaffolded. Full implementation is coming in the next step."
