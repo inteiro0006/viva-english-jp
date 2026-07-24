@@ -121,7 +121,8 @@ const audienceForKeys = [
 const audienceNotForKeys = ["instant", "advanced", "shortcut"] as const;
 
 function LandingPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isJa = (i18n.language || "ja").startsWith("ja");
   const priceLabel = formatJpy(COURSE_PRICE_JPY);
   const trustItems = t("landing.trust.items", { returnObjects: true }) as string[];
   const beforeItems = t("landing.transformation.before", {
@@ -738,10 +739,7 @@ function LandingPage() {
             {demoTestimonials
               .filter((tItem) => tItem.published)
               .map((tItem) => {
-                const quote =
-                  (t("language.ja") && document?.documentElement?.lang === "en")
-                    ? tItem.quoteEn
-                    : tItem.quoteJa;
+                const quote = isJa ? tItem.quoteJa : tItem.quoteEn;
                 return (
                   <Card key={tItem.id} className="border-border/70">
                     <CardContent className="flex h-full flex-col gap-4 py-6">
