@@ -27,6 +27,7 @@ import {
   saveLessonPosition,
   type LessonWorkspaceState,
 } from "@/lib/lms/lesson-workspace";
+import { StreamPlayer } from "@/components/lms/StreamPlayer";
 
 export const Route = createFileRoute("/student/lesson/$lessonId")({
   head: () => ({
