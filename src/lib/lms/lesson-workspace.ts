@@ -39,7 +39,7 @@ export type ResourceRow = {
   id: string;
   title_ja: string;
   title_en: string;
-  url: string;
+  file_url: string;
   resource_type: string;
   position: number;
 };
@@ -185,7 +185,7 @@ export function useLessonWorkspace(userId: string | undefined, lessonId: string 
       const [resourcesRes, progressRes] = await Promise.all([
         supabase
           .from("lesson_resources")
-          .select("id, title_ja, title_en, url, resource_type, position")
+          .select("id, title_ja, title_en, file_url, resource_type, position")
           .eq("lesson_id", lesson.id)
           .order("position"),
         supabase
