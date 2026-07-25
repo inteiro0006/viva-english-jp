@@ -531,6 +531,39 @@
       "certificateSoon": "Certificate coming soon",
       "errorTitle": "We couldn't load your dashboard",
       "errorRetry": "Try again"
+    },
+    "course": {
+      "errorTitle": "We couldn't load this course",
+      "notFoundTitle": "Course not found",
+      "notFoundDesc": "The course at this URL doesn't exist or isn't published.",
+      "noAccessTitle": "You don't have access to this course",
+      "noAccessDesc": "Purchase the course to unlock all materials.",
+      "buyCta": "Buy the course",
+      "backToDashboard": "Back to dashboard",
+      "continue": "Continue learning",
+      "stagesCount": "Stages",
+      "modulesCount": "Modules",
+      "lessonsCount": "Lessons",
+      "timeStudied": "Time studied"
+    },
+    "lesson": {
+      "errorTitle": "We couldn't load this lesson",
+      "notFoundTitle": "Lesson not found",
+      "notFoundDesc": "This lesson doesn't exist or isn't published.",
+      "accessDeniedTitle": "You can't access this lesson yet",
+      "accessDeniedDesc": "Purchase the course, or wait for the module to be released.",
+      "backToCourse": "Back to course",
+      "prev": "Previous",
+      "next": "Next",
+      "markComplete": "Mark as complete",
+      "completed": "Completed",
+      "completedToast": "Lesson marked complete.",
+      "materials": "Materials",
+      "playerPlaceholder": "Video player is being prepared",
+      "playerPlaceholderNote": "Enabled after Cloudflare Stream is integrated.",
+      "previewBadge": "Preview",
+      "lessonList": "Lesson list",
+      "yourProgress": "Lesson progress"
     }
   },
   "admin": {

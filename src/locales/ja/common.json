@@ -531,6 +531,39 @@
       "certificateSoon": "修了証は近日公開予定です",
       "errorTitle": "データを読み込めませんでした",
       "errorRetry": "もう一度試す"
+    },
+    "course": {
+      "errorTitle": "コースを読み込めませんでした",
+      "notFoundTitle": "コースが見つかりません",
+      "notFoundDesc": "このURLのコースは存在しないか、公開されていません。",
+      "noAccessTitle": "このコースは未購入です",
+      "noAccessDesc": "コースを購入すると、すべての教材にアクセスできます。",
+      "buyCta": "コースを購入する",
+      "backToDashboard": "ダッシュボードに戻る",
+      "continue": "学習を続ける",
+      "stagesCount": "ステージ数",
+      "modulesCount": "モジュール数",
+      "lessonsCount": "レッスン",
+      "timeStudied": "学習時間"
+    },
+    "lesson": {
+      "errorTitle": "レッスンを読み込めませんでした",
+      "notFoundTitle": "レッスンが見つかりません",
+      "notFoundDesc": "このレッスンは存在しないか、公開されていません。",
+      "accessDeniedTitle": "このレッスンは受講できません",
+      "accessDeniedDesc": "コースの購入、または前提となるモジュールの公開後にご利用いただけます。",
+      "backToCourse": "コースに戻る",
+      "prev": "前のレッスン",
+      "next": "次のレッスン",
+      "markComplete": "完了にする",
+      "completed": "完了済み",
+      "completedToast": "レッスンを完了しました。",
+      "materials": "教材・資料",
+      "playerPlaceholder": "動画プレーヤーは準備中です",
+      "playerPlaceholderNote": "Cloudflare Stream の統合後に有効になります。",
+      "previewBadge": "無料公開",
+      "lessonList": "レッスン一覧",
+      "yourProgress": "このレッスンの進捗"
     }
   },
   "admin": {
