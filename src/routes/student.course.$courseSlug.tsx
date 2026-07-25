@@ -22,6 +22,7 @@ import {
   useCourseWorkspace,
   computeModuleViews,
   type ModuleView,
+  type CourseWorkspaceState,
 } from "@/lib/lms/course-workspace";
 import type { DashboardLesson, DashboardProgressRow } from "@/lib/lms/dashboard-data";
 
