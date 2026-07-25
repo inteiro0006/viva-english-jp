@@ -102,7 +102,7 @@ function CourseView({
   lang,
   t,
 }: {
-  data: Extract<ReturnType<typeof useCourseWorkspace>["data"], { state: "ok" }>;
+  data: Extract<CourseWorkspaceState, { state: "ok" }>;
   lang: string;
   t: ReturnType<typeof useTranslation>["t"];
 }) {
