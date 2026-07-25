@@ -67,7 +67,7 @@ function formatRelativeDate(iso: string | null | undefined, locale: string) {
 
 // ---------- module lock computation ----------
 
-type ModuleView = DashboardModule & {
+type ModuleView = Omit<DashboardModule, "status"> & {
   lessons: DashboardLesson[];
   completedCount: number;
   totalCount: number;
