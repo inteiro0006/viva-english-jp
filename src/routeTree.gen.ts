@@ -40,6 +40,7 @@ import { Route as AdminCoursesRouteImport } from './routes/admin.courses'
 import { Route as StudentLessonLessonIdRouteImport } from './routes/student.lesson.$lessonId'
 import { Route as StudentCourseCourseSlugRouteImport } from './routes/student.course.$courseSlug'
 import { Route as AdminCoursesCourseIdRouteImport } from './routes/admin.courses.$courseId'
+import { Route as ApiPublicWebhooksCloudflareStreamRouteImport } from './routes/api/public/webhooks/cloudflare-stream'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
@@ -196,6 +197,12 @@ const AdminCoursesCourseIdRoute = AdminCoursesCourseIdRouteImport.update({
   path: '/$courseId',
   getParentRoute: () => AdminCoursesRoute,
 } as any)
+const ApiPublicWebhooksCloudflareStreamRoute =
+  ApiPublicWebhooksCloudflareStreamRouteImport.update({
+    id: '/api/public/webhooks/cloudflare-stream',
+    path: '/api/public/webhooks/cloudflare-stream',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -229,6 +236,7 @@ export interface FileRoutesByFullPath {
   '/admin/courses/$courseId': typeof AdminCoursesCourseIdRoute
   '/student/course/$courseSlug': typeof StudentCourseCourseSlugRoute
   '/student/lesson/$lessonId': typeof StudentLessonLessonIdRoute
+  '/api/public/webhooks/cloudflare-stream': typeof ApiPublicWebhooksCloudflareStreamRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -260,6 +268,7 @@ export interface FileRoutesByTo {
   '/admin/courses/$courseId': typeof AdminCoursesCourseIdRoute
   '/student/course/$courseSlug': typeof StudentCourseCourseSlugRoute
   '/student/lesson/$lessonId': typeof StudentLessonLessonIdRoute
+  '/api/public/webhooks/cloudflare-stream': typeof ApiPublicWebhooksCloudflareStreamRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -294,6 +303,7 @@ export interface FileRoutesById {
   '/admin/courses/$courseId': typeof AdminCoursesCourseIdRoute
   '/student/course/$courseSlug': typeof StudentCourseCourseSlugRoute
   '/student/lesson/$lessonId': typeof StudentLessonLessonIdRoute
+  '/api/public/webhooks/cloudflare-stream': typeof ApiPublicWebhooksCloudflareStreamRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -329,6 +339,7 @@ export interface FileRouteTypes {
     | '/admin/courses/$courseId'
     | '/student/course/$courseSlug'
     | '/student/lesson/$lessonId'
+    | '/api/public/webhooks/cloudflare-stream'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -360,6 +371,7 @@ export interface FileRouteTypes {
     | '/admin/courses/$courseId'
     | '/student/course/$courseSlug'
     | '/student/lesson/$lessonId'
+    | '/api/public/webhooks/cloudflare-stream'
   id:
     | '__root__'
     | '/'
@@ -393,6 +405,7 @@ export interface FileRouteTypes {
     | '/admin/courses/$courseId'
     | '/student/course/$courseSlug'
     | '/student/lesson/$lessonId'
+    | '/api/public/webhooks/cloudflare-stream'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -412,6 +425,7 @@ export interface RootRouteChildren {
   VerifyEmailRoute: typeof VerifyEmailRoute
   PaymentCancelRoute: typeof PaymentCancelRoute
   PaymentSuccessRoute: typeof PaymentSuccessRoute
+  ApiPublicWebhooksCloudflareStreamRoute: typeof ApiPublicWebhooksCloudflareStreamRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -633,6 +647,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCoursesCourseIdRouteImport
       parentRoute: typeof AdminCoursesRoute
     }
+    '/api/public/webhooks/cloudflare-stream': {
+      id: '/api/public/webhooks/cloudflare-stream'
+      path: '/api/public/webhooks/cloudflare-stream'
+      fullPath: '/api/public/webhooks/cloudflare-stream'
+      preLoaderRoute: typeof ApiPublicWebhooksCloudflareStreamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -710,6 +731,8 @@ const rootRouteChildren: RootRouteChildren = {
   VerifyEmailRoute: VerifyEmailRoute,
   PaymentCancelRoute: PaymentCancelRoute,
   PaymentSuccessRoute: PaymentSuccessRoute,
+  ApiPublicWebhooksCloudflareStreamRoute:
+    ApiPublicWebhooksCloudflareStreamRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
