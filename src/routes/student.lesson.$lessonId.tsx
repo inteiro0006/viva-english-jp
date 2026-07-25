@@ -27,6 +27,7 @@ import {
   saveLessonPosition,
   type LessonWorkspaceState,
 } from "@/lib/lms/lesson-workspace";
+import { StreamPlayer } from "@/components/lms/StreamPlayer";
 
 export const Route = createFileRoute("/student/lesson/$lessonId")({
   head: () => ({
@@ -183,19 +184,36 @@ function LessonView({ data }: { data: Extract<LessonWorkspaceState, { state: "ok
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div>
           {/* Player / main content */}
-          <div className="overflow-hidden rounded-2xl bg-black text-white shadow">
-            <div className="relative aspect-video w-full">
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-neutral-900 to-neutral-800">
-                <PlayCircle className="h-14 w-14 opacity-70" aria-hidden="true" />
-                <p className="px-4 text-center text-sm opacity-80">
-                  {t("student.lesson.playerPlaceholder")}
-                </p>
-                <p className="px-4 text-center text-xs opacity-60">
-                  {t("student.lesson.playerPlaceholderNote")}
-                </p>
+          {data.lesson.lesson_type === "video" && data.lesson.cloudflare_video_uid ? (
+            <StreamPlayer
+              lessonId={data.lesson.id}
+              initialSeconds={data.progress?.progress_seconds ?? 0}
+              durationSeconds={data.lesson.duration_seconds || 0}
+              onProgress={(seconds, pct) => {
+                setProgressPct(pct);
+                void saveLessonPosition(userId, data.lesson.id, seconds, pct);
+              }}
+              onComplete={() => {
+                if (!completedLocal) {
+                  void handleComplete();
+                }
+              }}
+            />
+          ) : (
+            <div className="overflow-hidden rounded-2xl bg-black text-white shadow">
+              <div className="relative aspect-video w-full">
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-neutral-900 to-neutral-800">
+                  <PlayCircle className="h-14 w-14 opacity-70" aria-hidden="true" />
+                  <p className="px-4 text-center text-sm opacity-80">
+                    {t("student.lesson.playerPlaceholder")}
+                  </p>
+                  <p className="px-4 text-center text-xs opacity-60">
+                    {t("student.lesson.playerPlaceholderNote")}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Mobile drawer toggle */}
           <div className="mt-4 flex items-center gap-2 lg:hidden">

@@ -589,5 +589,44 @@
   },
   "placeholder": {
     "note": "This screen is scaffolded. Full implementation is coming in the next step."
+  },
+  "stream": {
+    "player": {
+      "loading": "Loading video…",
+      "processing": "Video is still processing",
+      "processingNote": "Come back in a few minutes.",
+      "error": "Video unavailable"
+    },
+    "admin": {
+      "title": "Video library",
+      "subtitle": "Upload lesson videos to Cloudflare Stream, then attach them to lessons.",
+      "newUpload": "Request upload",
+      "uploadTitle": "New video",
+      "uploadHint": "Choose an MP4/MOV file. Uploads go directly to Cloudflare and never touch our server.",
+      "titleLabel": "Working title (internal)",
+      "fileLabel": "Video file",
+      "startUpload": "Start upload",
+      "uploading": "Uploading… {{pct}}%",
+      "uploadedToast": "Upload complete. Processing on Cloudflare.",
+      "refresh": "Refresh status",
+      "copyUid": "Copy UID",
+      "copied": "Copied",
+      "associate": "Associate with lesson",
+      "unassociate": "Detach from lesson",
+      "chooseLesson": "Select a lesson…",
+      "attachedTo": "Attached to",
+      "notAttached": "Not attached",
+      "status": {
+        "pendingupload": "Waiting for upload",
+        "downloading": "Downloading",
+        "queued": "Queued",
+        "inprogress": "Processing",
+        "ready": "Ready",
+        "error": "Error"
+      },
+      "duration": "Duration",
+      "createdAt": "Uploaded",
+      "empty": "No videos yet — start your first upload above."
+    }
   }
 }
