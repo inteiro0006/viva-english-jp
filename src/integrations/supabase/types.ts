@@ -534,6 +534,81 @@ export type Database = {
         }
         Relationships: []
       }
+      stream_videos: {
+        Row: {
+          cloudflare_uid: string
+          created_at: string
+          duration_seconds: number | null
+          id: string
+          meta: Json
+          preview_url: string | null
+          ready_to_stream: boolean
+          require_signed_urls: boolean
+          status: string
+          thumbnail_url: string | null
+          title: string | null
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          cloudflare_uid: string
+          created_at?: string
+          duration_seconds?: number | null
+          id?: string
+          meta?: Json
+          preview_url?: string | null
+          ready_to_stream?: boolean
+          require_signed_urls?: boolean
+          status?: string
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          cloudflare_uid?: string
+          created_at?: string
+          duration_seconds?: number | null
+          id?: string
+          meta?: Json
+          preview_url?: string | null
+          ready_to_stream?: boolean
+          require_signed_urls?: boolean
+          status?: string
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
+      stream_webhook_events: {
+        Row: {
+          cloudflare_uid: string | null
+          event_id: string | null
+          event_type: string | null
+          id: string
+          payload: Json
+          received_at: string
+        }
+        Insert: {
+          cloudflare_uid?: string | null
+          event_id?: string | null
+          event_type?: string | null
+          id?: string
+          payload: Json
+          received_at?: string
+        }
+        Update: {
+          cloudflare_uid?: string | null
+          event_id?: string | null
+          event_type?: string | null
+          id?: string
+          payload?: Json
+          received_at?: string
+        }
+        Relationships: []
+      }
       support_requests: {
         Row: {
           created_at: string
