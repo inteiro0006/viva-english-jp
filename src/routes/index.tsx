@@ -41,6 +41,8 @@ import {
 import { COURSE_PRICE_JPY, formatJpy } from "@/config/site";
 import { demoTestimonials } from "@/data/testimonials";
 
+const SITE_URL = "https://viva-english-jp.lovable.app";
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -48,7 +50,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "日本人学習者のために設計された、実践型オンライン英語コース。自分のペースで学び、仕事・旅行・日常で使える英語力を身につけましょう。",
+          "日本人学習者のために設計された、実践型オンライン英語コース。日本語のサポートで、仕事・旅行・日常で使える英語力を、自分のペースで身につけましょう。",
       },
       {
         property: "og:title",
@@ -60,11 +62,53 @@ export const Route = createFileRoute("/")({
           "実践型オンライン英語コース。自分のペースで、仕事・旅行・日常で使える英語力を。",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: `${SITE_URL}/` },
+      { property: "og:site_name", content: "Eigo Michi" },
+      { property: "og:locale", content: "ja_JP" },
+      { property: "og:locale:alternate", content: "en_US" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Eigo Michi — 日本人のための本格英語オンライン講座" },
+      {
+        name: "twitter:description",
+        content:
+          "日本語で丁寧に導く、実践型オンライン英語コース。自分のペースで、使える英語力を。",
+      },
+    ],
+    links: [
+      { rel: "canonical", href: `${SITE_URL}/` },
+      { rel: "alternate", hreflang: "ja", href: `${SITE_URL}/?lang=ja` },
+      { rel: "alternate", hreflang: "en", href: `${SITE_URL}/?lang=en` },
+      { rel: "alternate", hreflang: "x-default", href: `${SITE_URL}/` },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Course",
+          name: "Eigo Michi — 日本人のための本格英語オンライン講座",
+          description:
+            "日本語のサポート付きで学ぶ、実践型オンライン英語プログラム。",
+          inLanguage: ["ja", "en"],
+          provider: {
+            "@type": "Organization",
+            name: "Eigo Michi",
+            url: SITE_URL,
+          },
+          offers: {
+            "@type": "Offer",
+            price: "49800",
+            priceCurrency: "JPY",
+            availability: "https://schema.org/InStock",
+            url: `${SITE_URL}/checkout`,
+          },
+        }),
+      },
     ],
   }),
   component: LandingPage,
 });
+
 
 const trustIcons = [Save, Clock, Smartphone, LineChart, MessageCircle] as const;
 
