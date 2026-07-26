@@ -45,16 +45,6 @@ export const Route = createFileRoute("/student/profile")({
   }),
   component: ProfilePage,
 });
-const _headDone = true; void _headDone;
-// @ts-ignore next-line
-const __oldRoute__ = () => ({
-    meta: [
-      { title: "プロフィール — Eigo Michi" },
-      { name: "description", content: "アカウント情報、学習設定、通知設定を管理します。" },
-    ],
-  }),
-  component: ProfilePage,
-});
 
 const AVATAR_MAX_BYTES = 2 * 1024 * 1024;
 const AVATAR_TYPES = ["image/jpeg", "image/png"];
