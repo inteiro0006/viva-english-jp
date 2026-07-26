@@ -36,13 +36,21 @@ export function initI18n() {
       returnNull: false,
     });
 
-  if (typeof document !== "undefined") {
+  if (typeof window !== "undefined") {
     const applyLang = (lng: string) => {
       const short = lng.startsWith("ja") ? "ja" : "en";
-      document.documentElement.setAttribute("lang", short);
+      // Defer to after hydration to avoid SSR/CSR <html lang> mismatch.
+      requestAnimationFrame(() => {
+        document.documentElement.setAttribute("lang", short);
+      });
     };
-    applyLang(i18n.language || DEFAULT_LANGUAGE);
     i18n.on("languageChanged", applyLang);
+    // Sync once after initial hydration.
+    if (typeof requestAnimationFrame !== "undefined") {
+      requestAnimationFrame(() =>
+        applyLang(i18n.language || DEFAULT_LANGUAGE),
+      );
+    }
   }
 
   return i18n;
