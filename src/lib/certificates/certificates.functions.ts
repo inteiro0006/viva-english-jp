@@ -242,8 +242,7 @@ export const issueCertificate = createServerFn({ method: "POST" })
       studentName: profileRes.data.full_name,
       courseTitle: courseTitle ?? "",
       issuedAt: new Date(inserted.issued_at),
-      hours:
-        typeof courseRes.data.hours === "number" ? courseRes.data.hours : null,
+      hours: totalHours,
       certificateNumber: inserted.certificate_number,
       verificationCode: inserted.verification_code,
       verificationUrl,
