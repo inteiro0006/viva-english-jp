@@ -101,7 +101,7 @@ async function handleSessionExpired(session: any) {
   await getAdmin().from("orders").update({ status: "failed" }).eq("id", orderId);
 }
 
-async function process(env: StripeEnv, req: Request) {
+async function processEvent(env: StripeEnv, req: Request) {
   const event = await verifyWebhook(req, env);
   const rec = await recordEvent(event.id, event.type, event);
   if (rec.duplicate) return; // already processed

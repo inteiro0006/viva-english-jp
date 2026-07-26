@@ -41,7 +41,7 @@ import { Route as StudentLessonLessonIdRouteImport } from './routes/student.less
 import { Route as StudentCourseCourseSlugRouteImport } from './routes/student.course.$courseSlug'
 import { Route as AdminCoursesCourseIdRouteImport } from './routes/admin.courses.$courseId'
 import { Route as ApiPublicWebhooksCloudflareStreamRouteImport } from './routes/api/public/webhooks/cloudflare-stream'
-import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api.public.payments.webhook'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
