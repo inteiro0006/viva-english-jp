@@ -68,17 +68,15 @@ export const updateProfile = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ context, data }) => {
-    const patch: Record<string, unknown> = {
-      full_name: data.full_name,
-      preferred_language: data.preferred_language,
-      communication_preferences: data.communication_preferences,
-      marketing_consent: data.communication_preferences.marketing,
-    };
-    if (data.avatar_url !== undefined) patch.avatar_url = data.avatar_url;
-
     const { data: updated, error } = await context.supabase
       .from("profiles")
-      .update(patch)
+      .update({
+        full_name: data.full_name,
+        preferred_language: data.preferred_language,
+        communication_preferences: data.communication_preferences,
+        marketing_consent: data.communication_preferences.marketing,
+        ...(data.avatar_url !== undefined ? { avatar_url: data.avatar_url } : {}),
+      })
       .eq("id", context.userId)
       .select(
         "id, full_name, avatar_url, preferred_language, communication_preferences, marketing_consent",
