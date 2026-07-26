@@ -4,6 +4,16 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { assertAdmin, logAdminAction } from "@/lib/admin/require-admin";
 import { grantEnrollmentSchema } from "@/lib/admin/schemas";
 
+type EnrollmentRow = {
+  id: string;
+  user_id: string;
+  course_id: string;
+  status: string;
+  expires_at: string | null;
+  enrolled_at: string;
+  courses: { title_ja: string; title_en: string } | null;
+};
+
 export const listStudents = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
@@ -20,26 +30,36 @@ export const listStudents = createServerFn({ method: "POST" })
     const pageSize = 25;
     let q = context.supabase
       .from("profiles")
-      .select(
-        "id, full_name, preferred_language, created_at, enrollments(id, course_id, status, expires_at, courses(title_ja, title_en))",
-        { count: "exact" },
-      )
+      .select("id, full_name, preferred_language, created_at", { count: "exact" })
       .order("created_at", { ascending: false })
       .range(data.page * pageSize, data.page * pageSize + pageSize - 1);
     if (data.search) q = q.ilike("full_name", `%${data.search}%`);
-    const { data: rows, error, count } = await q;
+    const { data: profiles, error, count } = await q;
     if (error) throw new Error(error.message);
-    let filtered = rows ?? [];
-    if (data.filter === "enrolled") {
-      filtered = filtered.filter((r: { enrollments: unknown[] }) =>
-        (r.enrollments ?? []).some((e: { status: string }) => e.status === "active"),
-      );
-    } else if (data.filter === "not_enrolled") {
-      filtered = filtered.filter((r: { enrollments: unknown[] }) =>
-        !(r.enrollments ?? []).some((e: { status: string }) => e.status === "active"),
-      );
+    const rows = profiles ?? [];
+    const ids = rows.map((r) => r.id);
+    let enrollmentsByUser = new Map<string, EnrollmentRow[]>();
+    if (ids.length > 0) {
+      const { data: enrollments } = await context.supabase
+        .from("enrollments")
+        .select("id, user_id, course_id, status, expires_at, enrolled_at, courses(title_ja, title_en)")
+        .in("user_id", ids);
+      for (const e of (enrollments ?? []) as EnrollmentRow[]) {
+        const list = enrollmentsByUser.get(e.user_id) ?? [];
+        list.push(e);
+        enrollmentsByUser.set(e.user_id, list);
+      }
     }
-    return { rows: filtered, total: count ?? 0, pageSize };
+    let joined = rows.map((r) => ({
+      ...r,
+      enrollments: enrollmentsByUser.get(r.id) ?? [],
+    }));
+    if (data.filter === "enrolled") {
+      joined = joined.filter((r) => r.enrollments.some((e) => e.status === "active"));
+    } else if (data.filter === "not_enrolled") {
+      joined = joined.filter((r) => !r.enrollments.some((e) => e.status === "active"));
+    }
+    return { rows: joined, total: count ?? 0, pageSize };
   });
 
 export const getStudentDetail = createServerFn({ method: "POST" })
@@ -78,7 +98,6 @@ export const grantEnrollment = createServerFn({ method: "POST" })
         course_id: data.course_id,
         expires_at: data.expires_at ?? null,
         status: "active",
-        source: "manual_grant",
       })
       .select()
       .single();

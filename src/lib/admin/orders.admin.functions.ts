@@ -9,7 +9,7 @@ export const listOrders = createServerFn({ method: "POST" })
     z
       .object({
         status: z
-          .enum(["pending", "paid", "failed", "refunded", "canceled"])
+          .enum(["pending", "paid", "failed", "refunded", "partially_refunded"])
           .optional(),
         page: z.number().int().min(0).default(0),
       })
