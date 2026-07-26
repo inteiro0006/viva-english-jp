@@ -564,6 +564,7 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          communication_preferences: Json
           created_at: string
           full_name: string
           id: string
@@ -573,6 +574,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          communication_preferences?: Json
           created_at?: string
           full_name?: string
           id: string
@@ -582,6 +584,7 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          communication_preferences?: Json
           created_at?: string
           full_name?: string
           id?: string
@@ -668,27 +671,39 @@ export type Database = {
       }
       support_requests: {
         Row: {
+          attachment_url: string | null
+          category: Database["public"]["Enums"]["support_category"]
           created_at: string
           id: string
           message: string
+          responded_at: string | null
+          response: string | null
           status: Database["public"]["Enums"]["support_status"]
           subject: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          attachment_url?: string | null
+          category?: Database["public"]["Enums"]["support_category"]
           created_at?: string
           id?: string
           message: string
+          responded_at?: string | null
+          response?: string | null
           status?: Database["public"]["Enums"]["support_status"]
           subject: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          attachment_url?: string | null
+          category?: Database["public"]["Enums"]["support_category"]
           created_at?: string
           id?: string
           message?: string
+          responded_at?: string | null
+          response?: string | null
           status?: Database["public"]["Enums"]["support_status"]
           subject?: string
           updated_at?: string
@@ -824,6 +839,13 @@ export type Database = {
       preferred_language: "ja" | "en"
       release_type: "immediate" | "date" | "after_previous"
       resource_type: "pdf" | "link" | "download" | "other"
+      support_category:
+        | "payment"
+        | "access"
+        | "content"
+        | "video"
+        | "account"
+        | "other"
       support_status: "open" | "in_progress" | "resolved" | "closed"
     }
     CompositeTypes: {
@@ -968,6 +990,14 @@ export const Constants = {
       preferred_language: ["ja", "en"],
       release_type: ["immediate", "date", "after_previous"],
       resource_type: ["pdf", "link", "download", "other"],
+      support_category: [
+        "payment",
+        "access",
+        "content",
+        "video",
+        "account",
+        "other",
+      ],
       support_status: ["open", "in_progress", "resolved", "closed"],
     },
   },
