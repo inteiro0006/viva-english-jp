@@ -216,8 +216,7 @@ export const issueCertificate = createServerFn({ method: "POST" })
           language,
           student_name_snapshot: profileRes.data.full_name,
           course_title_snapshot: courseTitle ?? "",
-          hours_snapshot:
-            typeof courseRes.data.hours === "number" ? courseRes.data.hours : null,
+          hours_snapshot: totalHours,
         })
         .select(
           "id, certificate_number, verification_code, issued_at, language, pdf_path, revoked_at",
