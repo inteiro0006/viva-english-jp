@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+// SEO: protected route — must not be indexed
 import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useServerFn } from "@tanstack/react-start";
@@ -42,6 +43,7 @@ export const Route = createFileRoute("/student/support")({
   head: () => ({
     meta: [
       { title: "サポート — Eigo Michi" },
+      { name: "robots", content: "noindex, nofollow" },
       { name: "description", content: "お問い合わせ、よくある質問、過去の問い合わせ履歴。" },
     ],
   }),

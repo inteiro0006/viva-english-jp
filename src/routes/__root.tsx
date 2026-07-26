@@ -86,11 +86,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "日本語で学ぶ、実践的なオンライン英語プログラム。基礎から会話・執筆まで、あなたのペースで。",
       },
       { name: "author", content: "Eigo Michi" },
-      { property: "og:title", content: "Eigo Michi — 本格英語オンライン講座" },
-      {
-        property: "og:description",
-        content: "日本語で丁寧に導く、実践的なオンライン英語プログラム。",
-      },
+      { name: "theme-color", content: "#008061" },
+      { name: "format-detection", content: "telephone=no" },
+      { property: "og:site_name", content: "Eigo Michi" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -106,6 +104,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700&display=swap",
+      },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Eigo Michi",
+          url: "https://viva-english-jp.lovable.app",
+          description:
+            "日本人学習者のための、日本語サポート付きオンライン英語学習プラットフォーム。",
+        }),
       },
     ],
   }),

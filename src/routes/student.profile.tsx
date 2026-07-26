@@ -40,7 +40,7 @@ export const Route = createFileRoute("/student/profile")({
   head: () => ({
     meta: [
       { title: "プロフィール — Eigo Michi" },
-      { name: "description", content: "アカウント情報、学習設定、通知設定を管理します。" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: ProfilePage,

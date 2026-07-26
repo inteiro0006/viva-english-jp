@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+
+# Protected / private areas — do not index
+Disallow: /student
+Disallow: /student/
+Disallow: /admin
+Disallow: /admin/
+Disallow: /checkout
+Disallow: /checkout/
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /payment/
+Disallow: /certificate/
+Disallow: /api/
+
+Sitemap: https://viva-english-jp.lovable.app/sitemap.xml

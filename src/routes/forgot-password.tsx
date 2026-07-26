@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+// SEO: auth page — noindex
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,7 +16,8 @@ import { localizeAuthError } from "@/lib/auth/messages";
 
 export const Route = createFileRoute("/forgot-password")({
   head: () => ({
-    meta: [{ title: "パスワード再設定 — Eigo Michi" }],
+    meta: [{ title: "パスワード再設定 — Eigo Michi" },
+      { name: "robots", content: "noindex, nofollow" },],
   }),
   component: ForgotPasswordPage,
 });
