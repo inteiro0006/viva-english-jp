@@ -23,6 +23,8 @@ import { useSession } from "@/lib/auth/use-session";
 import {
   useDashboardData,
   type DashboardData,
+  type DashboardLesson,
+  type DashboardProgressRow,
 } from "@/lib/lms/dashboard-data";
 import {
   computeModuleViews,
