@@ -47,6 +47,71 @@ export type Database = {
         }
         Relationships: []
       }
+      certificates: {
+        Row: {
+          certificate_number: string
+          course_id: string
+          course_title_snapshot: string
+          created_at: string
+          hours_snapshot: number | null
+          id: string
+          issued_at: string
+          language: string
+          pdf_path: string | null
+          revoke_reason: string | null
+          revoked_at: string | null
+          revoked_by: string | null
+          student_name_snapshot: string
+          updated_at: string
+          user_id: string
+          verification_code: string
+        }
+        Insert: {
+          certificate_number: string
+          course_id: string
+          course_title_snapshot: string
+          created_at?: string
+          hours_snapshot?: number | null
+          id?: string
+          issued_at?: string
+          language?: string
+          pdf_path?: string | null
+          revoke_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          student_name_snapshot: string
+          updated_at?: string
+          user_id: string
+          verification_code: string
+        }
+        Update: {
+          certificate_number?: string
+          course_id?: string
+          course_title_snapshot?: string
+          created_at?: string
+          hours_snapshot?: number | null
+          id?: string
+          issued_at?: string
+          language?: string
+          pdf_path?: string | null
+          revoke_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          student_name_snapshot?: string
+          updated_at?: string
+          user_id?: string
+          verification_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certificates_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       course_stages: {
         Row: {
           course_id: string
@@ -811,6 +876,10 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _uid: string }; Returns: boolean }
+      is_certificate_eligible: {
+        Args: { _course_id: string; _uid: string }
+        Returns: boolean
+      }
       is_module_released: { Args: { _module_id: string }; Returns: boolean }
       log_admin_action: {
         Args: {
@@ -821,6 +890,19 @@ export type Database = {
           _old_values?: Json
         }
         Returns: string
+      }
+      verify_certificate: {
+        Args: { _code: string }
+        Returns: {
+          certificate_number: string
+          course_title_en: string
+          course_title_ja: string
+          issued_at: string
+          revoked_at: string
+          status: string
+          student_name_masked: string
+          valid: boolean
+        }[]
       }
     }
     Enums: {
