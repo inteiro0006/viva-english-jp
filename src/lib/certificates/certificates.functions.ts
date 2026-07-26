@@ -126,7 +126,7 @@ export const issueCertificate = createServerFn({ method: "POST" })
     if (existing.data) return { certificate: existing.data, created: false };
 
     // 3. Gather profile + course to snapshot (backend-owned; not from client)
-    const [profileRes, courseRes, settingsRes] = await Promise.all([
+    const [profileRes, courseRes, lessonsRes, settingsRes] = await Promise.all([
       supabase
         .from("profiles")
         .select("full_name, preferred_language")
@@ -134,9 +134,14 @@ export const issueCertificate = createServerFn({ method: "POST" })
         .maybeSingle(),
       supabase
         .from("courses")
-        .select("id, title_ja, title_en, hours")
+        .select("id, title_ja, title_en")
         .eq("id", data.courseId)
         .maybeSingle(),
+      supabase
+        .from("lessons")
+        .select("duration_seconds, module_id, modules!inner(course_id)")
+        .eq("modules.course_id", data.courseId)
+        .eq("status", "published"),
       supabase
         .from("platform_settings")
         .select("key, value")
@@ -149,8 +154,17 @@ export const issueCertificate = createServerFn({ method: "POST" })
     ]);
     if (profileRes.error) throw new Error(profileRes.error.message);
     if (courseRes.error) throw new Error(courseRes.error.message);
+    if (lessonsRes.error) throw new Error(lessonsRes.error.message);
     if (!profileRes.data?.full_name) throw new Error("profile_incomplete");
     if (!courseRes.data) throw new Error("course_not_found");
+
+    const totalSeconds = (lessonsRes.data ?? []).reduce(
+      (acc: number, l: { duration_seconds: number | null }) =>
+        acc + (l.duration_seconds ?? 0),
+      0,
+    );
+    const totalHours = totalSeconds > 0 ? Math.round(totalSeconds / 3600) : null;
+
 
     const language: "ja" | "en" =
       data.language ??
