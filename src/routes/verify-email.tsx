@@ -14,7 +14,7 @@ const searchSchema = z.object({ email: z.string().email().optional() });
 export const Route = createFileRoute("/verify-email")({
   validateSearch: (s) => searchSchema.parse(s),
   head: () => ({
-    meta: [{ title: "メール確認 — Eigo Michi" }
+    meta: [{ title: "メール確認 — Eigo Michi" },
       { name: "robots", content: "noindex, nofollow" },],
   }),
   component: VerifyEmailPage,
