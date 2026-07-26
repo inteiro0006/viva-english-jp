@@ -30,6 +30,7 @@ import { Route as StudentProfileRouteImport } from './routes/student.profile'
 import { Route as StudentDashboardRouteImport } from './routes/student.dashboard'
 import { Route as PaymentSuccessRouteImport } from './routes/payment.success'
 import { Route as PaymentCancelRouteImport } from './routes/payment.cancel'
+import { Route as CertificateVerificationCodeRouteImport } from './routes/certificate.$verificationCode'
 import { Route as AdminVideosRouteImport } from './routes/admin.videos'
 import { Route as AdminStudentsRouteImport } from './routes/admin.students'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
@@ -149,6 +150,12 @@ const PaymentCancelRoute = PaymentCancelRouteImport.update({
   path: '/payment/cancel',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CertificateVerificationCodeRoute =
+  CertificateVerificationCodeRouteImport.update({
+    id: '/certificate/$verificationCode',
+    path: '/certificate/$verificationCode',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminVideosRoute = AdminVideosRouteImport.update({
   id: '/videos',
   path: '/videos',
@@ -240,6 +247,7 @@ export interface FileRoutesByFullPath {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/students': typeof AdminStudentsRoute
   '/admin/videos': typeof AdminVideosRoute
+  '/certificate/$verificationCode': typeof CertificateVerificationCodeRoute
   '/payment/cancel': typeof PaymentCancelRoute
   '/payment/success': typeof PaymentSuccessRoute
   '/student/dashboard': typeof StudentDashboardRoute
@@ -274,6 +282,7 @@ export interface FileRoutesByTo {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/students': typeof AdminStudentsRoute
   '/admin/videos': typeof AdminVideosRoute
+  '/certificate/$verificationCode': typeof CertificateVerificationCodeRoute
   '/payment/cancel': typeof PaymentCancelRoute
   '/payment/success': typeof PaymentSuccessRoute
   '/student/dashboard': typeof StudentDashboardRoute
@@ -311,6 +320,7 @@ export interface FileRoutesById {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/students': typeof AdminStudentsRoute
   '/admin/videos': typeof AdminVideosRoute
+  '/certificate/$verificationCode': typeof CertificateVerificationCodeRoute
   '/payment/cancel': typeof PaymentCancelRoute
   '/payment/success': typeof PaymentSuccessRoute
   '/student/dashboard': typeof StudentDashboardRoute
@@ -349,6 +359,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/students'
     | '/admin/videos'
+    | '/certificate/$verificationCode'
     | '/payment/cancel'
     | '/payment/success'
     | '/student/dashboard'
@@ -383,6 +394,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/students'
     | '/admin/videos'
+    | '/certificate/$verificationCode'
     | '/payment/cancel'
     | '/payment/success'
     | '/student/dashboard'
@@ -419,6 +431,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/students'
     | '/admin/videos'
+    | '/certificate/$verificationCode'
     | '/payment/cancel'
     | '/payment/success'
     | '/student/dashboard'
@@ -448,6 +461,7 @@ export interface RootRouteChildren {
   StudentRoute: typeof StudentRouteWithChildren
   TermsRoute: typeof TermsRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
+  CertificateVerificationCodeRoute: typeof CertificateVerificationCodeRoute
   PaymentCancelRoute: typeof PaymentCancelRoute
   PaymentSuccessRoute: typeof PaymentSuccessRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
@@ -601,6 +615,13 @@ declare module '@tanstack/react-router' {
       path: '/payment/cancel'
       fullPath: '/payment/cancel'
       preLoaderRoute: typeof PaymentCancelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/certificate/$verificationCode': {
+      id: '/certificate/$verificationCode'
+      path: '/certificate/$verificationCode'
+      fullPath: '/certificate/$verificationCode'
+      preLoaderRoute: typeof CertificateVerificationCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/videos': {
@@ -771,6 +792,7 @@ const rootRouteChildren: RootRouteChildren = {
   StudentRoute: StudentRouteWithChildren,
   TermsRoute: TermsRoute,
   VerifyEmailRoute: VerifyEmailRoute,
+  CertificateVerificationCodeRoute: CertificateVerificationCodeRoute,
   PaymentCancelRoute: PaymentCancelRoute,
   PaymentSuccessRoute: PaymentSuccessRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
