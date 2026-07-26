@@ -31,6 +31,7 @@ import {
   computeCourseProgress,
   type ModuleView,
 } from "@/lib/lms/course-workspace";
+import { CertificateCard } from "@/components/lms/CertificateCard";
 
 export const Route = createFileRoute("/student/dashboard")({
   head: () => ({
@@ -186,6 +187,8 @@ function EnrolledDashboard({ data }: { data: Extract<DashboardData, { state: "en
       </section>
 
       {courseCompleted && <CompletedBanner />}
+
+      <CertificateCard courseId={data.course.id} />
 
       {/* Continue + up next */}
       <section className="grid gap-6 lg:grid-cols-[2fr_1fr]">
