@@ -43,6 +43,7 @@ export const Route = createFileRoute("/student/support")({
   head: () => ({
     meta: [
       { title: "サポート — Eigo Michi" },
+      { name: "robots", content: "noindex, nofollow" },
       { name: "description", content: "お問い合わせ、よくある質問、過去の問い合わせ履歴。" },
     ],
   }),

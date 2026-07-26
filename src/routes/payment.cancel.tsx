@@ -5,7 +5,8 @@ import { PublicLayout } from "@/components/layout/PublicLayout";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/payment/cancel")({
-  head: () => ({ meta: [{ title: "お支払いキャンセル — Eigo Michi" }] }),
+  head: () => ({ meta: [{ title: "お支払いキャンセル — Eigo Michi" }
+      { name: "robots", content: "noindex, nofollow" },] }),
   component: PaymentCancelPage,
 });
 

@@ -16,7 +16,8 @@ import { localizeAuthError } from "@/lib/auth/messages";
 
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
-    meta: [{ title: "新しいパスワード — Eigo Michi" }],
+    meta: [{ title: "新しいパスワード — Eigo Michi" }
+      { name: "robots", content: "noindex, nofollow" },],
   }),
   component: ResetPasswordPage,
 });
