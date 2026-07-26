@@ -36,7 +36,7 @@ export async function logAdminAction(
     const { error } = await supabase.rpc("log_admin_action", {
       _action: params.action,
       _entity_type: params.entityType,
-      _entity_id: params.entityId ?? null,
+      _entity_id: params.entityId ?? "",
       _old_values: (params.oldValues ?? null) as never,
       _new_values: (params.newValues ?? null) as never,
     });
