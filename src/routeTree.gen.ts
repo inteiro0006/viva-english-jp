@@ -37,6 +37,7 @@ import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminModulesRouteImport } from './routes/admin.modules'
 import { Route as AdminLessonsRouteImport } from './routes/admin.lessons'
 import { Route as AdminCoursesRouteImport } from './routes/admin.courses'
+import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as StudentLessonLessonIdRouteImport } from './routes/student.lesson.$lessonId'
 import { Route as StudentCourseCourseSlugRouteImport } from './routes/student.course.$courseSlug'
 import { Route as AdminCoursesCourseIdRouteImport } from './routes/admin.courses.$courseId'
@@ -183,6 +184,11 @@ const AdminCoursesRoute = AdminCoursesRouteImport.update({
   path: '/courses',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAuditRoute = AdminAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AdminRoute,
+} as any)
 const StudentLessonLessonIdRoute = StudentLessonLessonIdRouteImport.update({
   id: '/lesson/$lessonId',
   path: '/lesson/$lessonId',
@@ -226,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/student': typeof StudentRouteWithChildren
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/courses': typeof AdminCoursesRouteWithChildren
   '/admin/lessons': typeof AdminLessonsRoute
   '/admin/modules': typeof AdminModulesRoute
@@ -259,6 +266,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/courses': typeof AdminCoursesRouteWithChildren
   '/admin/lessons': typeof AdminLessonsRoute
   '/admin/modules': typeof AdminModulesRoute
@@ -295,6 +303,7 @@ export interface FileRoutesById {
   '/student': typeof StudentRouteWithChildren
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/courses': typeof AdminCoursesRouteWithChildren
   '/admin/lessons': typeof AdminLessonsRoute
   '/admin/modules': typeof AdminModulesRoute
@@ -332,6 +341,7 @@ export interface FileRouteTypes {
     | '/student'
     | '/terms'
     | '/verify-email'
+    | '/admin/audit'
     | '/admin/courses'
     | '/admin/lessons'
     | '/admin/modules'
@@ -365,6 +375,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/terms'
     | '/verify-email'
+    | '/admin/audit'
     | '/admin/courses'
     | '/admin/lessons'
     | '/admin/modules'
@@ -400,6 +411,7 @@ export interface FileRouteTypes {
     | '/student'
     | '/terms'
     | '/verify-email'
+    | '/admin/audit'
     | '/admin/courses'
     | '/admin/lessons'
     | '/admin/modules'
@@ -640,6 +652,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCoursesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/audit': {
+      id: '/admin/audit'
+      path: '/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AdminAuditRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/student/lesson/$lessonId': {
       id: '/student/lesson/$lessonId'
       path: '/lesson/$lessonId'
@@ -691,6 +710,7 @@ const AdminCoursesRouteWithChildren = AdminCoursesRoute._addFileChildren(
 )
 
 interface AdminRouteChildren {
+  AdminAuditRoute: typeof AdminAuditRoute
   AdminCoursesRoute: typeof AdminCoursesRouteWithChildren
   AdminLessonsRoute: typeof AdminLessonsRoute
   AdminModulesRoute: typeof AdminModulesRoute
@@ -702,6 +722,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAuditRoute: AdminAuditRoute,
   AdminCoursesRoute: AdminCoursesRouteWithChildren,
   AdminLessonsRoute: AdminLessonsRoute,
   AdminModulesRoute: AdminModulesRoute,
