@@ -41,7 +41,9 @@
     "save": "保存",
     "cancel": "キャンセル",
     "available": "受講可能",
-    "demoLabel": "デモ表示"
+    "demoLabel": "デモ表示",
+    "create": "作成",
+    "actions": "操作"
   },
   "landing": {
     "meta": {
@@ -194,7 +196,11 @@
           "objective": "英語の骨格を理解し、簡単な文を組み立てられる。",
           "modules": 6,
           "lessons": 24,
-          "samples": ["be動詞と一般動詞", "肯定文・否定文・疑問文", "基本の時制"],
+          "samples": [
+            "be動詞と一般動詞",
+            "肯定文・否定文・疑問文",
+            "基本の時制"
+          ],
           "status": "available"
         },
         "s2": {
@@ -202,7 +208,11 @@
           "objective": "自分の伝えたいことを正確に文で表現する。",
           "modules": 6,
           "lessons": 26,
-          "samples": ["過去・未来・完了形", "接続詞と関係詞", "自然な語順"],
+          "samples": [
+            "過去・未来・完了形",
+            "接続詞と関係詞",
+            "自然な語順"
+          ],
           "status": "available"
         },
         "s3": {
@@ -210,7 +220,11 @@
           "objective": "旅行・買い物・日常会話で使う表現を身につける。",
           "modules": 5,
           "lessons": 22,
-          "samples": ["カフェでの注文", "道案内", "予約と依頼"],
+          "samples": [
+            "カフェでの注文",
+            "道案内",
+            "予約と依頼"
+          ],
           "status": "available"
         },
         "s4": {
@@ -218,7 +232,11 @@
           "objective": "自然な英語を聞き取り、通じる発音で返す。",
           "modules": 5,
           "lessons": 20,
-          "samples": ["音の連結とリダクション", "シャドーイング", "リズムと強勢"],
+          "samples": [
+            "音の連結とリダクション",
+            "シャドーイング",
+            "リズムと強勢"
+          ],
           "status": "available"
         },
         "s5": {
@@ -226,7 +244,11 @@
           "objective": "メール・会議・電話で使えるビジネス英語。",
           "modules": 4,
           "lessons": 18,
-          "samples": ["丁寧な依頼表現", "会議での発言", "プレゼンの型"],
+          "samples": [
+            "丁寧な依頼表現",
+            "会議での発言",
+            "プレゼンの型"
+          ],
           "status": "coming_soon"
         },
         "s6": {
@@ -234,7 +256,11 @@
           "objective": "学んだ内容を統合し、自分の言葉として使いこなす。",
           "modules": 4,
           "lessons": 16,
-          "samples": ["ディスカッション", "自己紹介の応用", "総合復習"],
+          "samples": [
+            "ディスカッション",
+            "自己紹介の応用",
+            "総合復習"
+          ],
           "status": "coming_soon"
         }
       },
@@ -596,7 +622,140 @@
     "videos": "動画",
     "students": "受講生",
     "orders": "注文",
-    "settings": "設定"
+    "settings": "設定",
+    "account": "アカウント",
+    "signedInAsAdmin": "管理者としてログイン中",
+    "audit": "監査ログ",
+    "dash": {
+      "subtitle": "学習プラットフォームのリアルタイム状況。",
+      "students": "受講者数",
+      "enrollments": "アクティブな受講登録",
+      "paidOrders": "決済済み注文",
+      "revenue": "累計売上",
+      "avgCompletion": "レッスン平均完了率",
+      "processingVideos": "処理中の動画",
+      "openSupport": "未対応の問い合わせ",
+      "topLessons": "視聴回数の多いレッスン",
+      "recentEnrollments": "受講登録(直近30日)",
+      "views": "回"
+    },
+    "status": {
+      "all": "すべて",
+      "draft": "下書き",
+      "published": "公開",
+      "archived": "アーカイブ"
+    },
+    "courses_": {
+      "subtitle": "コースを作成・編集・公開します。",
+      "new": "新規コース",
+      "title": "タイトル",
+      "titleJa": "タイトル(日本語)",
+      "titleEn": "タイトル(英語)",
+      "descJa": "説明(日本語)",
+      "descEn": "説明(英語)",
+      "price": "価格(JPY)",
+      "status": "ステータス",
+      "thumbnail": "サムネイルURL",
+      "cover": "カバー画像URL",
+      "created": "コースを作成しました。",
+      "saved": "コースを保存しました。",
+      "duplicated": "コースを複製しました。",
+      "statusUpdated": "ステータスを更新しました。",
+      "reordered": "並び順を更新しました。",
+      "tabs": {
+        "details": "詳細",
+        "curriculum": "カリキュラム"
+      }
+    },
+    "modules_": {
+      "subtitle": "モジュールは各コースの「カリキュラム」タブから管理します。",
+      "editViaCourse": "モジュールの並び替えや編集は、コースを開いて「カリキュラム」タブで行ってください。",
+      "goToCourses": "コース一覧へ",
+      "new": "モジュールを追加",
+      "empty": "モジュールがありません。最初のモジュールを追加してください。",
+      "confirmDelete": "このモジュールと配下のレッスンをすべて削除しますか?"
+    },
+    "lessons_": {
+      "subtitle": "すべてのコースのレッスンを一覧します。",
+      "search": "タイトルで検索…",
+      "lesson": "レッスン",
+      "module": "モジュール",
+      "type": "種類",
+      "status": "ステータス",
+      "new": "レッスンを追加",
+      "confirmDelete": "このレッスンを削除しますか?"
+    },
+    "students_": {
+      "subtitle": "受講者・受講登録・アクセス権を管理します。",
+      "search": "名前で検索…",
+      "name": "氏名",
+      "language": "言語",
+      "enrollments": "有効",
+      "since": "登録日",
+      "detailDesc": "受講履歴と注文情報。",
+      "grant": "コースアクセス権を付与",
+      "selectCourse": "コースを選択…",
+      "grantAction": "付与する",
+      "granted": "アクセス権を付与しました。",
+      "revoke": "取り消す",
+      "revoked": "アクセス権を取り消しました。",
+      "confirmRevoke": "この受講登録を取り消しますか?",
+      "confirmRevokeDesc": "取り消すと、受講者はすぐにコースへアクセスできなくなります。",
+      "orders": "注文",
+      "filter": {
+        "all": "すべて",
+        "enrolled": "受講中",
+        "notEnrolled": "未受講"
+      }
+    },
+    "orders_": {
+      "subtitle": "決済のすべての履歴。",
+      "id": "注文",
+      "customer": "顧客",
+      "course": "コース",
+      "amount": "金額",
+      "status": "ステータス",
+      "date": "日付",
+      "paid": "支払い済み",
+      "pending": "保留中",
+      "failed": "失敗",
+      "refunded": "返金済み",
+      "refund": "返金する",
+      "confirmRefund": "この注文を返金しますか?",
+      "confirmRefundDesc": "返金を開始します。返金が確定するとコースへのアクセスは自動的に取り消されます。",
+      "refundQueued": "返金の要求を記録しました。"
+    },
+    "settings_": {
+      "subtitle": "プラットフォーム全体の設定。",
+      "saved": "設定を保存しました。",
+      "groups": {
+        "platform": "プラットフォーム",
+        "institutional": "コーポレート文言",
+        "legal": "法務",
+        "playback": "再生"
+      },
+      "keys": {
+        "platform_name": "プラットフォーム名",
+        "support_email": "サポートメール",
+        "display_price_jpy": "表示価格(JPY)",
+        "institutional_ja": "コーポレート文言(日本語)",
+        "institutional_en": "コーポレート文言(英語)",
+        "terms_ja": "利用規約(日本語)",
+        "terms_en": "利用規約(英語)",
+        "privacy_ja": "プライバシーポリシー(日本語)",
+        "privacy_en": "プライバシーポリシー(英語)",
+        "video_completion_threshold": "動画完了しきい値(%)"
+      }
+    },
+    "audit_": {
+      "subtitle": "すべての管理者操作の変更履歴。",
+      "filterAction": "アクションで絞り込み…",
+      "when": "日時",
+      "who": "実行者",
+      "action": "アクション",
+      "entity": "対象",
+      "id": "ID"
+    }
   },
   "footer": {
     "tagline": "日本人のための実践的な英語オンライン講座。",

@@ -1,0 +1,171 @@
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { assertAdmin, logAdminAction } from "@/lib/admin/require-admin";
+import { grantEnrollmentSchema } from "@/lib/admin/schemas";
+
+type EnrollmentRow = {
+  id: string;
+  user_id: string;
+  course_id: string;
+  status: string;
+  expires_at: string | null;
+  enrolled_at: string;
+  courses: { title_ja: string; title_en: string } | null;
+};
+
+export const listStudents = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        search: z.string().optional(),
+        filter: z.enum(["all", "enrolled", "not_enrolled"]).default("all"),
+        page: z.number().int().min(0).default(0),
+      })
+      .parse(d ?? {}),
+  )
+  .handler(async ({ context, data }) => {
+    await assertAdmin(context);
+    const pageSize = 25;
+    let q = context.supabase
+      .from("profiles")
+      .select("id, full_name, preferred_language, created_at", { count: "exact" })
+      .order("created_at", { ascending: false })
+      .range(data.page * pageSize, data.page * pageSize + pageSize - 1);
+    if (data.search) q = q.ilike("full_name", `%${data.search}%`);
+    const { data: profiles, error, count } = await q;
+    if (error) throw new Error(error.message);
+    const rows = profiles ?? [];
+    const ids = rows.map((r) => r.id);
+    let enrollmentsByUser = new Map<string, EnrollmentRow[]>();
+    if (ids.length > 0) {
+      const { data: enrollments } = await context.supabase
+        .from("enrollments")
+        .select("id, user_id, course_id, status, expires_at, enrolled_at, courses(title_ja, title_en)")
+        .in("user_id", ids);
+      for (const e of (enrollments ?? []) as EnrollmentRow[]) {
+        const list = enrollmentsByUser.get(e.user_id) ?? [];
+        list.push(e);
+        enrollmentsByUser.set(e.user_id, list);
+      }
+    }
+    let joined = rows.map((r) => ({
+      ...r,
+      enrollments: enrollmentsByUser.get(r.id) ?? [],
+    }));
+    if (data.filter === "enrolled") {
+      joined = joined.filter((r) => r.enrollments.some((e) => e.status === "active"));
+    } else if (data.filter === "not_enrolled") {
+      joined = joined.filter((r) => !r.enrollments.some((e) => e.status === "active"));
+    }
+    return { rows: joined, total: count ?? 0, pageSize };
+  });
+
+export const getStudentDetail = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ userId: z.string().uuid() }).parse(d))
+  .handler(async ({ context, data }) => {
+    await assertAdmin(context);
+    const { data: profile, error: pErr } = await context.supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", data.userId)
+      .maybeSingle();
+    if (pErr) throw new Error(pErr.message);
+    const { data: enrollments } = await context.supabase
+      .from("enrollments")
+      .select("*, courses(id, title_ja, title_en, slug)")
+      .eq("user_id", data.userId)
+      .order("enrolled_at", { ascending: false });
+    const { data: orders } = await context.supabase
+      .from("orders")
+      .select("id, status, amount, currency, created_at, paid_at, course_id")
+      .eq("user_id", data.userId)
+      .order("created_at", { ascending: false });
+    return { profile, enrollments: enrollments ?? [], orders: orders ?? [] };
+  });
+
+export const grantEnrollment = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => grantEnrollmentSchema.parse(d))
+  .handler(async ({ context, data }) => {
+    await assertAdmin(context);
+    const { data: inserted, error } = await context.supabase
+      .from("enrollments")
+      .insert({
+        user_id: data.user_id,
+        course_id: data.course_id,
+        expires_at: data.expires_at ?? null,
+        status: "active",
+      })
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    await logAdminAction(context.supabase, {
+      action: "enrollment.grant",
+      entityType: "enrollment",
+      entityId: inserted.id,
+      newValues: { ...data },
+    });
+    return inserted;
+  });
+
+export const revokeEnrollment = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({ enrollment_id: z.string().uuid(), reason: z.string().max(500).optional() }).parse(d),
+  )
+  .handler(async ({ context, data }) => {
+    await assertAdmin(context);
+    const { data: prev } = await context.supabase
+      .from("enrollments")
+      .select("*")
+      .eq("id", data.enrollment_id)
+      .maybeSingle();
+    const { error } = await context.supabase
+      .from("enrollments")
+      .update({ status: "revoked" })
+      .eq("id", data.enrollment_id);
+    if (error) throw new Error(error.message);
+    await logAdminAction(context.supabase, {
+      action: "enrollment.revoke",
+      entityType: "enrollment",
+      entityId: data.enrollment_id,
+      oldValues: prev,
+      newValues: { status: "revoked", reason: data.reason ?? null },
+    });
+    return { ok: true };
+  });
+
+export const setEnrollmentExpiry = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        enrollment_id: z.string().uuid(),
+        expires_at: z.string().datetime().nullable(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ context, data }) => {
+    await assertAdmin(context);
+    const { data: prev } = await context.supabase
+      .from("enrollments")
+      .select("expires_at")
+      .eq("id", data.enrollment_id)
+      .maybeSingle();
+    const { error } = await context.supabase
+      .from("enrollments")
+      .update({ expires_at: data.expires_at })
+      .eq("id", data.enrollment_id);
+    if (error) throw new Error(error.message);
+    await logAdminAction(context.supabase, {
+      action: "enrollment.set_expiry",
+      entityType: "enrollment",
+      entityId: data.enrollment_id,
+      oldValues: prev,
+      newValues: { expires_at: data.expires_at },
+    });
+    return { ok: true };
+  });
