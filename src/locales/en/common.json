@@ -41,7 +41,9 @@
     "save": "Save",
     "cancel": "Cancel",
     "available": "Available",
-    "demoLabel": "Demo"
+    "demoLabel": "Demo",
+    "create": "Create",
+    "actions": "Actions"
   },
   "landing": {
     "meta": {
@@ -194,7 +196,11 @@
           "objective": "Understand the shape of English and build simple sentences.",
           "modules": 6,
           "lessons": 24,
-          "samples": ["Be-verbs & action verbs", "Statements, negatives, questions", "Core tenses"],
+          "samples": [
+            "Be-verbs & action verbs",
+            "Statements, negatives, questions",
+            "Core tenses"
+          ],
           "status": "available"
         },
         "s2": {
@@ -202,7 +208,11 @@
           "objective": "Express what you want to say clearly and accurately.",
           "modules": 6,
           "lessons": 26,
-          "samples": ["Past, future, perfect", "Conjunctions & relative clauses", "Natural word order"],
+          "samples": [
+            "Past, future, perfect",
+            "Conjunctions & relative clauses",
+            "Natural word order"
+          ],
           "status": "available"
         },
         "s3": {
@@ -210,7 +220,11 @@
           "objective": "Handle travel, shopping and everyday conversation.",
           "modules": 5,
           "lessons": 22,
-          "samples": ["Ordering at a café", "Asking for directions", "Making reservations"],
+          "samples": [
+            "Ordering at a café",
+            "Asking for directions",
+            "Making reservations"
+          ],
           "status": "available"
         },
         "s4": {
@@ -218,7 +232,11 @@
           "objective": "Catch natural English and respond intelligibly.",
           "modules": 5,
           "lessons": 20,
-          "samples": ["Linking & reductions", "Shadowing", "Rhythm & stress"],
+          "samples": [
+            "Linking & reductions",
+            "Shadowing",
+            "Rhythm & stress"
+          ],
           "status": "available"
         },
         "s5": {
@@ -226,7 +244,11 @@
           "objective": "Handle email, meetings and calls in English.",
           "modules": 4,
           "lessons": 18,
-          "samples": ["Polite requests", "Speaking up in meetings", "Presentation patterns"],
+          "samples": [
+            "Polite requests",
+            "Speaking up in meetings",
+            "Presentation patterns"
+          ],
           "status": "coming_soon"
         },
         "s6": {
@@ -234,7 +256,11 @@
           "objective": "Integrate everything and make English your own.",
           "modules": 4,
           "lessons": 16,
-          "samples": ["Discussion", "Extended self-introduction", "Full review"],
+          "samples": [
+            "Discussion",
+            "Extended self-introduction",
+            "Full review"
+          ],
           "status": "coming_soon"
         }
       },
@@ -596,7 +622,140 @@
     "videos": "Videos",
     "students": "Students",
     "orders": "Orders",
-    "settings": "Settings"
+    "settings": "Settings",
+    "account": "Account",
+    "signedInAsAdmin": "Signed in as admin",
+    "audit": "Audit log",
+    "dash": {
+      "subtitle": "Real-time snapshot of the learning platform.",
+      "students": "Total students",
+      "enrollments": "Active enrollments",
+      "paidOrders": "Paid orders",
+      "revenue": "Total revenue",
+      "avgCompletion": "Avg. lesson completion",
+      "processingVideos": "Videos processing",
+      "openSupport": "Open support tickets",
+      "topLessons": "Most-watched lessons",
+      "recentEnrollments": "Enrollments (last 30 days)",
+      "views": "views"
+    },
+    "status": {
+      "all": "All",
+      "draft": "Draft",
+      "published": "Published",
+      "archived": "Archived"
+    },
+    "courses_": {
+      "subtitle": "Create, edit and publish courses.",
+      "new": "New course",
+      "title": "Title",
+      "titleJa": "Title (Japanese)",
+      "titleEn": "Title (English)",
+      "descJa": "Description (Japanese)",
+      "descEn": "Description (English)",
+      "price": "Price (JPY)",
+      "status": "Status",
+      "thumbnail": "Thumbnail URL",
+      "cover": "Cover URL",
+      "created": "Course created.",
+      "saved": "Course saved.",
+      "duplicated": "Course duplicated.",
+      "statusUpdated": "Status updated.",
+      "reordered": "Order updated.",
+      "tabs": {
+        "details": "Details",
+        "curriculum": "Curriculum"
+      }
+    },
+    "modules_": {
+      "subtitle": "Modules are managed inside each course's Curriculum tab.",
+      "editViaCourse": "To reorder or edit modules, open the course and switch to the Curriculum tab.",
+      "goToCourses": "Go to courses",
+      "new": "Add module",
+      "empty": "No modules yet — add the first one.",
+      "confirmDelete": "Delete this module and all its lessons?"
+    },
+    "lessons_": {
+      "subtitle": "Browse lessons across all courses.",
+      "search": "Search by title…",
+      "lesson": "Lesson",
+      "module": "Module",
+      "type": "Type",
+      "status": "Status",
+      "new": "Add lesson",
+      "confirmDelete": "Delete this lesson?"
+    },
+    "students_": {
+      "subtitle": "Manage students, enrollments and access.",
+      "search": "Search by name…",
+      "name": "Name",
+      "language": "Language",
+      "enrollments": "Active",
+      "since": "Since",
+      "detailDesc": "Enrollment history and orders.",
+      "grant": "Grant course access",
+      "selectCourse": "Select a course…",
+      "grantAction": "Grant",
+      "granted": "Access granted.",
+      "revoke": "Revoke",
+      "revoked": "Access revoked.",
+      "confirmRevoke": "Revoke this enrollment?",
+      "confirmRevokeDesc": "The student will lose access to the course immediately.",
+      "orders": "Orders",
+      "filter": {
+        "all": "All students",
+        "enrolled": "Enrolled",
+        "notEnrolled": "Not enrolled"
+      }
+    },
+    "orders_": {
+      "subtitle": "All checkout transactions.",
+      "id": "Order",
+      "customer": "Customer",
+      "course": "Course",
+      "amount": "Amount",
+      "status": "Status",
+      "date": "Date",
+      "paid": "Paid",
+      "pending": "Pending",
+      "failed": "Failed",
+      "refunded": "Refunded",
+      "refund": "Refund",
+      "confirmRefund": "Refund this order?",
+      "confirmRefundDesc": "This will initiate a refund. Access to the course will be revoked automatically once the refund settles.",
+      "refundQueued": "Refund intent recorded and audited."
+    },
+    "settings_": {
+      "subtitle": "Platform-wide configuration.",
+      "saved": "Setting saved.",
+      "groups": {
+        "platform": "Platform",
+        "institutional": "Institutional copy",
+        "legal": "Legal",
+        "playback": "Playback"
+      },
+      "keys": {
+        "platform_name": "Platform name",
+        "support_email": "Support email",
+        "display_price_jpy": "Displayed course price (JPY)",
+        "institutional_ja": "Institutional text (Japanese)",
+        "institutional_en": "Institutional text (English)",
+        "terms_ja": "Terms of Service (Japanese)",
+        "terms_en": "Terms of Service (English)",
+        "privacy_ja": "Privacy Policy (Japanese)",
+        "privacy_en": "Privacy Policy (English)",
+        "video_completion_threshold": "Video completion threshold (%)"
+      }
+    },
+    "audit_": {
+      "subtitle": "Immutable log of every administrative action.",
+      "filterAction": "Filter action…",
+      "when": "When",
+      "who": "Who",
+      "action": "Action",
+      "entity": "Entity",
+      "id": "ID"
+    }
   },
   "footer": {
     "tagline": "A practical online English course for Japanese learners.",
