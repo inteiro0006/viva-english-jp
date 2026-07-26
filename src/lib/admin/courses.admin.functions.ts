@@ -151,22 +151,5 @@ export const setCourseStatus = createServerFn({ method: "POST" })
     return updated;
   });
 
-export const reorderCourses = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ ids: z.array(z.string().uuid()).min(1) }).parse(d))
-  .handler(async ({ context, data }) => {
-    await assertAdmin(context);
-    for (let i = 0; i < data.ids.length; i++) {
-      const { error } = await context.supabase
-        .from("courses")
-        .update({ position: i })
-        .eq("id", data.ids[i]);
-      if (error) throw new Error(error.message);
-    }
-    await logAdminAction(context.supabase, {
-      action: "course.reorder",
-      entityType: "course",
-      newValues: { order: data.ids },
-    });
-    return { ok: true };
-  });
+// NOTE: `courses` table has no `position` column in the current schema;
+// custom ordering will require a schema change. Placeholder omitted intentionally.
