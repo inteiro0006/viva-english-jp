@@ -111,7 +111,7 @@ function LessonView({ data }: { data: Extract<LessonWorkspaceState, { state: "ok
     data.progress?.progress_percentage ?? 0,
   );
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const lastSavedRef = useRef<number>(0);
+  // Video lessons persist through StreamPlayer's internal throttle.
 
   useEffect(() => {
     setCompletedLocal(data.progress?.completed ?? false);
