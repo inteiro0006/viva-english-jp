@@ -31,6 +31,7 @@ import {
   computeCourseProgress,
   type ModuleView,
 } from "@/lib/lms/course-workspace";
+import { CertificateCard } from "@/components/lms/CertificateCard";
 
 export const Route = createFileRoute("/student/dashboard")({
   head: () => ({
