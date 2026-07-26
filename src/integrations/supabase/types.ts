@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_logs: {
+        Row: {
+          action: string
+          admin_id: string | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          id: string
+          new_values: Json | null
+          old_values: Json | null
+        }
+        Insert: {
+          action: string
+          admin_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+        }
+        Relationships: []
+      }
       course_stages: {
         Row: {
           course_id: string
@@ -504,6 +537,30 @@ export type Database = {
         }
         Relationships: []
       }
+      platform_settings: {
+        Row: {
+          is_public: boolean
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          is_public?: boolean
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Update: {
+          is_public?: boolean
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -740,6 +797,16 @@ export type Database = {
       }
       is_admin: { Args: { _uid: string }; Returns: boolean }
       is_module_released: { Args: { _module_id: string }; Returns: boolean }
+      log_admin_action: {
+        Args: {
+          _action: string
+          _entity_id: string
+          _entity_type: string
+          _new_values?: Json
+          _old_values?: Json
+        }
+        Returns: string
+      }
     }
     Enums: {
       access_type: "lifetime" | "limited"
