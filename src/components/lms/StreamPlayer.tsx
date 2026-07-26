@@ -100,6 +100,33 @@ export function StreamPlayer({
     let handle: StreamHandle | null = null;
     let disposed = false;
 
+    // Read latest state without needing to re-run the effect on every tick
+    const snapshot = () => {
+      if (!handle) return null;
+      const dur = handle.duration || durationSeconds || 0;
+      const sec = Math.min(Math.max(handle.currentTime || 0, 0), dur || Infinity);
+      const pct = dur > 0 ? Math.min(100, Math.max(0, (sec / dur) * 100)) : 0;
+      return { sec, pct };
+    };
+
+    const flush = () => {
+      const s = snapshot();
+      if (!s) return;
+      lastSavedRef.current = Date.now();
+      onProgress?.(Math.floor(s.sec), Math.round(s.pct));
+      if (!completedRef.current && s.pct / 100 >= autoCompleteThreshold) {
+        completedRef.current = true;
+        onComplete?.();
+      }
+    };
+
+    const persist = (force = false) => {
+      const now = Date.now();
+      // Throttle to ~1 save every 10s during playback
+      if (!force && now - lastSavedRef.current < 10_000) return;
+      flush();
+    };
+
     const attach = async () => {
       try {
         await ensureStreamSdk();
@@ -110,21 +137,6 @@ export function StreamPlayer({
           if (handle && initialSeconds > 0 && Number.isFinite(handle.duration)) {
             const target = Math.min(initialSeconds, Math.max(0, handle.duration - 2));
             handle.currentTime = target;
-          }
-        };
-
-        const persist = (force = false) => {
-          if (!handle) return;
-          const now = Date.now();
-          if (!force && now - lastSavedRef.current < 10000) return;
-          lastSavedRef.current = now;
-          const dur = handle.duration || durationSeconds || 0;
-          const sec = Math.min(handle.currentTime || 0, dur || Infinity);
-          const pct = dur > 0 ? Math.min(100, (sec / dur) * 100) : 0;
-          onProgress?.(Math.floor(sec), Math.round(pct));
-          if (!completedRef.current && pct / 100 >= autoCompleteThreshold) {
-            completedRef.current = true;
-            onComplete?.();
           }
         };
 
@@ -148,20 +160,20 @@ export function StreamPlayer({
     };
     void attach();
 
-    // Save on page hide/unload
+    // Flush on tab hide / navigation
     const onHide = () => {
-      if (!handle) return;
-      const dur = handle.duration || durationSeconds || 0;
-      const sec = Math.min(handle.currentTime || 0, dur || Infinity);
-      const pct = dur > 0 ? Math.min(100, (sec / dur) * 100) : 0;
-      onProgress?.(Math.floor(sec), Math.round(pct));
+      if (document.visibilityState === "hidden") flush();
     };
-    window.addEventListener("pagehide", onHide);
+    const onPageHide = () => flush();
+    window.addEventListener("pagehide", onPageHide);
     document.addEventListener("visibilitychange", onHide);
 
     return () => {
       disposed = true;
-      window.removeEventListener("pagehide", onHide);
+      // Persist the latest known position when the lesson unmounts
+      // (navigating between lessons, leaving the page, etc.)
+      flush();
+      window.removeEventListener("pagehide", onPageHide);
       document.removeEventListener("visibilitychange", onHide);
     };
   }, [status, token, initialSeconds, durationSeconds, onProgress, onComplete, autoCompleteThreshold]);

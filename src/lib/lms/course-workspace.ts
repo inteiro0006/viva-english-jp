@@ -130,6 +130,12 @@ export type ModuleView = {
   totalDurationSeconds: number;
   status: "not_started" | "in_progress" | "completed" | "locked" | "coming_soon";
   lockReason: "date" | "sequence" | null;
+  /**
+   * Whether this module's lessons should count in course-level progress
+   * denominators. Modules that are still scheduled for the future are
+   * excluded so they don't distort the current view.
+   */
+  countsForProgress: boolean;
 };
 
 export function computeModuleViews(
@@ -151,10 +157,12 @@ export function computeModuleViews(
 
     let status: ModuleView["status"] = "not_started";
     let lockReason: ModuleView["lockReason"] = null;
+    let countsForProgress = true;
 
     if (m.release_type === "date" && m.release_at && new Date(m.release_at) > now) {
       status = "coming_soon";
       lockReason = "date";
+      countsForProgress = false;
     } else if (m.release_type === "after_previous" && !previousCompleted) {
       status = "locked";
       lockReason = "sequence";
@@ -182,6 +190,7 @@ export function computeModuleViews(
       totalDurationSeconds,
       status,
       lockReason,
+      countsForProgress,
     });
 
     if (m.release_type === "after_previous") {
@@ -189,4 +198,36 @@ export function computeModuleViews(
     }
   }
   return views;
+}
+
+export type CourseProgressSummary = {
+  totalLessons: number;
+  completedLessons: number;
+  percentage: number;
+  lastWatchedAt: string | null;
+};
+
+/**
+ * Consistent course-level progress:
+ * denominator = published lessons in modules currently released
+ * (future-date modules are excluded so they don't drag % down).
+ */
+export function computeCourseProgress(
+  modules: ModuleView[],
+  progress: DashboardProgressRow[],
+): CourseProgressSummary {
+  const eligible = modules.filter((m) => m.countsForProgress);
+  const eligibleIds = new Set(eligible.flatMap((m) => m.lessons.map((l) => l.id)));
+  const totalLessons = eligibleIds.size;
+  const eligibleProgress = progress.filter((p) => eligibleIds.has(p.lesson_id));
+  const completedLessons = eligibleProgress.filter((p) => p.completed).length;
+  const percentage =
+    totalLessons === 0 ? 0 : Math.round((completedLessons / totalLessons) * 100);
+  const lastWatchedAt =
+    progress
+      .filter((p) => p.last_watched_at)
+      .map((p) => p.last_watched_at as string)
+      .sort()
+      .pop() ?? null;
+  return { totalLessons, completedLessons, percentage, lastWatchedAt };
 }

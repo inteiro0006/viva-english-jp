@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -111,7 +111,7 @@ function LessonView({ data }: { data: Extract<LessonWorkspaceState, { state: "ok
     data.progress?.progress_percentage ?? 0,
   );
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const lastSavedRef = useRef<number>(0);
+  // Video lessons persist through StreamPlayer's internal throttle.
 
   useEffect(() => {
     setCompletedLocal(data.progress?.completed ?? false);
@@ -140,20 +140,9 @@ function LessonView({ data }: { data: Extract<LessonWorkspaceState, { state: "ok
     }
   };
 
-  // Simulated progress: for text/quiz/file lessons we don't have a real player yet.
-  // Persist position when user interacts with the "mark progress" control.
-  // Throttled to at most once per 5s.
-  const persistPosition = async (pct: number) => {
-    const now = Date.now();
-    if (now - lastSavedRef.current < 5000) return;
-    lastSavedRef.current = now;
-    try {
-      const seconds = Math.round(((data.lesson.duration_seconds || 60) * pct) / 100);
-      await saveLessonPosition(userId, data.lesson.id, seconds, pct);
-    } catch {
-      /* silent — non-critical */
-    }
-  };
+  // Video lessons persist progress through StreamPlayer's throttled saves.
+  // Text/quiz lessons persist only when the user marks them complete.
+
 
   const goTo = (id: string | null) => {
     if (!id) return;
@@ -293,18 +282,8 @@ function LessonView({ data }: { data: Extract<LessonWorkspaceState, { state: "ok
               )}
             </Button>
 
-            {!completedLocal ? (
-              <Button
-                variant="outline"
-                onClick={() => {
-                  const next = Math.min(100, Math.round(progressPct) + 25);
-                  setProgressPct(next);
-                  void persistPosition(next);
-                }}
-              >
-                +25%
-              </Button>
-            ) : null}
+            {/* Text/quiz lessons complete manually via the button above.
+                No progress simulation is exposed until quizzes ship. */}
 
             <div className="ml-auto flex gap-2">
               <Button

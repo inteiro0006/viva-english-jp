@@ -23,10 +23,14 @@ import { useSession } from "@/lib/auth/use-session";
 import {
   useDashboardData,
   type DashboardData,
-  type DashboardModule,
   type DashboardLesson,
   type DashboardProgressRow,
 } from "@/lib/lms/dashboard-data";
+import {
+  computeModuleViews,
+  computeCourseProgress,
+  type ModuleView,
+} from "@/lib/lms/course-workspace";
 
 export const Route = createFileRoute("/student/dashboard")({
   head: () => ({
@@ -65,64 +69,8 @@ function formatRelativeDate(iso: string | null | undefined, locale: string) {
   return new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(d);
 }
 
-// ---------- module lock computation ----------
-
-type ModuleView = Omit<DashboardModule, "status"> & {
-  lessons: DashboardLesson[];
-  completedCount: number;
-  totalCount: number;
-  progressPct: number;
-  status: "not_started" | "in_progress" | "completed" | "locked" | "coming_soon";
-  lockReason: "date" | "sequence" | null;
-};
-
-function computeModuleViews(
-  modules: DashboardModule[],
-  lessons: DashboardLesson[],
-  progress: DashboardProgressRow[],
-): ModuleView[] {
-  const now = new Date();
-  const progressByLesson = new Map(progress.map((p) => [p.lesson_id, p]));
-  const views: ModuleView[] = [];
-  let previousCompleted = true; // first module has no predecessor
-
-  for (const m of modules) {
-    const modLessons = lessons.filter((l) => l.module_id === m.id);
-    const completed = modLessons.filter(
-      (l) => progressByLesson.get(l.id)?.completed,
-    ).length;
-    const total = modLessons.length;
-    const pct = total === 0 ? 0 : Math.round((completed / total) * 100);
-
-    let status: ModuleView["status"] = "not_started";
-    let lockReason: ModuleView["lockReason"] = null;
-
-    if (m.release_type === "date" && m.release_at && new Date(m.release_at) > now) {
-      status = "coming_soon";
-      lockReason = "date";
-    } else if (m.release_type === "after_previous" && !previousCompleted) {
-      status = "locked";
-      lockReason = "sequence";
-    } else if (total > 0 && completed === total) {
-      status = "completed";
-    } else if (completed > 0) {
-      status = "in_progress";
-    }
-
-    views.push({
-      ...m,
-      lessons: modLessons,
-      completedCount: completed,
-      totalCount: total,
-      progressPct: pct,
-      status,
-      lockReason,
-    });
-
-    previousCompleted = total > 0 && completed === total;
-  }
-  return views;
-}
+// Module locking + course progress helpers are shared with the course page
+// (see @/lib/lms/course-workspace) so calculations stay consistent everywhere.
 
 // ---------- page ----------
 
@@ -150,10 +98,13 @@ function EnrolledDashboard({ data }: { data: Extract<DashboardData, { state: "en
     [data.modules, data.lessons, data.progress],
   );
 
-  const totalLessons = data.lessons.length;
-  const completedLessons = data.progress.filter((p) => p.completed).length;
-  const overallPct =
-    totalLessons === 0 ? 0 : Math.round((completedLessons / totalLessons) * 100);
+  const courseProgress = useMemo(
+    () => computeCourseProgress(moduleViews, data.progress),
+    [moduleViews, data.progress],
+  );
+  const totalLessons = courseProgress.totalLessons;
+  const completedLessons = courseProgress.completedLessons;
+  const overallPct = courseProgress.percentage;
 
   const progressByLesson = useMemo(
     () => new Map(data.progress.map((p) => [p.lesson_id, p])),
