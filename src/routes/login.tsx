@@ -27,6 +27,7 @@ export const Route = createFileRoute("/login")({
     meta: [
       { title: "ログイン — Eigo Michi" },
       { name: "description", content: "アカウントにログイン。" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: LoginPage,

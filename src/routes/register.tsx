@@ -22,6 +22,7 @@ export const Route = createFileRoute("/register")({
     meta: [
       { title: "新規登録 — Eigo Michi" },
       { name: "description", content: "アカウントを新規作成。" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: RegisterPage,

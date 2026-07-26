@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+// SEO: auth page — noindex
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

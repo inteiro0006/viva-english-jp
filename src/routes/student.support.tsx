@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+// SEO: protected route — must not be indexed
 import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useServerFn } from "@tanstack/react-start";
