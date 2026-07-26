@@ -23,10 +23,12 @@ import { useSession } from "@/lib/auth/use-session";
 import {
   useDashboardData,
   type DashboardData,
-  type DashboardModule,
-  type DashboardLesson,
-  type DashboardProgressRow,
 } from "@/lib/lms/dashboard-data";
+import {
+  computeModuleViews,
+  computeCourseProgress,
+  type ModuleView,
+} from "@/lib/lms/course-workspace";
 
 export const Route = createFileRoute("/student/dashboard")({
   head: () => ({
