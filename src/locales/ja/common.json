@@ -919,5 +919,47 @@
       "createdAt": "アップロード日",
       "empty": "まだ動画がありません。上のボタンから最初の動画をアップロードしてください。"
     }
+  },
+  "certificate": {
+    "loading": "証明書の状況を確認中…",
+    "generate": "修了証を発行",
+    "download": "PDF をダウンロード",
+    "reissue": "再発行",
+    "reissueHint": "現在の証明書を無効化し、新しい番号で再発行します。",
+    "issuedToast": "修了証を発行しました。",
+    "issued": {
+      "title": "修了証は発行済みです",
+      "description": "証明書番号: {{number}}"
+    },
+    "eligible": {
+      "title": "おめでとうございます！修了要件を満たしました",
+      "description": "修了証をいつでも発行できます。"
+    },
+    "locked": {
+      "title": "修了証は未取得です",
+      "description": "あと {{remaining}} レッスンで修了証を取得できます。"
+    },
+    "errors": {
+      "notEligible": "まだ修了要件を満たしていません。",
+      "profileIncomplete": "プロフィールの氏名を入力してください。",
+      "download": "ダウンロード用リンクの発行に失敗しました。",
+      "generic": "証明書の発行に失敗しました。"
+    },
+    "verify": {
+      "pageTitle": "修了証の検証",
+      "loading": "検証中…",
+      "error": "検証に失敗しました。",
+      "valid": "この修了証は有効です",
+      "revoked": "この修了証は取り消されています",
+      "notFound": "該当する修了証は見つかりませんでした",
+      "privacyNote": "プライバシー保護のため一部の情報のみ表示しています。",
+      "field": {
+        "name": "受講者名",
+        "course": "コース",
+        "number": "証明書番号",
+        "issued": "発行日",
+        "revoked": "取消日"
+      }
+    }
   }
 }

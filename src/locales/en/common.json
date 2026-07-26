@@ -919,5 +919,47 @@
       "createdAt": "Uploaded",
       "empty": "No videos yet — start your first upload above."
     }
+  },
+  "certificate": {
+    "loading": "Checking certificate status…",
+    "generate": "Issue certificate",
+    "download": "Download PDF",
+    "reissue": "Reissue",
+    "reissueHint": "Revoke the current certificate and issue a new one.",
+    "issuedToast": "Certificate issued.",
+    "issued": {
+      "title": "Certificate ready",
+      "description": "Certificate number: {{number}}"
+    },
+    "eligible": {
+      "title": "Congratulations — you've completed the course",
+      "description": "You can issue your official certificate now."
+    },
+    "locked": {
+      "title": "Certificate locked",
+      "description": "Complete {{remaining}} more lesson(s) to unlock your certificate."
+    },
+    "errors": {
+      "notEligible": "You haven't met the completion requirements yet.",
+      "profileIncomplete": "Please set your full name in your profile first.",
+      "download": "Could not generate a download link.",
+      "generic": "Certificate could not be issued."
+    },
+    "verify": {
+      "pageTitle": "Certificate verification",
+      "loading": "Verifying…",
+      "error": "Verification failed.",
+      "valid": "This certificate is valid",
+      "revoked": "This certificate has been revoked",
+      "notFound": "No certificate matches this code",
+      "privacyNote": "Only limited information is shown to protect the holder's privacy.",
+      "field": {
+        "name": "Student",
+        "course": "Course",
+        "number": "Certificate No.",
+        "issued": "Issued",
+        "revoked": "Revoked"
+      }
+    }
   }
 }
