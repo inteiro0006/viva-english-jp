@@ -98,10 +98,13 @@ function EnrolledDashboard({ data }: { data: Extract<DashboardData, { state: "en
     [data.modules, data.lessons, data.progress],
   );
 
-  const totalLessons = data.lessons.length;
-  const completedLessons = data.progress.filter((p) => p.completed).length;
-  const overallPct =
-    totalLessons === 0 ? 0 : Math.round((completedLessons / totalLessons) * 100);
+  const courseProgress = useMemo(
+    () => computeCourseProgress(moduleViews, data.progress),
+    [moduleViews, data.progress],
+  );
+  const totalLessons = courseProgress.totalLessons;
+  const completedLessons = courseProgress.completedLessons;
+  const overallPct = courseProgress.percentage;
 
   const progressByLesson = useMemo(
     () => new Map(data.progress.map((p) => [p.lesson_id, p])),
