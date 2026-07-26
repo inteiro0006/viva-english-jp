@@ -140,20 +140,9 @@ function LessonView({ data }: { data: Extract<LessonWorkspaceState, { state: "ok
     }
   };
 
-  // Simulated progress: for text/quiz/file lessons we don't have a real player yet.
-  // Persist position when user interacts with the "mark progress" control.
-  // Throttled to at most once per 5s.
-  const persistPosition = async (pct: number) => {
-    const now = Date.now();
-    if (now - lastSavedRef.current < 5000) return;
-    lastSavedRef.current = now;
-    try {
-      const seconds = Math.round(((data.lesson.duration_seconds || 60) * pct) / 100);
-      await saveLessonPosition(userId, data.lesson.id, seconds, pct);
-    } catch {
-      /* silent — non-critical */
-    }
-  };
+  // Video lessons persist progress through StreamPlayer's throttled saves.
+  // Text/quiz lessons persist only when the user marks them complete.
+
 
   const goTo = (id: string | null) => {
     if (!id) return;
