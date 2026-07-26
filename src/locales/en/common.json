@@ -460,13 +460,34 @@
   },
   "checkout": {
     "title": "Checkout",
-    "subtitle": "Secure payment to unlock the course."
+    "subtitle": "Secure payment to unlock the course.",
+    "productLabel": "Course",
+    "productName": "Eigo Academy",
+    "oneTimePayment": "One-time payment",
+    "formHeading": "Payment details",
+    "included": [
+      "Lifetime access to every stage and lesson",
+      "Downloadable practice materials",
+      "Progress tracking on every device",
+      "Free updates as new content is added"
+    ],
+    "trustSecure": "Payments are processed by Stripe with end-to-end encryption.",
+    "trustInstant": "Your course unlocks automatically once payment is confirmed.",
+    "alreadyEnrolled": "You already have access to this course.",
+    "notConfigured": "Checkout is not available yet. Please try again later.",
+    "retry": "Try again"
   },
   "payment": {
     "successTitle": "Payment complete",
     "successBody": "Thanks for your purchase. Head to your dashboard to start learning.",
     "cancelTitle": "Payment canceled",
-    "cancelBody": "No worries — you can try again anytime."
+    "cancelBody": "No worries — you can try again anytime.",
+    "confirmingTitle": "Confirming your payment…",
+    "confirmingBody": "This usually takes a few seconds. Please keep this page open.",
+    "pendingTitle": "Almost there",
+    "pendingBody": "Your payment is still being confirmed. Your course will appear in the dashboard as soon as it clears.",
+    "errorTitle": "Something went wrong",
+    "errorBody": "We couldn't verify this payment. If you were charged, please contact support."
   },
   "legal": {
     "termsTitle": "Terms of service",

@@ -460,13 +460,34 @@
   },
   "checkout": {
     "title": "お支払い",
-    "subtitle": "安全な決済でコースにアクセス。"
+    "subtitle": "安全な決済でコースにアクセス。",
+    "productLabel": "コース",
+    "productName": "Eigo Academy",
+    "oneTimePayment": "一括払い",
+    "formHeading": "お支払い情報",
+    "included": [
+      "全ステージ・全レッスンに永久アクセス",
+      "ダウンロード可能な学習教材",
+      "すべての端末で学習進捗を同期",
+      "新規コンテンツの無料アップデート"
+    ],
+    "trustSecure": "決済はStripeにより暗号化されて安全に処理されます。",
+    "trustInstant": "お支払い確認後、すぐにコースが解放されます。",
+    "alreadyEnrolled": "このコースはすでにご購入済みです。",
+    "notConfigured": "現在お支払いをご利用いただけません。時間をおいて再度お試しください。",
+    "retry": "もう一度試す"
   },
   "payment": {
     "successTitle": "お支払いが完了しました",
     "successBody": "ご購入ありがとうございます。ダッシュボードから学習を始められます。",
     "cancelTitle": "お支払いがキャンセルされました",
-    "cancelBody": "いつでもやり直すことができます。"
+    "cancelBody": "いつでもやり直すことができます。",
+    "confirmingTitle": "お支払いを確認しています…",
+    "confirmingBody": "通常は数秒で完了します。このページを閉じずにお待ちください。",
+    "pendingTitle": "まもなく完了します",
+    "pendingBody": "お支払いを確認中です。処理が完了次第、ダッシュボードにコースが表示されます。",
+    "errorTitle": "エラーが発生しました",
+    "errorBody": "お支払いを確認できませんでした。すでに課金されている場合はサポートまでご連絡ください。"
   },
   "legal": {
     "termsTitle": "利用規約",
