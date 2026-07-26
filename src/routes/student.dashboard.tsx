@@ -187,6 +187,8 @@ function EnrolledDashboard({ data }: { data: Extract<DashboardData, { state: "en
 
       {courseCompleted && <CompletedBanner />}
 
+      <CertificateCard courseId={data.course.id} />
+
       {/* Continue + up next */}
       <section className="grid gap-6 lg:grid-cols-[2fr_1fr]">
         <ContinueCard
