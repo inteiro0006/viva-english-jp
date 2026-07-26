@@ -611,6 +611,117 @@
       "previewBadge": "無料公開",
       "lessonList": "レッスン一覧",
       "yourProgress": "このレッスンの進捗"
+    },
+    "profile": {
+      "metaTitle": "プロフィール — Eigo Michi",
+      "metaDesc": "アカウント情報、学習設定、通知設定を管理します。",
+      "heading": "プロフィール",
+      "subtitle": "アカウント情報と学習設定を管理します。",
+      "sections": {
+        "identity": "アカウント情報",
+        "communication": "通知設定",
+        "password": "パスワード",
+        "account": "登録情報",
+        "enrollment": "受講中のコース"
+      },
+      "fields": {
+        "fullName": "氏名",
+        "email": "メールアドレス",
+        "emailHelp": "メールアドレスの変更にはサポートへご連絡ください。",
+        "language": "表示言語",
+        "avatar": "プロフィール画像",
+        "avatarHint": "JPG または PNG。最大 2MB。",
+        "changeAvatar": "画像を変更",
+        "removeAvatar": "画像を削除",
+        "memberSince": "登録日",
+        "course": "コース",
+        "enrollmentStatus": "受講状況",
+        "purchasedAt": "購入日",
+        "expiresAt": "有効期限",
+        "noExpiry": "無期限",
+        "noEnrollment": "有効なコースはまだありません。"
+      },
+      "prefs": {
+        "product_updates": "プロダクトからのお知らせ",
+        "product_updatesDesc": "新機能や重要な更新をお知らせします。",
+        "learning_reminders": "学習リマインダー",
+        "learning_remindersDesc": "学習を継続するためのリマインダーを受け取ります。",
+        "marketing": "マーケティング情報",
+        "marketingDesc": "キャンペーンや割引の情報を受け取ります。"
+      },
+      "password": {
+        "new": "新しいパスワード",
+        "confirm": "新しいパスワード(確認)",
+        "submit": "パスワードを変更",
+        "success": "パスワードを変更しました。",
+        "mismatch": "パスワードが一致しません。"
+      },
+      "actions": {
+        "save": "変更を保存",
+        "saved": "保存しました。",
+        "saving": "保存中…"
+      },
+      "errors": {
+        "avatarType": "JPG または PNG を選択してください。",
+        "avatarSize": "ファイルサイズは 2MB 以下にしてください。",
+        "avatarUpload": "画像のアップロードに失敗しました。",
+        "updateFailed": "変更を保存できませんでした。"
+      }
+    },
+    "support": {
+      "metaTitle": "サポート — Eigo Michi",
+      "metaDesc": "お問い合わせ、よくある質問、過去の問い合わせ履歴。",
+      "heading": "サポート",
+      "subtitle": "お困りの内容をお知らせください。通常24時間以内にご返信します。",
+      "faq": {
+        "title": "よくある質問",
+        "searchPlaceholder": "キーワードで検索…",
+        "noResults": "該当する質問は見つかりませんでした。下のフォームからお問い合わせください。",
+        "seeAll": "すべての質問を表示"
+      },
+      "form": {
+        "title": "お問い合わせ",
+        "category": "カテゴリ",
+        "subject": "件名",
+        "subjectPlaceholder": "例: 動画が再生されません",
+        "message": "お問い合わせ内容",
+        "messagePlaceholder": "できるだけ詳しくお書きください。",
+        "attachment": "添付ファイル(任意)",
+        "attachmentHint": "画像・PDF、最大 5MB。",
+        "attachmentRemove": "添付を削除",
+        "submit": "送信する",
+        "submitting": "送信中…",
+        "success": "お問い合わせを受け付けました。",
+        "attachmentUploadFailed": "添付のアップロードに失敗しました。"
+      },
+      "categories": {
+        "payment": "支払い",
+        "access": "アクセス",
+        "content": "コース内容",
+        "video": "動画",
+        "account": "アカウント",
+        "other": "その他"
+      },
+      "history": {
+        "title": "問い合わせ履歴",
+        "empty": "まだ問い合わせはありません。",
+        "subject": "件名",
+        "category": "カテゴリ",
+        "status": "状態",
+        "date": "送信日",
+        "response": "サポートからの返信"
+      },
+      "status": {
+        "open": "受付中",
+        "in_progress": "対応中",
+        "resolved": "解決済み",
+        "closed": "クローズ"
+      },
+      "errors": {
+        "attachType": "画像 (JPG/PNG) または PDF を選択してください。",
+        "attachSize": "ファイルサイズは 5MB 以下にしてください。",
+        "failed": "送信に失敗しました。"
+      }
     }
   },
   "admin": {

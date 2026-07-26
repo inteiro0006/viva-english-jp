@@ -611,6 +611,117 @@
       "previewBadge": "Preview",
       "lessonList": "Lesson list",
       "yourProgress": "Lesson progress"
+    },
+    "profile": {
+      "metaTitle": "Profile — Eigo Michi",
+      "metaDesc": "Manage your account details, learning language and notification preferences.",
+      "heading": "Profile",
+      "subtitle": "Manage your account and learning preferences.",
+      "sections": {
+        "identity": "Account details",
+        "communication": "Communication preferences",
+        "password": "Password",
+        "account": "Registration",
+        "enrollment": "Your course"
+      },
+      "fields": {
+        "fullName": "Full name",
+        "email": "Email",
+        "emailHelp": "To change your email, please contact support.",
+        "language": "Display language",
+        "avatar": "Profile picture",
+        "avatarHint": "JPG or PNG, up to 2MB.",
+        "changeAvatar": "Change picture",
+        "removeAvatar": "Remove picture",
+        "memberSince": "Member since",
+        "course": "Course",
+        "enrollmentStatus": "Status",
+        "purchasedAt": "Purchased on",
+        "expiresAt": "Expires",
+        "noExpiry": "No expiry",
+        "noEnrollment": "You don't have an active course yet."
+      },
+      "prefs": {
+        "product_updates": "Product updates",
+        "product_updatesDesc": "New features and important announcements.",
+        "learning_reminders": "Learning reminders",
+        "learning_remindersDesc": "Gentle nudges to help you stay consistent.",
+        "marketing": "Marketing",
+        "marketingDesc": "Occasional campaigns and discounts."
+      },
+      "password": {
+        "new": "New password",
+        "confirm": "Confirm new password",
+        "submit": "Change password",
+        "success": "Password updated.",
+        "mismatch": "Passwords do not match."
+      },
+      "actions": {
+        "save": "Save changes",
+        "saved": "Saved.",
+        "saving": "Saving…"
+      },
+      "errors": {
+        "avatarType": "Please choose a JPG or PNG image.",
+        "avatarSize": "File must be 2MB or less.",
+        "avatarUpload": "Avatar upload failed.",
+        "updateFailed": "We couldn't save your changes."
+      }
+    },
+    "support": {
+      "metaTitle": "Support — Eigo Michi",
+      "metaDesc": "Contact support, browse FAQ and see your ticket history.",
+      "heading": "Support",
+      "subtitle": "Tell us how we can help. We usually reply within 24 hours.",
+      "faq": {
+        "title": "Frequently asked questions",
+        "searchPlaceholder": "Search FAQ…",
+        "noResults": "No matching answers. Send us a message below.",
+        "seeAll": "See all questions"
+      },
+      "form": {
+        "title": "Contact support",
+        "category": "Category",
+        "subject": "Subject",
+        "subjectPlaceholder": "e.g. Video won't play",
+        "message": "Message",
+        "messagePlaceholder": "Please describe the issue in detail.",
+        "attachment": "Attachment (optional)",
+        "attachmentHint": "Image or PDF, up to 5MB.",
+        "attachmentRemove": "Remove attachment",
+        "submit": "Send request",
+        "submitting": "Sending…",
+        "success": "Your request has been received.",
+        "attachmentUploadFailed": "Attachment upload failed."
+      },
+      "categories": {
+        "payment": "Payment",
+        "access": "Access",
+        "content": "Course content",
+        "video": "Video",
+        "account": "Account",
+        "other": "Other"
+      },
+      "history": {
+        "title": "Your requests",
+        "empty": "You haven't sent any requests yet.",
+        "subject": "Subject",
+        "category": "Category",
+        "status": "Status",
+        "date": "Sent",
+        "response": "Support response"
+      },
+      "status": {
+        "open": "Open",
+        "in_progress": "In progress",
+        "resolved": "Resolved",
+        "closed": "Closed"
+      },
+      "errors": {
+        "attachType": "Please choose an image (JPG/PNG) or PDF file.",
+        "attachSize": "File must be 5MB or less.",
+        "failed": "Failed to send request."
+      }
     }
   },
   "admin": {
