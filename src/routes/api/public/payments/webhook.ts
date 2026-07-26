@@ -146,7 +146,7 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
           return Response.json({ received: true, ignored: "invalid env" });
         }
         try {
-          await process(rawEnv, request);
+          await processEvent(rawEnv, request);
           return Response.json({ received: true });
         } catch (err) {
           console.error("Stripe webhook error:", err);
