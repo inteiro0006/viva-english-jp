@@ -293,18 +293,8 @@ function LessonView({ data }: { data: Extract<LessonWorkspaceState, { state: "ok
               )}
             </Button>
 
-            {!completedLocal ? (
-              <Button
-                variant="outline"
-                onClick={() => {
-                  const next = Math.min(100, Math.round(progressPct) + 25);
-                  setProgressPct(next);
-                  void persistPosition(next);
-                }}
-              >
-                +25%
-              </Button>
-            ) : null}
+            {/* Text/quiz lessons complete manually via the button above.
+                No progress simulation is exposed until quizzes ship. */}
 
             <div className="ml-auto flex gap-2">
               <Button
