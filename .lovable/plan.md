@@ -1,108 +1,87 @@
-# Plano: Schema completo do LMS
+# Pagamento único via Stripe — Eigo Academy (¥49.800)
 
-## Situação atual verificada
+## Contexto verificado
+- Pagamentos Stripe já habilitados (sandbox: `STRIPE_SANDBOX_API_KEY`, `PAYMENTS_SANDBOX_WEBHOOK_SECRET`, `VITE_PAYMENTS_CLIENT_TOKEN`).
+- Já existem no banco: `orders`, `enrollments`, `payment_events`, `courses` (com curso "Eigo Mastery" seed).
+- Rotas placeholder existem: `/checkout`, `/payment/success`, `/payment/cancel`.
+- Conta Stripe será baseada no Japão → **não** usa `managed_payments` (Japão está excluído). Usaremos `automatic_tax: { enabled: true }` (Stripe calcula, vendedor declara).
+- Moeda JPY é zero-decimal → `amount = 49800` direto.
 
-Já existem no banco (não recriar, apenas estender se necessário):
-- `public.profiles` (id, full_name, avatar_url, preferred_language, marketing_consent, timestamps) — **sem coluna `role`** (correto: role vive em `user_roles`).
-- `public.user_roles` com enum `app_role` (student, admin) + política RLS.
-- Funções `has_role(_user_id, _role)`, `handle_new_user()`, `set_updated_at()`.
-- Enum `preferred_language` (ja, en).
+## O que será entregue
 
-**Decisão:** manter `role` fora de `profiles` (segurança já estabelecida via `user_roles` — não vamos regredir). O item "1. profiles → role" do pedido será atendido lendo o role via `has_role()` / `user_roles`, não como coluna.
+### 1. Produto no Stripe
+- `eigo_academy_course` / preço `eigo_academy_onetime` — ¥49.800, one-time, quantidade 1, tax code `txcd_10103000` (educational services).
 
-## Migração única, idempotente
+### 2. Utilitário Stripe server-only (`src/lib/stripe.server.ts`)
+- `createStripeClient(env)` roteando via connector-gateway (nunca instanciar Stripe SDK direto).
+- `verifyWebhook(req, env)` com HMAC-SHA256 e janela de 5 min.
+- `getStripeErrorMessage()`.
 
-Uma migration só (`CREATE TABLE IF NOT EXISTS`, `CREATE INDEX IF NOT EXISTS`, `DROP POLICY IF EXISTS` antes de recriar, `CREATE OR REPLACE FUNCTION`). Ordem: enums → tabelas → índices → GRANTs → RLS/policies → funções → triggers → seed.
+### 3. Cliente Stripe.js (`src/lib/stripe.ts`)
+- `getStripe()` + `getStripeEnvironment()` derivando ambiente do prefixo `pk_test_` / `pk_live_` — falha explícita se token ausente.
+- Instalar `@stripe/stripe-js@9.2.0` e `@stripe/react-stripe-js@6.2.0`.
 
-### Novos enums
-`course_status` (draft, published, archived), `access_type` (lifetime, limited), `stage_status`, `module_status`, `lesson_status` (mesmo conjunto), `lesson_type` (video, text, quiz, file), `release_type` (immediate, date, after_previous), `enrollment_status` (active, expired, revoked, refunded), `order_status` (pending, paid, failed, refunded, partially_refunded), `support_status` (open, in_progress, resolved, closed), `resource_type` (pdf, link, download, other).
+### 4. Server function de checkout (`src/lib/payments/checkout.functions.ts`)
+- `createCourseCheckoutSession` — protegido com `requireSupabaseAuth`.
+- Resolve email a partir de `context.supabase.auth.getUser()` (nunca do cliente).
+- Cria/reaproveita `Stripe Customer` com `metadata.userId` (função `resolveOrCreateCustomer` do knowledge).
+- Verifica se o usuário **já possui matrícula ativa** no curso → retorna `{ error }` antes de abrir Stripe.
+- Cria order local `status='pending'` com `provider_session_id`, `amount_cents=49800`, `currency='jpy'`, `course_id`.
+- `checkout.sessions.create` com: `mode: 'payment'`, `ui_mode: 'embedded_page'`, `automatic_tax: { enabled: true }`, `payment_intent_data.description = 'Eigo Academy'`, `metadata: { userId, courseId, orderId }`, `return_url`.
+- Retorna `clientSecret` **serializável** (nunca lança para o middleware genérico).
 
-### Tabelas (todas em `public`, com `id uuid pk default gen_random_uuid()`, `created_at`, `updated_at` onde aplicável)
+### 5. Página `/checkout`
+- Protegida (se não autenticado → `/register?redirect=/checkout`).
+- Layout split: à esquerda, resumo do curso (título, benefícios, preço formatado com `Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' })`); à direita, `<EmbeddedCheckoutProvider>` + `<EmbeddedCheckout>`.
+- Se usuário já matriculado → redireciona para `/student/dashboard`.
+- Banner de test mode global (`PaymentTestModeBanner`) no `PublicLayout`.
+- Textos em i18n JA/EN.
 
-1. `courses` — campos bilíngues, `slug` UNIQUE, `price_jpy int`, `status`, `access_type`, `access_duration_days int null`.
-2. `course_stages` — FK `course_id`, `position int`, UNIQUE(course_id, position) deferrable.
-3. `modules` — FK `course_id`, `stage_id`, `release_type`, `release_at timestamptz null`.
-4. `lessons` — FK `module_id`, `lesson_type`, `cloudflare_video_uid text null`, `duration_seconds int`, `is_preview bool`.
-5. `enrollments` — FK `user_id`→auth.users, `course_id`, `order_id` (nullable, FK adicionado após `orders`), UNIQUE(user_id, course_id).
-6. `lesson_progress` — UNIQUE(user_id, lesson_id), `progress_seconds`, `progress_percentage numeric(5,2)`, `completed bool`, `completed_at`, `last_watched_at`.
-7. `orders` — `provider text`, `provider_checkout_id`, `provider_payment_id`, `amount int`, `currency text default 'JPY'`, `status`, `customer_email`, `paid_at`.
-8. `payment_events` — `provider_event_id UNIQUE NOT NULL` (idempotência), `payload jsonb`, `processed bool`, `processing_error text`.
-9. `lesson_resources` — FK `lesson_id`, bilíngue, `resource_type`, `file_url`, `position`.
-10. `support_requests` — FK `user_id`, `subject`, `message`, `status`.
-11. `testimonials` — bilíngue, `rating smallint check between 1..5`, `published`, `position`.
-12. `faq_items` — bilíngue, `category`, `published`, `position`.
+### 6. Webhook (`src/routes/api/public/payments/webhook.ts`)
+- Verifica assinatura via `verifyWebhook`. Extrai `?env=sandbox|live`.
+- Idempotência: usa `payment_events` (por `event_id`) — insert-only, ignora duplicados.
+- Trata:
+  - `checkout.session.completed` (mode=payment, payment_status=paid): atualiza `orders.status='paid'`, cria `enrollments` (`status='active'`, sem expires_at), grava `payment_events`.
+  - `charge.refunded` / `payment_intent.refunded`: marca `orders.status='refunded'` e desativa a matrícula correspondente (`status='refunded'`).
+  - `checkout.session.expired`: marca order como `expired`.
+- Trata duplo pagamento (mesmo user, mesmo curso, matrícula já ativa): não cria segunda; marca a order duplicada com nota; opcional refund automático fica documentado como próximo passo.
+- Cliente Supabase construído com `SUPABASE_SERVICE_ROLE_KEY` **dentro** do handler (nunca no escopo do módulo).
 
-`course_progress` → **função SQL** `public.get_course_progress(_user_id uuid, _course_id uuid)` retornando `(total_lessons int, completed_lessons int, percentage numeric, last_lesson_id uuid, last_watched_at timestamptz)`. Sem tabela derivada.
+### 7. Páginas de resultado
+- `/payment/success?session_id=...`: consulta a order pelo `provider_session_id` via server fn autenticada; polling curto (até 5s) enquanto webhook processa; ao confirmar → botão "Ir para o dashboard". Textos claros em JA/EN.
+- `/payment/cancel`: mensagem + CTA para tentar novamente.
 
-### Índices
-`courses(slug)` unique já pela constraint; `courses(status)`; FKs em stages/modules/lessons/enrollments/lesson_progress/orders/lesson_resources; `(course_id, position)`, `(module_id, position)`, `(stage_id, position)`; `enrollments(user_id, status)`, `orders(user_id, status)`, `payment_events(provider_event_id)`, `lesson_progress(user_id, lesson_id)`.
+### 8. CTAs da landing
+- Já autenticado sem compra → `/checkout`.
+- Não autenticado → `/register?redirect=/checkout`.
+- Aluno com matrícula → `/student/dashboard`.
+- Admin → `/admin`.
+- Lê o preço de um `getCoursePricing` (server fn) que consulta o Stripe (`prices.retrieve` via lookup_key) — nunca hardcoded no cliente.
 
-### GRANTs (obrigatório em toda tabela `public`)
-- Conteúdo público (courses/stages/modules/lessons/lesson_resources/testimonials/faq_items): `GRANT SELECT TO anon, authenticated`; `GRANT ALL TO service_role`; escritas de admin passam por RLS `authenticated`.
-- Dados do usuário (enrollments, lesson_progress, orders, support_requests): `GRANT SELECT, INSERT, UPDATE ON ... TO authenticated`; `GRANT ALL TO service_role`. Sem `anon`.
-- `payment_events`: apenas `service_role` (webhooks server-side).
+### 9. Fonte única de preço
+- Landing page e checkout consomem o mesmo endpoint. Fallback SSR: valor cacheado no `courses.price_cents` do banco (atualizado por script/admin, mas source of truth = Stripe).
 
-### Funções auxiliares (SECURITY DEFINER onde necessário, `set search_path=public`)
-- `public.is_admin(_uid uuid) returns boolean` — wrapper de `has_role(_uid,'admin')`.
-- `public.has_active_enrollment(_uid uuid, _course_id uuid) returns boolean` — checa `enrollments.status='active'` e `expires_at is null or > now()`.
-- `public.is_module_released(_module_id uuid) returns boolean` — avalia `release_type`.
-- `public.get_next_lesson(_uid uuid, _course_id uuid) returns uuid`.
-- `public.get_course_progress(...)` conforme acima.
+### 10. Segurança e RLS
+- Nenhuma chave secreta no bundle client (`stripe.server.ts` é server-only).
+- Order/enrollment só criados/atualizados pelo webhook com `service_role`.
+- Front nunca envia `amount`; server sempre resolve via `lookup_key`.
+- `/api/public/payments/webhook` — sem `requireSupabaseAuth`; segurança = assinatura Stripe.
 
-Todas com `EXECUTE` para `authenticated` apenas onde faz sentido (progresso e next_lesson); `payment_events` writers ficam server-only.
+## O que NÃO será feito nesta etapa
+- Cupons/descontos.
+- Refund automático via UI admin (só o webhook reage a refund manual no Stripe).
+- Faturamento recorrente (é pagamento único, por design).
+- Go-live: usuário precisará completar onboarding do Stripe depois pela aba Payments.
 
-### RLS
-
-- Enable em todas as novas tabelas.
-- **courses/course_stages/lessons/modules/lesson_resources**:
-  - SELECT (anon+authenticated) quando `status='published'` — para `lessons`, apenas quando `is_preview=true` OU `has_active_enrollment(auth.uid(), course_id_do_module)` (via subquery). Módulos também precisam de `is_module_released`.
-  - INSERT/UPDATE/DELETE: `is_admin(auth.uid())`.
-- **enrollments**: SELECT próprio (`user_id=auth.uid()`) + admin. INSERT/UPDATE/DELETE: admin ou `service_role` (aluno NÃO cria matrícula).
-- **orders**: SELECT próprio + admin. INSERT/UPDATE/DELETE: apenas `service_role` (aluno não altera pedido).
-- **lesson_progress**: SELECT/INSERT/UPDATE próprio (`user_id=auth.uid()`). Sem DELETE para aluno.
-- **support_requests**: SELECT/INSERT próprio; UPDATE só admin.
-- **testimonials/faq_items**: SELECT público quando `published=true`; escrita só admin.
-- **payment_events**: nenhuma policy para `authenticated`/`anon` (só `service_role` via GRANT).
-- **profiles**: manter policies existentes; adicionar policy `admin SELECT all`.
-
-Nenhuma policy referencia a própria tabela; admin sempre via `has_role`/`is_admin` (evita recursão).
-
-### Triggers
-- `set_updated_at` BEFORE UPDATE em todas as tabelas com `updated_at`.
-- `handle_new_user` mantido.
-- Trigger em `lesson_progress` BEFORE UPDATE: se `progress_percentage >= 95` → `completed=true, completed_at=now()`.
-- Nenhum trigger que confie em dados do cliente para marcar pagamento.
-
-### Seed (dentro da mesma migration, idempotente com `ON CONFLICT DO NOTHING` por slug)
-- 1 curso (`slug='eigo-mastery'`, published, lifetime, price 49800).
-- 6 stages (Foundations → Fluency).
-- 3 módulos de exemplo no primeiro stage.
-- 6 lições exemplo (2 por módulo, `cloudflare_video_uid=null`, 1 `is_preview=true`).
-- Sem usuários fictícios em `auth.users`.
-- Não popula testimonials/faq via SQL (já existem em `src/data/`); pode ser feito depois se desejado.
-
-## Após aprovação da migration
-
-1. Tipos TS regenerados automaticamente (`src/integrations/supabase/types.ts`).
-2. Criar helpers de dados em `src/lib/lms/`:
-   - `courses.functions.ts` (public read via server publishable client).
-   - `enrollment.functions.ts` (`requireSupabaseAuth`).
-   - `progress.functions.ts` (`requireSupabaseAuth`, chama `get_course_progress`).
-3. Não altero UI existente nesta etapa — apenas schema + tipos + funções de acesso.
-
-## Placeholders / etapas futuras
-
-- Webhook Stripe (`/api/public/webhooks/stripe`) que insere em `orders` + `enrollments` — próxima etapa.
-- Player Cloudflare Stream (signed URLs via server fn) — próxima etapa.
-- CRUD admin UI — próxima etapa.
-
-## Variáveis de ambiente necessárias (ainda não configuradas)
-
-- `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
-- `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_STREAM_API_TOKEN`, `CLOUDFLARE_STREAM_SIGNING_KEY_ID`, `CLOUDFLARE_STREAM_SIGNING_JWK`
-
-Supabase URL/keys já injetados pelo Lovable Cloud.
+## Variáveis usadas
+Já configuradas: `STRIPE_SANDBOX_API_KEY`, `PAYMENTS_SANDBOX_WEBHOOK_SECRET`, `LOVABLE_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `VITE_PAYMENTS_CLIENT_TOKEN`. Nenhum secret novo necessário.
 
 ## Critérios de aceitação
-
-Todos os itens da lista do pedido são cobertos: idempotência, RLS estrita, aluno sem acesso a conteúdo sem matrícula (exceto preview), aluno não altera orders/role, idempotência em `payment_events`, conteúdo bilíngue modelado, sem segredos no banco.
+- Preço sempre vem do Stripe (via `lookup_key`), nunca do cliente.
+- Matrícula só é criada pelo webhook após `checkout.session.completed` com `payment_status='paid'`.
+- Eventos duplicados são ignorados via `payment_events.event_id UNIQUE`.
+- Compra duplicada bloqueada antes de abrir o Stripe.
+- Refund manual no Stripe revoga acesso automaticamente.
+- Dashboard só libera com `has_active_enrollment` verdadeiro.
+- Nenhuma `STRIPE_SECRET_KEY` no frontend (usa gateway).
+- Textos completos JA/EN.
