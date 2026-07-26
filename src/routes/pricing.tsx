@@ -5,16 +5,32 @@ import { PublicLayout } from "@/components/layout/PublicLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
+const SITE_URL = "https://viva-english-jp.lovable.app";
+
 export const Route = createFileRoute("/pricing")({
   head: () => ({
     meta: [
-      { title: "料金 — Eigo Michi" },
-      { name: "description", content: "一度きりのお支払いで、生涯アクセス。" },
-      { property: "og:title", content: "料金 — Eigo Michi" },
+      { title: "料金プラン — Eigo Michi" },
+      {
+        name: "description",
+        content:
+          "一度きりのお支払いで、Eigo Michi の全レッスンに生涯アクセス。追加費用や月額課金はありません。",
+      },
+      { property: "og:title", content: "料金プラン — Eigo Michi" },
       {
         property: "og:description",
-        content: "一度きりのお支払いで、生涯アクセス。",
+        content: "一度きりのお支払いで、全レッスンに生涯アクセス。",
       },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: `${SITE_URL}/pricing` },
+      { property: "og:locale", content: "ja_JP" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+    links: [
+      { rel: "canonical", href: `${SITE_URL}/pricing` },
+      { rel: "alternate", hreflang: "ja", href: `${SITE_URL}/pricing?lang=ja` },
+      { rel: "alternate", hreflang: "en", href: `${SITE_URL}/pricing?lang=en` },
+      { rel: "alternate", hreflang: "x-default", href: `${SITE_URL}/pricing` },
     ],
   }),
   component: PricingPage,
