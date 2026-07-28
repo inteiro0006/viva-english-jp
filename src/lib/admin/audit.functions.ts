@@ -62,9 +62,9 @@ export const listAuditLogs = createServerFn({ method: "POST" })
         entity_type: string;
         entity_id: string | null;
         summary: string | null;
-        changed_fields: unknown;
-        old_values: unknown;
-        new_values: unknown;
+        changed_fields: Json | null;
+        old_values: Json | null;
+        new_values: Json | null;
         ip_address: string | null;
         user_agent: string | null;
         created_at: string;
