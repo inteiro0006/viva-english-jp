@@ -18,32 +18,44 @@ export type Database = {
         Row: {
           action: string
           admin_id: string | null
+          changed_fields: Json | null
           created_at: string
           entity_id: string | null
           entity_type: string
           id: string
+          ip_address: unknown
           new_values: Json | null
           old_values: Json | null
+          summary: string | null
+          user_agent: string | null
         }
         Insert: {
           action: string
           admin_id?: string | null
+          changed_fields?: Json | null
           created_at?: string
           entity_id?: string | null
           entity_type: string
           id?: string
+          ip_address?: unknown
           new_values?: Json | null
           old_values?: Json | null
+          summary?: string | null
+          user_agent?: string | null
         }
         Update: {
           action?: string
           admin_id?: string | null
+          changed_fields?: Json | null
           created_at?: string
           entity_id?: string | null
           entity_type?: string
           id?: string
+          ip_address?: unknown
           new_values?: Json | null
           old_values?: Json | null
+          summary?: string | null
+          user_agent?: string | null
         }
         Relationships: []
       }
@@ -881,16 +893,31 @@ export type Database = {
         Returns: boolean
       }
       is_module_released: { Args: { _module_id: string }; Returns: boolean }
-      log_admin_action: {
-        Args: {
-          _action: string
-          _entity_id: string
-          _entity_type: string
-          _new_values?: Json
-          _old_values?: Json
-        }
-        Returns: string
-      }
+      log_admin_action:
+        | {
+            Args: {
+              _action: string
+              _entity_id: string
+              _entity_type: string
+              _new_values?: Json
+              _old_values?: Json
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              _action: string
+              _changed_fields?: Json
+              _entity_id: string
+              _entity_type: string
+              _ip_address?: unknown
+              _new_values?: Json
+              _old_values?: Json
+              _summary?: string
+              _user_agent?: string
+            }
+            Returns: string
+          }
       verify_certificate: {
         Args: { _code: string }
         Returns: {
