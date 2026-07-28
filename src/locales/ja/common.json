@@ -817,8 +817,26 @@
         "all": "すべて",
         "enrolled": "受講中",
         "notEnrolled": "未受講"
+      },
+      "tabs": {
+        "students": "受講生",
+        "allUsers": "全ユーザー"
+      },
+      "allUsers": {
+        "subtitle": "登録済みの全アカウント。メールアドレス・権限・登録日を確認できます。",
+        "search": "名前またはメールで検索…",
+        "email": "メールアドレス",
+        "role": "権限",
+        "lastSignIn": "最終ログイン",
+        "never": "未ログイン",
+        "roleFilter": {
+          "all": "すべての権限",
+          "admin": "管理者のみ",
+          "student": "受講者のみ"
+        }
       }
     },
+
     "orders_": {
       "subtitle": "決済のすべての履歴。",
       "id": "注文",
