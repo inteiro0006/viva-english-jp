@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { assertAdmin } from "@/lib/admin/require-admin";
+import type { Json } from "@/integrations/supabase/types";
 
 export type AuditLogRow = {
   id: string;
@@ -11,9 +12,9 @@ export type AuditLogRow = {
   entity_type: string;
   entity_id: string | null;
   summary: string | null;
-  changed_fields: unknown;
-  old_values: unknown;
-  new_values: unknown;
+  changed_fields: Json | null;
+  old_values: Json | null;
+  new_values: Json | null;
   ip_address: string | null;
   user_agent: string | null;
   created_at: string;
