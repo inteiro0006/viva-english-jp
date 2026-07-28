@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useState, useMemo, Fragment } from "react";
+import { useState, Fragment } from "react";
 import { ChevronDown, ChevronRight, Download } from "lucide-react";
 import { listAuditLogs, listAuditAdmins, type AuditLogRow } from "@/lib/admin/audit.functions";
 import { Card } from "@/components/ui/card";
