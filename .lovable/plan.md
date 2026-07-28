@@ -1,37 +1,50 @@
 ## Objetivo
-Conceder a role `admin` ao usuário `andre.montrezollo@gmail.com` para liberar acesso a `/admin`.
 
-## Pré-requisito
-O e-mail já precisa estar cadastrado em `/register` (o trigger `handle_new_user` cria a linha em `auth.users` e a role `student` por padrão). Se ainda não estiver, cadastre antes de aprovar o plano.
+Hoje `/admin/students` já lista perfis (`public.profiles`) com suas matrículas. O que falta é uma visão focada em **cadastros** — todos os usuários que criaram conta, com **e-mail** (que vive em `auth.users`, não em `profiles`), **role** (student/admin) e **data de cadastro**, independentemente de terem comprado curso.
 
-## Ação
-Executar um único INSERT idempotente em `public.user_roles`, resolvendo o `user_id` a partir de `auth.users.email`:
+## Escopo
 
-```sql
-INSERT INTO public.user_roles (user_id, role)
-SELECT id, 'admin'::public.app_role
-FROM auth.users
-WHERE email = 'andre.montrezollo@gmail.com'
-ON CONFLICT (user_id, role) DO NOTHING;
+Adicionar uma segunda aba na tela `/admin/students`:
+
+```text
+[ Alunos ]  [ Todos os usuários ]
 ```
 
-- Mantém a role `student` existente (roles são aditivas).
-- `ON CONFLICT` torna a operação segura para re-execução.
-- Se o e-mail não existir em `auth.users`, o INSERT afeta 0 linhas — nesse caso, cadastre-se primeiro e reaplique.
+- **Alunos** (aba atual): mantém o comportamento existente (perfis + matrículas + filtro all/enrolled/not_enrolled).
+- **Todos os usuários** (nova): tabela plana de cadastros com colunas:
+  - Nome (`profiles.full_name`)
+  - E-mail (de `auth.users.email`)
+  - Role (`admin` / `student`, derivado de `user_roles`)
+  - Idioma preferido
+  - Cadastrado em (`profiles.created_at`)
+  - Última atividade (`auth.users.last_sign_in_at`)
+  - Ações: link para o detalhe do aluno já existente
+- Busca por nome ou e-mail e filtro por role (todos / admin / student).
+- Paginação (25 por página) e contagem total.
+- Export CSV opcional fica fora desta iteração.
 
-## Como acessar depois
-1. Faça logout se estiver em sessão antiga.
-2. Entre em `/login` com esse e-mail.
-3. O `LoginPage` detecta a role `admin` e redireciona para `/admin`. O `beforeLoad` de `/admin` revalida via `has_role()` no servidor.
+## Detalhes técnicos
 
-## Verificação
-Após aplicar, um SELECT confirma a role:
+1. **Server function nova** em `src/lib/admin/students.admin.functions.ts`:
+   - `listAllUsers({ search, role, page })` protegida por `requireSupabaseAuth` + `assertAdmin`.
+   - Como `auth.users` não é acessível via PostgREST, usar `supabaseAdmin` (import dinâmico dentro do handler, padrão já usado no projeto) para chamar `auth.admin.listUsers({ page, perPage: 25 })`.
+   - Em paralelo, buscar `profiles` e `user_roles` pelos ids retornados e fazer merge em memória.
+   - Filtro por `search` aplicado sobre email/full_name após o merge; filtro `role` via `user_roles`.
+   - Retornar `{ rows, total, pageSize }` no mesmo formato de `listStudents`.
 
-```sql
-SELECT u.email, r.role
-FROM auth.users u
-JOIN public.user_roles r ON r.user_id = u.id
-WHERE u.email = 'andre.montrezollo@gmail.com';
-```
+2. **UI** em `src/routes/admin.students.tsx`:
+   - Envolver o conteúdo atual em `<Tabs>` do shadcn com dois `TabsContent`.
+   - Novo componente/seção `AllUsersTab` que consome `listAllUsers` via `useQuery`, com input de busca, `Select` de role, tabela e paginação — reutilizando os mesmos primitivos visuais da aba atual.
+   - Badge colorido para role admin.
 
-Nenhum código de aplicação será alterado — apenas dados em `public.user_roles`.
+3. **Auditoria/segurança**:
+   - Nenhuma escrita nova; apenas leitura administrativa. `assertAdmin` já registra a barreira.
+   - Sem exposição de dados sensíveis além de e-mail (admin-only, atrás de RLS + role check no server).
+
+4. **i18n**: adicionar strings em `src/locales/ja/common.json` e `src/locales/en/common.json` para títulos de aba, colunas e filtro de role.
+
+## Fora do escopo
+
+- Editar role a partir dessa tela (promover/demover admin) — pode ser uma iteração seguinte.
+- Export CSV.
+- Alterar a aba atual de "Alunos".
