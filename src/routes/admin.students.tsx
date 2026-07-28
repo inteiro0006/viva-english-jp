@@ -77,72 +77,84 @@ function AdminStudentsPage() {
 
   return (
     <div className="space-y-4">
-      <header className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{t("admin.students")}</h1>
-          <p className="text-sm text-muted-foreground">{t("admin.students_.subtitle")}</p>
-        </div>
-        <div className="flex gap-2">
-          <Input
-            placeholder={t("admin.students_.search")}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-64"
-          />
-          <Select value={filter} onValueChange={(v) => setFilter(v as never)}>
-            <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t("admin.students_.filter.all")}</SelectItem>
-              <SelectItem value="enrolled">{t("admin.students_.filter.enrolled")}</SelectItem>
-              <SelectItem value="not_enrolled">{t("admin.students_.filter.notEnrolled")}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      <header>
+        <h1 className="text-2xl font-bold tracking-tight">{t("admin.students")}</h1>
+        <p className="text-sm text-muted-foreground">{t("admin.students_.subtitle")}</p>
       </header>
 
-      <Card>
-        {isLoading ? (
-          <div className="p-4"><Skeleton className="h-64 w-full" /></div>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("admin.students_.name")}</TableHead>
-                <TableHead>{t("admin.students_.language")}</TableHead>
-                <TableHead>{t("admin.students_.enrollments")}</TableHead>
-                <TableHead>{t("admin.students_.since")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {(data?.rows ?? []).map((s) => (
-                <TableRow
-                  key={s.id}
-                  onClick={() => setSelected(s.id)}
-                  className="cursor-pointer hover:bg-muted/50"
-                >
-                  <TableCell className="font-medium">{s.full_name || "—"}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{s.preferred_language.toUpperCase()}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    {(s.enrollments ?? []).filter((e) => e.status === "active").length}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {new Date(s.created_at).toLocaleDateString(i18n.language)}
-                  </TableCell>
-                </TableRow>
-              ))}
-              {(data?.rows ?? []).length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={4} className="py-12 text-center text-sm text-muted-foreground">
-                    {t("common.empty")}
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        )}
-      </Card>
+      <Tabs defaultValue="students">
+        <TabsList>
+          <TabsTrigger value="students">{t("admin.students_.tabs.students")}</TabsTrigger>
+          <TabsTrigger value="all">{t("admin.students_.tabs.allUsers")}</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="students" className="space-y-4">
+          <div className="flex flex-wrap justify-end gap-2">
+            <Input
+              placeholder={t("admin.students_.search")}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-64"
+            />
+            <Select value={filter} onValueChange={(v) => setFilter(v as never)}>
+              <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("admin.students_.filter.all")}</SelectItem>
+                <SelectItem value="enrolled">{t("admin.students_.filter.enrolled")}</SelectItem>
+                <SelectItem value="not_enrolled">{t("admin.students_.filter.notEnrolled")}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Card>
+            {isLoading ? (
+              <div className="p-4"><Skeleton className="h-64 w-full" /></div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t("admin.students_.name")}</TableHead>
+                    <TableHead>{t("admin.students_.language")}</TableHead>
+                    <TableHead>{t("admin.students_.enrollments")}</TableHead>
+                    <TableHead>{t("admin.students_.since")}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {(data?.rows ?? []).map((s) => (
+                    <TableRow
+                      key={s.id}
+                      onClick={() => setSelected(s.id)}
+                      className="cursor-pointer hover:bg-muted/50"
+                    >
+                      <TableCell className="font-medium">{s.full_name || "—"}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{s.preferred_language.toUpperCase()}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        {(s.enrollments ?? []).filter((e) => e.status === "active").length}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {new Date(s.created_at).toLocaleDateString(i18n.language)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {(data?.rows ?? []).length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={4} className="py-12 text-center text-sm text-muted-foreground">
+                        {t("common.empty")}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            )}
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="all" className="space-y-4">
+          <AllUsersTab onSelect={setSelected} />
+        </TabsContent>
+      </Tabs>
 
       <StudentDrawer
         userId={selected}
@@ -152,6 +164,97 @@ function AdminStudentsPage() {
     </div>
   );
 }
+
+function AllUsersTab({ onSelect }: { onSelect: (id: string) => void }) {
+  const { t, i18n } = useTranslation();
+  const list = useServerFn(listAllUsers);
+  const [search, setSearch] = useState("");
+  const [role, setRole] = useState<"all" | "admin" | "student">("all");
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["admin", "all-users", search, role],
+    queryFn: () => list({ data: { search: search || undefined, role, page: 0 } }),
+  });
+
+  return (
+    <>
+      <p className="text-sm text-muted-foreground">{t("admin.students_.allUsers.subtitle")}</p>
+      <div className="flex flex-wrap justify-end gap-2">
+        <Input
+          placeholder={t("admin.students_.allUsers.search")}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-64"
+        />
+        <Select value={role} onValueChange={(v) => setRole(v as never)}>
+          <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("admin.students_.allUsers.roleFilter.all")}</SelectItem>
+            <SelectItem value="admin">{t("admin.students_.allUsers.roleFilter.admin")}</SelectItem>
+            <SelectItem value="student">{t("admin.students_.allUsers.roleFilter.student")}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <Card>
+        {isLoading ? (
+          <div className="p-4"><Skeleton className="h-64 w-full" /></div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("admin.students_.name")}</TableHead>
+                <TableHead>{t("admin.students_.allUsers.email")}</TableHead>
+                <TableHead>{t("admin.students_.allUsers.role")}</TableHead>
+                <TableHead>{t("admin.students_.language")}</TableHead>
+                <TableHead>{t("admin.students_.since")}</TableHead>
+                <TableHead>{t("admin.students_.allUsers.lastSignIn")}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {(data?.rows ?? []).map((u) => (
+                <TableRow
+                  key={u.id}
+                  onClick={() => onSelect(u.id)}
+                  className="cursor-pointer hover:bg-muted/50"
+                >
+                  <TableCell className="font-medium">{u.full_name || "—"}</TableCell>
+                  <TableCell className="text-muted-foreground">{u.email || "—"}</TableCell>
+                  <TableCell>
+                    <Badge variant={u.role === "admin" ? "default" : "outline"}>
+                      {u.role}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline">
+                      {(u.preferred_language ?? "ja").toUpperCase()}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {new Date(u.created_at).toLocaleDateString(i18n.language)}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {u.last_sign_in_at
+                      ? new Date(u.last_sign_in_at).toLocaleDateString(i18n.language)
+                      : t("admin.students_.allUsers.never")}
+                  </TableCell>
+                </TableRow>
+              ))}
+              {(data?.rows ?? []).length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className="py-12 text-center text-sm text-muted-foreground">
+                    {t("common.empty")}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        )}
+      </Card>
+    </>
+  );
+}
+
 
 function StudentDrawer({
   userId,
