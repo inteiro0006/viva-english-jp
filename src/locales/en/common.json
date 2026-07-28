@@ -817,8 +817,26 @@
         "all": "All students",
         "enrolled": "Enrolled",
         "notEnrolled": "Not enrolled"
+      },
+      "tabs": {
+        "students": "Students",
+        "allUsers": "All users"
+      },
+      "allUsers": {
+        "subtitle": "All registered accounts, including users without enrollments.",
+        "search": "Search by name or email…",
+        "email": "Email",
+        "role": "Role",
+        "lastSignIn": "Last sign-in",
+        "never": "Never",
+        "roleFilter": {
+          "all": "All roles",
+          "admin": "Admins only",
+          "student": "Students only"
+        }
       }
     },
+
     "orders_": {
       "subtitle": "All checkout transactions.",
       "id": "Order",
