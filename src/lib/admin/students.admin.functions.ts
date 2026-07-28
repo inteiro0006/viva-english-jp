@@ -62,6 +62,92 @@ export const listStudents = createServerFn({ method: "POST" })
     return { rows: joined, total: count ?? 0, pageSize };
   });
 
+export type AllUsersRow = {
+  id: string;
+  email: string | null;
+  full_name: string | null;
+  preferred_language: "ja" | "en" | null;
+  role: "admin" | "student";
+  created_at: string;
+  last_sign_in_at: string | null;
+};
+
+export const listAllUsers = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        search: z.string().optional(),
+        role: z.enum(["all", "admin", "student"]).default("all"),
+        page: z.number().int().min(0).default(0),
+      })
+      .parse(d ?? {}),
+  )
+  .handler(async ({ context, data }) => {
+    await assertAdmin(context);
+    const pageSize = 25;
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: usersData, error } = await supabaseAdmin.auth.admin.listUsers({
+      page: data.page + 1,
+      perPage: pageSize,
+    });
+    if (error) throw new Error(error.message);
+    const users = usersData?.users ?? [];
+    const ids = users.map((u) => u.id);
+
+    const [profilesRes, rolesRes] = await Promise.all([
+      ids.length
+        ? context.supabase
+            .from("profiles")
+            .select("id, full_name, preferred_language")
+            .in("id", ids)
+        : Promise.resolve({ data: [], error: null } as const),
+      ids.length
+        ? context.supabase.from("user_roles").select("user_id, role").in("user_id", ids)
+        : Promise.resolve({ data: [], error: null } as const),
+    ]);
+    const profiles = new Map<string, { full_name: string; preferred_language: "ja" | "en" }>();
+    for (const p of profilesRes.data ?? []) {
+      profiles.set(p.id, {
+        full_name: p.full_name,
+        preferred_language: p.preferred_language as "ja" | "en",
+      });
+    }
+    const roles = new Map<string, "admin" | "student">();
+    for (const r of rolesRes.data ?? []) {
+      const current = roles.get(r.user_id);
+      if (r.role === "admin" || !current) roles.set(r.user_id, r.role as "admin" | "student");
+    }
+
+    let rows: AllUsersRow[] = users.map((u) => {
+      const prof = profiles.get(u.id);
+      return {
+        id: u.id,
+        email: u.email ?? null,
+        full_name: prof?.full_name ?? null,
+        preferred_language: prof?.preferred_language ?? null,
+        role: roles.get(u.id) ?? "student",
+        created_at: u.created_at,
+        last_sign_in_at: u.last_sign_in_at ?? null,
+      };
+    });
+
+    if (data.search) {
+      const q = data.search.toLowerCase();
+      rows = rows.filter(
+        (r) =>
+          (r.email ?? "").toLowerCase().includes(q) ||
+          (r.full_name ?? "").toLowerCase().includes(q),
+      );
+    }
+    if (data.role !== "all") {
+      rows = rows.filter((r) => r.role === data.role);
+    }
+
+    return { rows, total: usersData?.total ?? rows.length, pageSize };
+  });
+
+
 export const getStudentDetail = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ userId: z.string().uuid() }).parse(d))
