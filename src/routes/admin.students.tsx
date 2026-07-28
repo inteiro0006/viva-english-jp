@@ -6,11 +6,14 @@ import { useState } from "react";
 import { toast } from "sonner";
 import {
   listStudents,
+  listAllUsers,
   getStudentDetail,
   grantEnrollment,
   revokeEnrollment,
 } from "@/lib/admin/students.admin.functions";
 import { listAdminCourses } from "@/lib/admin/courses.admin.functions";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { Card } from "@/components/ui/card";
 import {
   Table,
