@@ -1,0 +1,2 @@
+REVOKE EXECUTE ON FUNCTION public.log_admin_action(text, text, text, jsonb, jsonb, jsonb, text, inet, text) FROM anon, PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.log_admin_action(text, text, text, jsonb, jsonb) FROM anon, PUBLIC;
