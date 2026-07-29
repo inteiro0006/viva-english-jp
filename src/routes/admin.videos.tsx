@@ -292,8 +292,40 @@ function VideoRow({
             <RefreshCw className={`mr-1 h-3.5 w-3.5 ${busy ? "animate-spin" : ""}`} />
             {t("stream.admin.refresh")}
           </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+            onClick={() => setConfirmDelete(true)}
+            disabled={busy}
+          >
+            <Trash2 className="mr-1 h-3.5 w-3.5" />
+            {t("stream.admin.delete")}
+          </Button>
         </div>
       </CardContent>
+      <Dialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("stream.admin.deleteConfirmTitle")}</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">{t("stream.admin.deleteConfirmBody")}</p>
+          <p className="mt-2 truncate text-sm font-medium">
+            {video.title ?? video.cloudflare_uid}
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmDelete(false)} disabled={busy}>
+              {t("common.cancel", "Cancel")}
+            </Button>
+            <Button variant="destructive" onClick={doDelete} disabled={busy}>
+              {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : (
+                <Trash2 className="mr-1 h-3.5 w-3.5" />
+              )}
+              {t("stream.admin.deleteConfirm")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
