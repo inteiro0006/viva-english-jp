@@ -140,11 +140,22 @@ function AdminCourseEditor() {
         <p className="font-mono text-xs text-muted-foreground">{data.slug}</p>
       </header>
 
-      <Tabs defaultValue="details">
+      <Tabs
+        value={tab}
+        onValueChange={(v) =>
+          navigate({
+            to: "/admin/courses/$courseId",
+            params: { courseId },
+            search: { tab: v === "curriculum" ? "curriculum" : "details" },
+            replace: true,
+          })
+        }
+      >
         <TabsList>
           <TabsTrigger value="details">{t("admin.courses_.tabs.details")}</TabsTrigger>
           <TabsTrigger value="curriculum">{t("admin.courses_.tabs.curriculum")}</TabsTrigger>
         </TabsList>
+
 
         <TabsContent value="details" className="pt-4">
           <CourseDetailsForm
