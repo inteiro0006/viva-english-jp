@@ -139,9 +139,31 @@ function AdminCoursesPage() {
               <DialogTitle>{t("admin.courses_.new")}</DialogTitle>
             </DialogHeader>
             <div className="space-y-3">
-              <Field id="slug" label="Slug" value={form.slug} onChange={(v) => setForm({ ...form, slug: v })} placeholder="eigo-mastery" />
+              <div className="space-y-1.5">
+                <Label htmlFor="slug">Slug</Label>
+                <Input
+                  id="slug"
+                  value={form.slug}
+                  onChange={(e) => setForm({ ...form, slug: slugify(e.target.value) })}
+                  placeholder="eigo-mastery"
+                />
+                <p className="text-xs text-muted-foreground">{t("admin.courses_.slugHint")}</p>
+              </div>
               <Field id="title_ja" label={t("admin.courses_.titleJa")} value={form.title_ja} onChange={(v) => setForm({ ...form, title_ja: v })} />
-              <Field id="title_en" label={t("admin.courses_.titleEn")} value={form.title_en} onChange={(v) => setForm({ ...form, title_en: v })} />
+              <div className="space-y-1.5">
+                <Label htmlFor="title_en">{t("admin.courses_.titleEn")}</Label>
+                <Input
+                  id="title_en"
+                  value={form.title_en}
+                  onChange={(e) => setForm({ ...form, title_en: e.target.value })}
+                  onBlur={() => {
+                    if (!form.slug && form.title_en) {
+                      setForm((f) => ({ ...f, slug: slugify(f.title_en) }));
+                    }
+                  }}
+                />
+              </div>
+
               <div className="space-y-1.5">
                 <Label htmlFor="price">{t("admin.courses_.price")}</Label>
                 <Input
