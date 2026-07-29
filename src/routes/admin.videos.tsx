@@ -84,7 +84,10 @@ function AdminVideosPage() {
           <h1 className="text-2xl font-bold">{t("stream.admin.title")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">{t("stream.admin.subtitle")}</p>
         </div>
-        <UploadDialog onUploaded={invalidate} />
+        <div className="flex items-center gap-2">
+          <TestConnectionButton />
+          <UploadDialog onUploaded={invalidate} />
+        </div>
       </div>
 
       {videosQ.isLoading ? (
