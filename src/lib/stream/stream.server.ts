@@ -9,6 +9,17 @@ export type CFEnv = {
   signingKeyPem?: string;
 };
 
+export class CloudflareStreamApiError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number,
+    public readonly errors: unknown,
+  ) {
+    super(message);
+    this.name = "CloudflareStreamApiError";
+  }
+}
+
 export function readCloudflareEnv(): CFEnv {
   const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
   const apiToken = process.env.CLOUDFLARE_STREAM_API_TOKEN;
@@ -39,7 +50,11 @@ async function cfFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
   });
   const json = (await res.json()) as { success: boolean; result: T; errors?: unknown };
   if (!res.ok || !json.success) {
-    throw new Error(`Cloudflare Stream API error: ${JSON.stringify(json.errors ?? res.statusText)}`);
+    throw new CloudflareStreamApiError(
+      `Cloudflare Stream API error: ${JSON.stringify(json.errors ?? res.statusText)}`,
+      res.status,
+      json.errors ?? res.statusText,
+    );
   }
   return json.result;
 }

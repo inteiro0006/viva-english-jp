@@ -997,6 +997,7 @@
       "startUpload": "アップロード開始",
       "uploading": "アップロード中… {{pct}}%",
       "uploadedToast": "アップロード完了。Cloudflare で処理中です。",
+      "cloudflareAuthError": "Cloudflare 認証に失敗しました。Account ID と Stream API token を更新してから、もう一度お試しください。",
       "refresh": "状態を更新",
       "copyUid": "UID をコピー",
       "copied": "コピーしました",

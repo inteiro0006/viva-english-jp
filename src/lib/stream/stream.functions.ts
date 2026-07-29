@@ -27,11 +27,34 @@ export const createStreamUpload = createServerFn({ method: "POST" })
     const { createDirectUpload } = await import("@/lib/stream/stream.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const upload = await createDirectUpload({
-      maxDurationSeconds: data.maxDurationSeconds,
-      requireSignedURLs: true,
-      meta: { uploaded_by: context.userId, title: data.title ?? "" },
-    });
+    let upload: Awaited<ReturnType<typeof createDirectUpload>>;
+    try {
+      upload = await createDirectUpload({
+        maxDurationSeconds: data.maxDurationSeconds,
+        requireSignedURLs: true,
+        meta: { uploaded_by: context.userId, title: data.title ?? "" },
+      });
+    } catch (error) {
+      const isCloudflareAuthError =
+        error instanceof Error &&
+        (error.message.includes('"code":10000') || error.message.includes("Authentication error"));
+      if (isCloudflareAuthError) {
+        return {
+          ok: false as const,
+          code: "cloudflare_auth" as const,
+          message:
+            "Cloudflare authentication failed. Update CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_STREAM_API_TOKEN with a token that has Stream Edit access for the selected account.",
+        };
+      }
+      if (error instanceof Error && error.message.includes("Cloudflare Stream env vars missing")) {
+        return {
+          ok: false as const,
+          code: "cloudflare_config" as const,
+          message: "Cloudflare Stream is not fully configured.",
+        };
+      }
+      throw error;
+    }
 
     await supabaseAdmin.from("stream_videos").insert({
       cloudflare_uid: upload.uid,
@@ -42,7 +65,7 @@ export const createStreamUpload = createServerFn({ method: "POST" })
       uploaded_by: context.userId,
     });
 
-    return { uid: upload.uid, uploadURL: upload.uploadURL };
+    return { ok: true as const, uid: upload.uid, uploadURL: upload.uploadURL };
   });
 
 /**
@@ -162,7 +185,23 @@ export const refreshStreamVideo = createServerFn({ method: "POST" })
 
     const { getVideoInfo } = await import("@/lib/stream/stream.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const info = await getVideoInfo(data.cloudflareUid);
+    let info: Awaited<ReturnType<typeof getVideoInfo>>;
+    try {
+      info = await getVideoInfo(data.cloudflareUid);
+    } catch (error) {
+      const isCloudflareAuthError =
+        error instanceof Error &&
+        (error.message.includes('"code":10000') || error.message.includes("Authentication error"));
+      if (isCloudflareAuthError) {
+        return {
+          ok: false as const,
+          code: "cloudflare_auth" as const,
+          message:
+            "Cloudflare authentication failed. Update CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_STREAM_API_TOKEN.",
+        };
+      }
+      throw error;
+    }
     await supabaseAdmin
       .from("stream_videos")
       .update({
@@ -174,7 +213,7 @@ export const refreshStreamVideo = createServerFn({ method: "POST" })
         require_signed_urls: !!info.requireSignedURLs,
       })
       .eq("cloudflare_uid", data.cloudflareUid);
-    return { ok: true, status: info.status?.state, readyToStream: info.readyToStream };
+    return { ok: true as const, status: info.status?.state, readyToStream: info.readyToStream };
   });
 
 /**

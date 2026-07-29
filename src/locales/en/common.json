@@ -997,6 +997,7 @@
       "startUpload": "Start upload",
       "uploading": "Uploading… {{pct}}%",
       "uploadedToast": "Upload complete. Processing on Cloudflare.",
+      "cloudflareAuthError": "Cloudflare authentication failed. Update the Account ID and Stream API token, then try again.",
       "refresh": "Refresh status",
       "copyUid": "Copy UID",
       "copied": "Copied",
