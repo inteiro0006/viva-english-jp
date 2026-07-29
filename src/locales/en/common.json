@@ -775,11 +775,25 @@
       "reordered": "Order updated.",
       "slugHint": "Lowercase letters, numbers and dashes only. Ex.: eigo-mastery",
       "errors": {
-        "invalid_slug": "Slug must contain only lowercase letters, numbers and dashes."
+        "invalid_slug": "Slug must contain only lowercase letters, numbers and dashes.",
+        "course_not_found": "Course not found.",
+        "confirm_slug_mismatch": "The slug you typed does not match.",
+        "course_has_paid_enrollments": "This course has paid enrollments. Archive it instead of deleting to preserve student history."
       },
       "tabs": {
         "details": "Details",
         "curriculum": "Curriculum"
+      },
+      "danger": {
+        "title": "Danger zone",
+        "description": "Deleting a course permanently removes its stages, modules, lessons and progress. This cannot be undone.",
+        "delete": "Delete course",
+        "confirmTitle": "Delete this course?",
+        "confirmDesc": "This action is permanent. To confirm, type the course slug below:",
+        "confirmPlaceholder": "Type the slug to confirm",
+        "cancel": "Cancel",
+        "confirm": "Delete permanently",
+        "deleted": "Course deleted."
       }
     },
 
