@@ -95,6 +95,29 @@ export async function getVideoInfo(uid: string): Promise<StreamVideoInfo> {
   return cfFetch<StreamVideoInfo>(`/stream/${uid}`);
 }
 
+export async function deleteStreamVideo(uid: string): Promise<void> {
+  const env = readCloudflareEnv();
+  const res = await fetch(`${CF_BASE}/accounts/${env.accountId}/stream/${uid}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${env.apiToken}` },
+  });
+  if (res.status === 404) return; // already gone on Cloudflare
+  if (!res.ok) {
+    let errors: unknown = res.statusText;
+    try {
+      const json = (await res.json()) as { errors?: unknown };
+      errors = json.errors ?? res.statusText;
+    } catch {
+      /* ignore */
+    }
+    throw new CloudflareStreamApiError(
+      `Cloudflare Stream API error: ${JSON.stringify(errors)}`,
+      res.status,
+      errors,
+    );
+  }
+}
+
 /**
  * Signs a short-lived JWT that Cloudflare Stream accepts as a playback token.
  * Uses the Stream signing key (RS256, PKCS8 PEM).
