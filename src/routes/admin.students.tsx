@@ -298,6 +298,12 @@ function StudentDrawer({
     },
     onError: (e: Error) => toast.error(e.message),
   });
+  const resetMut = useMutation({
+    mutationFn: () => resetPw({ data: { userId: userId! } }),
+    onSuccess: (r: { email: string }) =>
+      toast.success(t("admin.students_.resetSent", { email: r.email, defaultValue: `Password reset link sent to ${r.email}` })),
+    onError: (e: Error) => toast.error(e.message),
+  });
   const revokeMut = useMutation({
     mutationFn: (id: string) => revoke({ data: { enrollment_id: id } }),
     onSuccess: () => {
