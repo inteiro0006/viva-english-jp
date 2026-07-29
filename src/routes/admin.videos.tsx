@@ -184,6 +184,24 @@ function VideoRow({
     }
   };
 
+  const doDelete = async () => {
+    setBusy(true);
+    try {
+      const result = await del({ data: { cloudflareUid: video.cloudflare_uid } });
+      if (!result.ok) {
+        toast.error(t("stream.admin.cloudflareAuthError"));
+        return;
+      }
+      toast.success(t("stream.admin.deleted"));
+      setConfirmDelete(false);
+      onChanged();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "error");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const availableLessons = lessons.filter(
     (l) => !l.cloudflare_video_uid || l.cloudflare_video_uid === video.cloudflare_uid,
   );
