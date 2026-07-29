@@ -136,8 +136,10 @@ function VideoRow({
   const { t } = useTranslation();
   const refresh = useServerFn(refreshStreamVideo);
   const attach = useServerFn(setLessonVideo);
+  const del = useServerFn(deleteStreamVideo);
   const [busy, setBusy] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<string>("");
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const doRefresh = async () => {
     setBusy(true);
