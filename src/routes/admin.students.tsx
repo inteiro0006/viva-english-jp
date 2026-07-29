@@ -323,6 +323,18 @@ function StudentDrawer({
 
         <div className="mt-4 space-y-6">
           <section>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => resetMut.mutate()}
+              disabled={resetMut.isPending}
+            >
+              {resetMut.isPending
+                ? t("common.loading")
+                : t("admin.students_.sendResetLink", { defaultValue: "Send password reset link" })}
+            </Button>
+          </section>
+          <section>
             <h3 className="mb-2 text-sm font-semibold">{t("admin.students_.grant")}</h3>
             <div className="flex gap-2">
               <Select value={courseId} onValueChange={setCourseId}>
