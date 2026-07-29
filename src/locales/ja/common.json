@@ -864,7 +864,17 @@
       "save": "保存",
       "cancel": "キャンセル",
       "updated": "レッスンを更新しました。",
-      "titleRequired": "両方のタイトルを入力してください。"
+      "titleRequired": "両方のタイトルを入力してください。",
+      "attachVideo": "動画を関連付ける",
+      "changeVideo": "動画を変更",
+      "detach": "動画を解除",
+      "searchVideos": "タイトルで動画を検索…",
+      "noVideosReady": "利用可能な動画がありません。まず動画をアップロードしてください。",
+      "goToVideos": "動画管理へ",
+      "attached": "現在",
+      "attachedTo": "使用中:",
+      "videoAttached": "動画をレッスンに関連付けました。",
+      "videoDetached": "動画の関連付けを解除しました。"
     },
     "students_": {
       "subtitle": "受講者・受講登録・アクセス権を管理します。",

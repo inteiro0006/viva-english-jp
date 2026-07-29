@@ -21,7 +21,8 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Plus, Trash2, ChevronDown, ChevronRight, Pencil } from "lucide-react";
+import { GripVertical, Plus, Trash2, ChevronDown, ChevronRight, Pencil, Video, Search, ExternalLink } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { getAdminCourse, updateCourse, deleteCourse } from "@/lib/admin/courses.admin.functions";
 import {
   createModule,
@@ -36,6 +37,7 @@ import {
   setLessonPublished,
   updateLesson,
 } from "@/lib/admin/lessons.admin.functions";
+import { listStreamVideos, setLessonVideo } from "@/lib/stream/stream.functions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -87,6 +89,7 @@ type Lesson = {
   lesson_type: string;
   position: number;
   is_preview: boolean;
+  cloudflare_video_uid: string | null;
 };
 type Module = {
   id: string;
@@ -547,6 +550,7 @@ function LessonList({
   const setPub = useServerFn(setLessonPublished);
   const delL = useServerFn(deleteLesson);
   const updL = useServerFn(updateLesson);
+  const setVid = useServerFn(setLessonVideo);
   const [order, setOrder] = useState(m.lessons.map((l) => l.id));
   useMemo(() => setOrder(m.lessons.map((l) => l.id)), [m.lessons.length]);
 
@@ -617,6 +621,18 @@ function LessonList({
                     delL({ data: { id: l.id } }).then(onChange).catch((e: Error) => toast.error(e.message));
                   }
                 }}
+                onAttachVideo={(videoUid) =>
+                  setVid({ data: { lessonId: l.id, videoUid } })
+                    .then(() => {
+                      toast.success(
+                        videoUid
+                          ? t("admin.lessons_.videoAttached")
+                          : t("admin.lessons_.videoDetached"),
+                      );
+                      onChange();
+                    })
+                    .catch((e: Error) => toast.error(e.message))
+                }
               />
             );
           })}
@@ -635,12 +651,14 @@ function SortableLesson({
   onTogglePublish,
   onRename,
   onDelete,
+  onAttachVideo,
 }: {
   lesson: Lesson;
   lang: string;
   onTogglePublish: () => void;
   onRename: (title_ja: string, title_en: string) => void;
   onDelete: () => void;
+  onAttachVideo: (videoUid: string | null) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: l.id,
@@ -683,6 +701,10 @@ function SortableLesson({
       </Button>
       <Badge variant="outline" className="text-[10px] uppercase">{l.lesson_type}</Badge>
       {l.is_preview && <Badge variant="secondary">Preview</Badge>}
+      <AttachVideoButton
+        currentVideoUid={l.cloudflare_video_uid}
+        onAttach={onAttachVideo}
+      />
       <Button size="sm" variant="ghost" onClick={onTogglePublish}>
         {l.status === "published" ? t("admin.status.published") : t("admin.status.draft")}
       </Button>
@@ -713,5 +735,178 @@ function SortableLesson({
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+type StreamVideoItem = {
+  id: string;
+  cloudflare_uid: string;
+  title: string | null;
+  status: string;
+  duration_seconds: number | null;
+  thumbnail_url: string | null;
+  ready_to_stream: boolean;
+  lesson: { id: string; title_ja: string; title_en: string } | null;
+};
+
+function AttachVideoButton({
+  currentVideoUid,
+  onAttach,
+}: {
+  currentVideoUid: string | null;
+  onAttach: (videoUid: string | null) => void;
+}) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const list = useServerFn(listStreamVideos);
+  const videosQ = useQuery({
+    queryKey: ["admin-stream-videos"],
+    queryFn: () => list() as Promise<StreamVideoItem[]>,
+    enabled: open,
+  });
+  const attached = !!currentVideoUid;
+
+  const filtered = useMemo(() => {
+    const rows = (videosQ.data ?? []).filter((v) => v.ready_to_stream);
+    if (!query.trim()) return rows;
+    const q = query.toLowerCase();
+    return rows.filter(
+      (v) =>
+        (v.title ?? "").toLowerCase().includes(q) ||
+        v.cloudflare_uid.toLowerCase().includes(q),
+    );
+  }, [videosQ.data, query]);
+
+  function formatDuration(sec: number | null): string {
+    if (!sec) return "—";
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  }
+
+  return (
+    <>
+      <Button
+        size="icon"
+        variant={attached ? "default" : "ghost"}
+        onClick={() => setOpen(true)}
+        aria-label={t(attached ? "admin.lessons_.changeVideo" : "admin.lessons_.attachVideo")}
+        title={
+          attached
+            ? t("admin.lessons_.changeVideo")
+            : t("admin.lessons_.attachVideo")
+        }
+      >
+        <Video className="size-4" />
+      </Button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              {attached
+                ? t("admin.lessons_.changeVideo")
+                : t("admin.lessons_.attachVideo")}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={t("admin.lessons_.searchVideos")}
+                className="pl-9"
+              />
+            </div>
+            <div className="max-h-[420px] space-y-2 overflow-y-auto pr-1">
+              {videosQ.isLoading && <Skeleton className="h-24 w-full" />}
+              {!videosQ.isLoading && filtered.length === 0 && (
+                <div className="rounded-md border border-dashed p-6 text-center text-sm text-muted-foreground">
+                  <p>{t("admin.lessons_.noVideosReady")}</p>
+                  <Link
+                    to="/admin/videos"
+                    className="mt-2 inline-flex items-center gap-1 text-primary hover:underline"
+                  >
+                    {t("admin.lessons_.goToVideos")}
+                    <ExternalLink className="size-3" />
+                  </Link>
+                </div>
+              )}
+              {filtered.map((v) => {
+                const isCurrent = v.cloudflare_uid === currentVideoUid;
+                return (
+                  <button
+                    key={v.id}
+                    type="button"
+                    onClick={() => {
+                      onAttach(v.cloudflare_uid);
+                      setOpen(false);
+                    }}
+                    className={`flex w-full items-center gap-3 rounded-md border p-2 text-left transition hover:bg-accent ${
+                      isCurrent ? "border-primary bg-accent/50" : "border-border"
+                    }`}
+                  >
+                    <div className="h-14 w-24 shrink-0 overflow-hidden rounded bg-muted">
+                      {v.thumbnail_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={v.thumbnail_url}
+                          alt=""
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center">
+                          <Video className="size-5 text-muted-foreground" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-sm font-medium">
+                        {v.title || v.cloudflare_uid}
+                      </div>
+                      <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
+                        <span>{formatDuration(v.duration_seconds)}</span>
+                        <Badge variant="outline" className="text-[10px]">
+                          {v.status}
+                        </Badge>
+                        {v.lesson && (
+                          <span className="truncate">
+                            · {t("admin.lessons_.attachedTo")} {v.lesson.title_ja}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    {isCurrent && (
+                      <Badge variant="secondary">
+                        {t("admin.lessons_.attached")}
+                      </Badge>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <DialogFooter className="justify-between sm:justify-between">
+            {attached ? (
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  onAttach(null);
+                  setOpen(false);
+                }}
+              >
+                {t("admin.lessons_.detach")}
+              </Button>
+            ) : (
+              <span />
+            )}
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              {t("admin.lessons_.cancel")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
