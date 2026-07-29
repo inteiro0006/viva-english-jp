@@ -137,7 +137,6 @@ function VideoRow({
   const doRefresh = async () => {
     setBusy(true);
     try {
-      await refresh({ data: { cloudflareUid: video.cloudflare_uid } });
       const result = await refresh({ data: { cloudflareUid: video.cloudflare_uid } });
       if (!result.ok) {
         toast.error(t("stream.admin.cloudflareAuthError"));
