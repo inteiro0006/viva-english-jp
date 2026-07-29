@@ -38,8 +38,8 @@ import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminModulesRouteImport } from './routes/admin.modules'
 import { Route as AdminLessonsRouteImport } from './routes/admin.lessons'
-import { Route as AdminCoursesRouteImport } from './routes/admin.courses'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
+import { Route as AdminCoursesIndexRouteImport } from './routes/admin.courses.index'
 import { Route as StudentLessonLessonIdRouteImport } from './routes/student.lesson.$lessonId'
 import { Route as StudentCourseCourseSlugRouteImport } from './routes/student.course.$courseSlug'
 import { Route as AdminCoursesCourseIdRouteImport } from './routes/admin.courses.$courseId'
@@ -192,14 +192,14 @@ const AdminLessonsRoute = AdminLessonsRouteImport.update({
   path: '/lessons',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminCoursesRoute = AdminCoursesRouteImport.update({
-  id: '/courses',
-  path: '/courses',
-  getParentRoute: () => AdminRoute,
-} as any)
 const AdminAuditRoute = AdminAuditRouteImport.update({
   id: '/audit',
   path: '/audit',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCoursesIndexRoute = AdminCoursesIndexRouteImport.update({
+  id: '/courses/',
+  path: '/courses/',
   getParentRoute: () => AdminRoute,
 } as any)
 const StudentLessonLessonIdRoute = StudentLessonLessonIdRouteImport.update({
@@ -213,9 +213,9 @@ const StudentCourseCourseSlugRoute = StudentCourseCourseSlugRouteImport.update({
   getParentRoute: () => StudentRoute,
 } as any)
 const AdminCoursesCourseIdRoute = AdminCoursesCourseIdRouteImport.update({
-  id: '/$courseId',
-  path: '/$courseId',
-  getParentRoute: () => AdminCoursesRoute,
+  id: '/courses/$courseId',
+  path: '/courses/$courseId',
+  getParentRoute: () => AdminRoute,
 } as any)
 const ApiPublicWebhooksCloudflareStreamRoute =
   ApiPublicWebhooksCloudflareStreamRouteImport.update({
@@ -247,7 +247,6 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
   '/admin/audit': typeof AdminAuditRoute
-  '/admin/courses': typeof AdminCoursesRouteWithChildren
   '/admin/lessons': typeof AdminLessonsRoute
   '/admin/modules': typeof AdminModulesRoute
   '/admin/orders': typeof AdminOrdersRoute
@@ -265,6 +264,7 @@ export interface FileRoutesByFullPath {
   '/admin/courses/$courseId': typeof AdminCoursesCourseIdRoute
   '/student/course/$courseSlug': typeof StudentCourseCourseSlugRoute
   '/student/lesson/$lessonId': typeof StudentLessonLessonIdRoute
+  '/admin/courses/': typeof AdminCoursesIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/webhooks/cloudflare-stream': typeof ApiPublicWebhooksCloudflareStreamRoute
 }
@@ -283,7 +283,6 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
   '/admin/audit': typeof AdminAuditRoute
-  '/admin/courses': typeof AdminCoursesRouteWithChildren
   '/admin/lessons': typeof AdminLessonsRoute
   '/admin/modules': typeof AdminModulesRoute
   '/admin/orders': typeof AdminOrdersRoute
@@ -301,6 +300,7 @@ export interface FileRoutesByTo {
   '/admin/courses/$courseId': typeof AdminCoursesCourseIdRoute
   '/student/course/$courseSlug': typeof StudentCourseCourseSlugRoute
   '/student/lesson/$lessonId': typeof StudentLessonLessonIdRoute
+  '/admin/courses': typeof AdminCoursesIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/webhooks/cloudflare-stream': typeof ApiPublicWebhooksCloudflareStreamRoute
 }
@@ -322,7 +322,6 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
   '/admin/audit': typeof AdminAuditRoute
-  '/admin/courses': typeof AdminCoursesRouteWithChildren
   '/admin/lessons': typeof AdminLessonsRoute
   '/admin/modules': typeof AdminModulesRoute
   '/admin/orders': typeof AdminOrdersRoute
@@ -340,6 +339,7 @@ export interface FileRoutesById {
   '/admin/courses/$courseId': typeof AdminCoursesCourseIdRoute
   '/student/course/$courseSlug': typeof StudentCourseCourseSlugRoute
   '/student/lesson/$lessonId': typeof StudentLessonLessonIdRoute
+  '/admin/courses/': typeof AdminCoursesIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/webhooks/cloudflare-stream': typeof ApiPublicWebhooksCloudflareStreamRoute
 }
@@ -362,7 +362,6 @@ export interface FileRouteTypes {
     | '/terms'
     | '/verify-email'
     | '/admin/audit'
-    | '/admin/courses'
     | '/admin/lessons'
     | '/admin/modules'
     | '/admin/orders'
@@ -380,6 +379,7 @@ export interface FileRouteTypes {
     | '/admin/courses/$courseId'
     | '/student/course/$courseSlug'
     | '/student/lesson/$lessonId'
+    | '/admin/courses/'
     | '/api/public/payments/webhook'
     | '/api/public/webhooks/cloudflare-stream'
   fileRoutesByTo: FileRoutesByTo
@@ -398,7 +398,6 @@ export interface FileRouteTypes {
     | '/terms'
     | '/verify-email'
     | '/admin/audit'
-    | '/admin/courses'
     | '/admin/lessons'
     | '/admin/modules'
     | '/admin/orders'
@@ -416,6 +415,7 @@ export interface FileRouteTypes {
     | '/admin/courses/$courseId'
     | '/student/course/$courseSlug'
     | '/student/lesson/$lessonId'
+    | '/admin/courses'
     | '/api/public/payments/webhook'
     | '/api/public/webhooks/cloudflare-stream'
   id:
@@ -436,7 +436,6 @@ export interface FileRouteTypes {
     | '/terms'
     | '/verify-email'
     | '/admin/audit'
-    | '/admin/courses'
     | '/admin/lessons'
     | '/admin/modules'
     | '/admin/orders'
@@ -454,6 +453,7 @@ export interface FileRouteTypes {
     | '/admin/courses/$courseId'
     | '/student/course/$courseSlug'
     | '/student/lesson/$lessonId'
+    | '/admin/courses/'
     | '/api/public/payments/webhook'
     | '/api/public/webhooks/cloudflare-stream'
   fileRoutesById: FileRoutesById
@@ -686,18 +686,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLessonsRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/courses': {
-      id: '/admin/courses'
-      path: '/courses'
-      fullPath: '/admin/courses'
-      preLoaderRoute: typeof AdminCoursesRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/admin/audit': {
       id: '/admin/audit'
       path: '/audit'
       fullPath: '/admin/audit'
       preLoaderRoute: typeof AdminAuditRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/courses/': {
+      id: '/admin/courses/'
+      path: '/courses'
+      fullPath: '/admin/courses/'
+      preLoaderRoute: typeof AdminCoursesIndexRouteImport
       parentRoute: typeof AdminRoute
     }
     '/student/lesson/$lessonId': {
@@ -716,10 +716,10 @@ declare module '@tanstack/react-router' {
     }
     '/admin/courses/$courseId': {
       id: '/admin/courses/$courseId'
-      path: '/$courseId'
+      path: '/courses/$courseId'
       fullPath: '/admin/courses/$courseId'
       preLoaderRoute: typeof AdminCoursesCourseIdRouteImport
-      parentRoute: typeof AdminCoursesRoute
+      parentRoute: typeof AdminRoute
     }
     '/api/public/webhooks/cloudflare-stream': {
       id: '/api/public/webhooks/cloudflare-stream'
@@ -738,21 +738,8 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AdminCoursesRouteChildren {
-  AdminCoursesCourseIdRoute: typeof AdminCoursesCourseIdRoute
-}
-
-const AdminCoursesRouteChildren: AdminCoursesRouteChildren = {
-  AdminCoursesCourseIdRoute: AdminCoursesCourseIdRoute,
-}
-
-const AdminCoursesRouteWithChildren = AdminCoursesRoute._addFileChildren(
-  AdminCoursesRouteChildren,
-)
-
 interface AdminRouteChildren {
   AdminAuditRoute: typeof AdminAuditRoute
-  AdminCoursesRoute: typeof AdminCoursesRouteWithChildren
   AdminLessonsRoute: typeof AdminLessonsRoute
   AdminModulesRoute: typeof AdminModulesRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
@@ -760,11 +747,12 @@ interface AdminRouteChildren {
   AdminStudentsRoute: typeof AdminStudentsRoute
   AdminVideosRoute: typeof AdminVideosRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminCoursesCourseIdRoute: typeof AdminCoursesCourseIdRoute
+  AdminCoursesIndexRoute: typeof AdminCoursesIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAuditRoute: AdminAuditRoute,
-  AdminCoursesRoute: AdminCoursesRouteWithChildren,
   AdminLessonsRoute: AdminLessonsRoute,
   AdminModulesRoute: AdminModulesRoute,
   AdminOrdersRoute: AdminOrdersRoute,
@@ -772,6 +760,8 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminStudentsRoute: AdminStudentsRoute,
   AdminVideosRoute: AdminVideosRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminCoursesCourseIdRoute: AdminCoursesCourseIdRoute,
+  AdminCoursesIndexRoute: AdminCoursesIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)

@@ -43,7 +43,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/admin/courses")({
+export const Route = createFileRoute("/admin/courses/")({
   component: AdminCoursesPage,
 });
 
