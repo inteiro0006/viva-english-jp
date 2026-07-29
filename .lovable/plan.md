@@ -1,24 +1,35 @@
-## Situação atual
+## Objetivo
 
-Em `/admin/courses/:id?tab=curriculum`, cada lição é criada com título padrão **"新しいレッスン" / "New lesson"** (linha 559-561 de `admin.courses.$courseId.tsx`) e a UI atual (`SortableLesson`, linhas 615-651) só mostra o título como texto — não há como editar. O server function `updateLesson` já existe em `src/lib/admin/lessons.admin.functions.ts` e aceita `patch` parcial com `title_ja` / `title_en`.
+Adicionar uma nova área no painel admin — **/admin/payments** — para auditar eventos do Stripe (tabela `payment_events`), inspecionar payloads, e reprocessar manualmente a criação de `orders`/`enrollments` quando um webhook falhou ou ficou preso em `processing_error`.
 
-Ou seja: só falta a UI de renomear.
+## Escopo
 
-## Plano — adicionar edição inline do título da lição
+1. **Nova rota**: `src/routes/admin.payments.tsx` (listada no `AdminLayout` nav como "Payments" / 決済).
+2. **Server functions** (novo arquivo `src/lib/admin/payments.admin.functions.ts`, todas protegidas por `requireSupabaseAuth` + `assertAdmin`, com `logAdminAction`):
+   - `listPaymentEvents({ status?, eventType?, providerEventId?, from?, to?, page? })` — lista paginada de `payment_events` com filtros (processados, falhados, não processados; tipo de evento; busca por `provider_event_id` ou metadata userId/orderId; intervalo de datas).
+   - `getPaymentEvent({ id })` — retorna o evento completo com payload JSON, e resolve o `order` + `enrollment` correspondentes (via metadata) para mostrar estado atual.
+   - `reprocessPaymentEvent({ id })` — reexecuta o handler adequado (`checkout.session.completed`, `charge.refunded`, `checkout.session.expired`, `payment_intent.payment_failed`) usando o payload já salvo, de forma idempotente. Atualiza `processed` / `processing_error`. Auditado.
+   - `manualEnrollment({ userId, courseId, orderId? })` — cria uma `enrollment` ativa manualmente para casos onde o webhook nunca chegou (ex.: pagamento fora do Stripe ou cortesia). Auditado com `entity_type: "enrollment"`, action `enrollment.manual_create`.
+3. **Refatoração leve do webhook** (`src/routes/api/public/payments/webhook.ts`):
+   - Extrair os handlers (`handleCheckoutCompleted`, `handleRefund`, `handleSessionExpired`, `handlePaymentFailed`) e a função `dispatchStripeEvent(eventType, payload)` para um módulo `src/lib/payments/stripe-handlers.server.ts`, para que tanto o webhook quanto `reprocessPaymentEvent` compartilhem exatamente a mesma lógica. O comportamento do webhook público não muda.
+4. **UI** (`admin.payments.tsx`):
+   - Header com KPIs: total, processados, falhas, não processados (últimas 24h/7d).
+   - Filtros: status (all / processed / failed / pending), event_type (select dos tipos vistos), busca por `provider_event_id` ou userId/orderId, data range.
+   - Tabela com colunas: quando, tipo, provider_event_id (truncado), status (badge verde/vermelho/cinza), erro resumido, order/user resolvido (link para `/admin/orders` e `/admin/students`).
+   - Linha expansível mostrando: payload JSON formatado, estado atual do `order` e `enrollment` associados, botão **Reprocess** (confirmação), e (quando aplicável) botão **Create enrollment manually** que abre diálogo com `userId` + `courseId` pré-preenchidos a partir da metadata.
+   - Export CSV do resultado filtrado (mesmo padrão de `/admin/audit`).
+5. **i18n**: chaves em `src/locales/{en,ja}/common.json` sob `admin.payments.*`.
+6. **Nav**: adicionar item "Payments" em `AdminLayout` (entre Orders e Audit) com ícone `CreditCard`.
 
-1. **`src/routes/admin.courses.$courseId.tsx`** — `SortableLesson`:
-   - Adicionar botão "editar" (ícone `Pencil`) que abre um pequeno diálogo (`Dialog` do shadcn) com dois inputs: **Título (JA)** e **Título (EN)**.
-   - Salvar chama `updateLesson({ id, patch: { title_ja, title_en } })` e invalida a query do currículo para refletir o novo nome imediatamente.
-   - Validação leve: ambos obrigatórios, ≤ 200 chars (já espelha `lessonInputSchema`).
-   - Manter drag handle, badges e delete no lugar; o botão de edição vai entre o título e o badge de tipo.
+## Notas técnicas
 
-2. **`src/locales/{ja,en}/common.json`** — adicionar chaves sob `admin.lessons_`:
-   - `edit`, `editTitle`, `titleJa`, `titleEn`, `save`, `cancel`, `updated` (toast).
+- Sem alterações de schema — `payment_events` já tem tudo o que precisamos (`payload`, `processed`, `processing_error`, `provider_event_id`).
+- `reprocessPaymentEvent` chama `dispatchStripeEvent` com o `payload` salvo, então é idempotente por design (o handler de checkout já checa enrollment existente antes de inserir).
+- `manualEnrollment` respeita a mesma checagem "already active" para evitar duplicatas; opcionalmente também marca o `order` como `paid` se um `orderId` for informado.
+- Todas as ações escrevem em `admin_audit_logs` via `logAdminAction`, aparecendo em `/admin/audit`.
+- Nenhuma alteração no fluxo público de checkout, no webhook handler HTTP, ou em RLS. `payment_events` continua acessível apenas via service role.
 
-3. **Verificação**: após aplicar, abrir `/admin/courses/:id?tab=curriculum`, clicar no lápis de uma lição, alterar o nome, salvar e confirmar que a lista atualiza sem reload.
+## Fora de escopo
 
-Nenhuma mudança de schema ou server function é necessária — apenas UI + i18n.
-
-## Alternativa (se preferir)
-
-Se quiser edição ainda mais rápida, posso fazer o título virar um campo editável in-place (clique no texto → input) em vez de diálogo. Diga qual prefere; caso contrário sigo com o diálogo (mais claro, permite editar JA e EN juntos).
+- Reenviar eventos direto do Stripe (isso continua via dashboard do Stripe → o handler existente vai receber e gravar normalmente).
+- Reembolsos iniciados pelo admin (só reprocessamento de eventos já recebidos).
