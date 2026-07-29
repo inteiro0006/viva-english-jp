@@ -369,3 +369,98 @@ function UploadDialog({ onUploaded }: { onUploaded: () => void }) {
     </Dialog>
   );
 }
+
+type TestResult = Awaited<ReturnType<typeof testCloudflareConnection>>;
+
+function TestConnectionButton() {
+  const { t } = useTranslation();
+  const test = useServerFn(testCloudflareConnection);
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [result, setResult] = useState<TestResult | null>(null);
+
+  const run = async () => {
+    setLoading(true);
+    try {
+      const r = await test();
+      setResult(r);
+      setOpen(true);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : String(e));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <Button variant="outline" onClick={run} disabled={loading}>
+        {loading ? (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
+          <Plug className="mr-2 h-4 w-4" />
+        )}
+        {t("stream.admin.testConnection", "Test connection")}
+      </Button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {result?.ok ? (
+                <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+              ) : (
+                <XCircle className="h-5 w-5 text-destructive" />
+              )}
+              {result?.ok
+                ? t("stream.admin.testOk", "Cloudflare Stream connected")
+                : t("stream.admin.testFailed", "Connection failed")}
+            </DialogTitle>
+          </DialogHeader>
+          {result ? (
+            <div className="space-y-3 text-sm">
+              <p className={result.ok ? "text-muted-foreground" : "text-destructive"}>
+                {result.message}
+              </p>
+              {"totalVideos" in result && result.totalVideos !== null ? (
+                <p className="text-muted-foreground">
+                  {t("stream.admin.totalVideos", "Videos in account")}: {result.totalVideos}
+                </p>
+              ) : null}
+              <div className="rounded-md border p-3">
+                <p className="mb-2 font-medium">
+                  {t("stream.admin.envChecks", "Environment checks")}
+                </p>
+                <ul className="space-y-1">
+                  {Object.entries(result.checks).map(([k, v]) => (
+                    <li key={k} className="flex items-center gap-2">
+                      {v ? (
+                        <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                      ) : (
+                        <XCircle className="h-4 w-4 text-destructive" />
+                      )}
+                      <code className="text-xs">{k}</code>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              {!result.ok && "code" in result ? (
+                <p className="text-xs text-muted-foreground">
+                  code: <code>{result.code}</code>
+                </p>
+              ) : null}
+            </div>
+          ) : null}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              {t("common.close", "Close")}
+            </Button>
+            <Button onClick={run} disabled={loading}>
+              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              {t("stream.admin.testAgain", "Test again")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
