@@ -10,6 +10,7 @@ import {
   getStudentDetail,
   grantEnrollment,
   revokeEnrollment,
+  sendPasswordReset,
 } from "@/lib/admin/students.admin.functions";
 import { listAdminCourses } from "@/lib/admin/courses.admin.functions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
