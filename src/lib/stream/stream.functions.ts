@@ -234,3 +234,96 @@ export const listLessonsForVideo = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     return data ?? [];
   });
+
+/**
+ * Admin: tests Cloudflare Stream credentials by calling a lightweight endpoint.
+ * Returns structured status so the UI can show configuration health.
+ */
+export const testCloudflareConnection = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: role } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!role) throw new Error("Forbidden");
+
+    const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
+    const apiToken = process.env.CLOUDFLARE_STREAM_API_TOKEN;
+    const webhookSecret = process.env.CLOUDFLARE_STREAM_WEBHOOK_SECRET;
+    const signingKeyId = process.env.CLOUDFLARE_STREAM_SIGNING_KEY_ID;
+    const signingKeyPem = process.env.CLOUDFLARE_STREAM_SIGNING_KEY_PEM;
+
+    const missing: string[] = [];
+    if (!accountId) missing.push("CLOUDFLARE_ACCOUNT_ID");
+    if (!apiToken) missing.push("CLOUDFLARE_STREAM_API_TOKEN");
+    if (!webhookSecret) missing.push("CLOUDFLARE_STREAM_WEBHOOK_SECRET");
+    if (missing.length > 0) {
+      return {
+        ok: false as const,
+        code: "missing_config" as const,
+        message: `Missing environment variables: ${missing.join(", ")}`,
+        checks: {
+          accountId: !!accountId,
+          apiToken: !!apiToken,
+          webhookSecret: !!webhookSecret,
+          signingKey: !!(signingKeyId && signingKeyPem),
+        },
+      };
+    }
+
+    try {
+      const res = await fetch(
+        `https://api.cloudflare.com/client/v4/accounts/${accountId}/stream?per_page=1`,
+        { headers: { Authorization: `Bearer ${apiToken}` } },
+      );
+      const json = (await res.json()) as {
+        success: boolean;
+        errors?: Array<{ code: number; message: string }>;
+        result?: unknown[];
+        result_info?: { total_count?: number };
+      };
+      if (!res.ok || !json.success) {
+        const first = json.errors?.[0];
+        const isAuth = first?.code === 10000 || first?.message?.toLowerCase().includes("auth");
+        return {
+          ok: false as const,
+          code: (isAuth ? "cloudflare_auth" : "cloudflare_error") as
+            | "cloudflare_auth"
+            | "cloudflare_error",
+          status: res.status,
+          message: first?.message ?? `HTTP ${res.status}`,
+          errors: json.errors ?? [],
+          checks: {
+            accountId: true,
+            apiToken: true,
+            webhookSecret: true,
+            signingKey: !!(signingKeyId && signingKeyPem),
+          },
+        };
+      }
+      return {
+        ok: true as const,
+        message: "Cloudflare Stream credentials are valid.",
+        totalVideos: json.result_info?.total_count ?? null,
+        checks: {
+          accountId: true,
+          apiToken: true,
+          webhookSecret: true,
+          signingKey: !!(signingKeyId && signingKeyPem),
+        },
+      };
+    } catch (error) {
+      return {
+        ok: false as const,
+        code: "network_error" as const,
+        message: error instanceof Error ? error.message : "Network error",
+        checks: {
+          accountId: true,
+          apiToken: true,
+          webhookSecret: true,
+          signingKey: !!(signingKeyId && signingKeyPem),
+        },
+      };
+    }
+  });
