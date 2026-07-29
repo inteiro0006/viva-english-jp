@@ -9,6 +9,7 @@ import {
   Video,
   Users,
   Receipt,
+  CreditCard,
   Settings,
   LogOut,
   Menu,
