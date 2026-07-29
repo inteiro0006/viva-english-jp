@@ -22,7 +22,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Plus, Trash2, ChevronDown, ChevronRight } from "lucide-react";
-import { getAdminCourse, updateCourse } from "@/lib/admin/courses.admin.functions";
+import { getAdminCourse, updateCourse, deleteCourse } from "@/lib/admin/courses.admin.functions";
 import {
   createModule,
   deleteModule,
@@ -50,6 +50,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/admin/courses/$courseId")({
   component: AdminCourseEditor,
@@ -139,7 +150,79 @@ function AdminCourseEditor() {
           <CurriculumTree courseId={courseId} modules={modules} onChange={invalidate} />
         </TabsContent>
       </Tabs>
+
+      <DangerZone courseId={courseId} slug={data.slug} />
     </div>
+  );
+}
+
+function DangerZone({ courseId, slug }: { courseId: string; slug: string }) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+  const del = useServerFn(deleteCourse);
+  const [open, setOpen] = useState(false);
+  const [confirmSlug, setConfirmSlug] = useState("");
+
+  const remove = useMutation({
+    mutationFn: () => del({ data: { id: courseId, confirmSlug } }),
+    onSuccess: () => {
+      toast.success(t("admin.courses_.danger.deleted"));
+      qc.invalidateQueries({ queryKey: ["admin", "courses"] });
+      setOpen(false);
+      navigate({ to: "/admin/courses" });
+    },
+    onError: (e: Error) => {
+      const key = `admin.courses_.errors.${e.message}`;
+      const translated = t(key);
+      toast.error(translated === key ? e.message : translated);
+    },
+  });
+
+  return (
+    <Card className="border-destructive/50">
+      <CardHeader>
+        <CardTitle className="text-destructive">{t("admin.courses_.danger.title")}</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          {t("admin.courses_.danger.description")}
+        </p>
+        <AlertDialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setConfirmSlug(""); }}>
+          <AlertDialogTrigger asChild>
+            <Button variant="destructive">
+              <Trash2 className="mr-2 h-4 w-4" />
+              {t("admin.courses_.danger.delete")}
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t("admin.courses_.danger.confirmTitle")}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t("admin.courses_.danger.confirmDesc")}{" "}
+                <span className="font-mono font-semibold text-foreground">{slug}</span>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <Input
+              value={confirmSlug}
+              onChange={(e) => setConfirmSlug(e.target.value)}
+              placeholder={t("admin.courses_.danger.confirmPlaceholder")}
+              autoFocus
+            />
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t("admin.courses_.danger.cancel")}</AlertDialogCancel>
+              <AlertDialogAction
+                disabled={confirmSlug !== slug || remove.isPending}
+                onClick={(e) => { e.preventDefault(); remove.mutate(); }}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {t("admin.courses_.danger.confirm")}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </CardContent>
+    </Card>
   );
 }
 
