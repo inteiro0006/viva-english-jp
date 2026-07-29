@@ -35,6 +35,7 @@ import { Route as CertificateVerificationCodeRouteImport } from './routes/certif
 import { Route as AdminVideosRouteImport } from './routes/admin.videos'
 import { Route as AdminStudentsRouteImport } from './routes/admin.students'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminModulesRouteImport } from './routes/admin.modules'
 import { Route as AdminLessonsRouteImport } from './routes/admin.lessons'
@@ -177,6 +178,11 @@ const AdminSettingsRoute = AdminSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPaymentsRoute = AdminPaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminOrdersRoute = AdminOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
@@ -250,6 +256,7 @@ export interface FileRoutesByFullPath {
   '/admin/lessons': typeof AdminLessonsRoute
   '/admin/modules': typeof AdminModulesRoute
   '/admin/orders': typeof AdminOrdersRoute
+  '/admin/payments': typeof AdminPaymentsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/students': typeof AdminStudentsRoute
   '/admin/videos': typeof AdminVideosRoute
@@ -286,6 +293,7 @@ export interface FileRoutesByTo {
   '/admin/lessons': typeof AdminLessonsRoute
   '/admin/modules': typeof AdminModulesRoute
   '/admin/orders': typeof AdminOrdersRoute
+  '/admin/payments': typeof AdminPaymentsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/students': typeof AdminStudentsRoute
   '/admin/videos': typeof AdminVideosRoute
@@ -325,6 +333,7 @@ export interface FileRoutesById {
   '/admin/lessons': typeof AdminLessonsRoute
   '/admin/modules': typeof AdminModulesRoute
   '/admin/orders': typeof AdminOrdersRoute
+  '/admin/payments': typeof AdminPaymentsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/students': typeof AdminStudentsRoute
   '/admin/videos': typeof AdminVideosRoute
@@ -365,6 +374,7 @@ export interface FileRouteTypes {
     | '/admin/lessons'
     | '/admin/modules'
     | '/admin/orders'
+    | '/admin/payments'
     | '/admin/settings'
     | '/admin/students'
     | '/admin/videos'
@@ -401,6 +411,7 @@ export interface FileRouteTypes {
     | '/admin/lessons'
     | '/admin/modules'
     | '/admin/orders'
+    | '/admin/payments'
     | '/admin/settings'
     | '/admin/students'
     | '/admin/videos'
@@ -439,6 +450,7 @@ export interface FileRouteTypes {
     | '/admin/lessons'
     | '/admin/modules'
     | '/admin/orders'
+    | '/admin/payments'
     | '/admin/settings'
     | '/admin/students'
     | '/admin/videos'
@@ -665,6 +677,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/payments': {
+      id: '/admin/payments'
+      path: '/payments'
+      fullPath: '/admin/payments'
+      preLoaderRoute: typeof AdminPaymentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/orders': {
       id: '/admin/orders'
       path: '/orders'
@@ -743,6 +762,7 @@ interface AdminRouteChildren {
   AdminLessonsRoute: typeof AdminLessonsRoute
   AdminModulesRoute: typeof AdminModulesRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
+  AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminStudentsRoute: typeof AdminStudentsRoute
   AdminVideosRoute: typeof AdminVideosRoute
@@ -756,6 +776,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminLessonsRoute: AdminLessonsRoute,
   AdminModulesRoute: AdminModulesRoute,
   AdminOrdersRoute: AdminOrdersRoute,
+  AdminPaymentsRoute: AdminPaymentsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminStudentsRoute: AdminStudentsRoute,
   AdminVideosRoute: AdminVideosRoute,
