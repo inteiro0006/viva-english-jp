@@ -3,15 +3,9 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { assertAdmin, logAdminAction } from "@/lib/admin/require-admin";
 
-export type PaymentEventRow = {
-  id: string;
-  provider: string;
-  provider_event_id: string;
-  event_type: string;
-  processed: boolean;
-  processing_error: string | null;
-  created_at: string;
-  payload: unknown;
+import type { Database } from "@/integrations/supabase/types";
+
+export type PaymentEventRow = Database["public"]["Tables"]["payment_events"]["Row"] & {
   order_id: string | null;
   user_id: string | null;
   course_id: string | null;
