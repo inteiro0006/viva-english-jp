@@ -259,6 +259,29 @@ export const setEnrollmentExpiry = createServerFn({ method: "POST" })
       entityId: data.enrollment_id,
       oldValues: prev,
       newValues: { expires_at: data.expires_at },
+  });
+
+export const sendPasswordReset = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ userId: z.string().uuid() }).parse(d))
+  .handler(async ({ context, data }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: userRes, error: uErr } = await supabaseAdmin.auth.admin.getUserById(data.userId);
+    if (uErr) throw new Error(uErr.message);
+    const email = userRes?.user?.email;
+    if (!email) throw new Error("User has no email");
+    const siteUrl = process.env.SITE_URL ?? process.env.VITE_SITE_URL;
+    const redirectTo = siteUrl ? `${siteUrl}/reset-password` : undefined;
+    const { error } = await supabaseAdmin.auth.resetPasswordForEmail(email, { redirectTo });
+    if (error) throw new Error(error.message);
+    await logAdminAction(context.supabase, {
+      action: "user.password_reset_sent",
+      entityType: "user",
+      entityId: data.userId,
+      newValues: { email },
     });
+    return { ok: true, email };
+  });
     return { ok: true };
   });
