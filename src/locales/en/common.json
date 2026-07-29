@@ -864,7 +864,17 @@
       "save": "Save",
       "cancel": "Cancel",
       "updated": "Lesson updated.",
-      "titleRequired": "Both titles are required."
+      "titleRequired": "Both titles are required.",
+      "attachVideo": "Attach video",
+      "changeVideo": "Change video",
+      "detach": "Detach video",
+      "searchVideos": "Search videos by title…",
+      "noVideosReady": "No videos are ready yet. Upload one first.",
+      "goToVideos": "Go to Videos",
+      "attached": "Current",
+      "attachedTo": "in use by",
+      "videoAttached": "Video attached to lesson.",
+      "videoDetached": "Video detached from lesson."
     },
     "students_": {
       "subtitle": "Manage students, enrollments and access.",
