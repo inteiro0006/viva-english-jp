@@ -152,3 +152,55 @@ export const setCourseStatus = createServerFn({ method: "POST" })
 
 // NOTE: `courses` table has no `position` column in the current schema;
 // custom ordering will require a schema change. Placeholder omitted intentionally.
+
+export const deleteCourse = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        confirmSlug: z.string().min(1),
+      })
+      .parse(d),
+  )
+  .handler(async ({ context, data }) => {
+    await assertAdmin(context);
+
+    // Load course to verify slug confirmation matches and snapshot for audit.
+    const { data: course, error: loadErr } = await context.supabase
+      .from("courses")
+      .select("*")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (loadErr) throw new Error(loadErr.message);
+    if (!course) throw new Error("course_not_found");
+    if (course.slug !== data.confirmSlug) {
+      throw new Error("confirm_slug_mismatch");
+    }
+
+    // Safety: block delete when there are paid enrollments; suggest archive.
+    const { count: paidCount, error: paidErr } = await context.supabase
+      .from("enrollments")
+      .select("id, orders!inner(status)", { count: "exact", head: true })
+      .eq("course_id", data.id)
+      .eq("orders.status", "paid");
+    if (paidErr) throw new Error(paidErr.message);
+    if ((paidCount ?? 0) > 0) {
+      throw new Error("course_has_paid_enrollments");
+    }
+
+    const { error: delErr } = await context.supabase
+      .from("courses")
+      .delete()
+      .eq("id", data.id);
+    if (delErr) throw new Error(delErr.message);
+
+    await logAdminAction(context.supabase, {
+      action: "course.delete",
+      entityType: "course",
+      entityId: data.id,
+      oldValues: course,
+    });
+
+    return { ok: true as const };
+  });
