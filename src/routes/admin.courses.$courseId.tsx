@@ -63,8 +63,12 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/admin/courses/$courseId")({
+  validateSearch: (s: Record<string, unknown>) => ({
+    tab: s.tab === "curriculum" ? ("curriculum" as const) : ("details" as const),
+  }),
   component: AdminCourseEditor,
 });
+
 
 type Lesson = {
   id: string;
