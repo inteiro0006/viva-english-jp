@@ -10,6 +10,7 @@ import {
   getStudentDetail,
   grantEnrollment,
   revokeEnrollment,
+  sendPasswordReset,
 } from "@/lib/admin/students.admin.functions";
 import { listAdminCourses } from "@/lib/admin/courses.admin.functions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -274,6 +275,7 @@ function StudentDrawer({
   const listCourses = useServerFn(listAdminCourses);
   const grant = useServerFn(grantEnrollment);
   const revoke = useServerFn(revokeEnrollment);
+  const resetPw = useServerFn(sendPasswordReset);
   const [courseId, setCourseId] = useState("");
 
   const { data } = useQuery({
@@ -296,6 +298,12 @@ function StudentDrawer({
     },
     onError: (e: Error) => toast.error(e.message),
   });
+  const resetMut = useMutation({
+    mutationFn: () => resetPw({ data: { userId: userId! } }),
+    onSuccess: (r: { email: string }) =>
+      toast.success(t("admin.students_.resetSent", { email: r.email, defaultValue: `Password reset link sent to ${r.email}` })),
+    onError: (e: Error) => toast.error(e.message),
+  });
   const revokeMut = useMutation({
     mutationFn: (id: string) => revoke({ data: { enrollment_id: id } }),
     onSuccess: () => {
@@ -314,6 +322,18 @@ function StudentDrawer({
         </SheetHeader>
 
         <div className="mt-4 space-y-6">
+          <section>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => resetMut.mutate()}
+              disabled={resetMut.isPending}
+            >
+              {resetMut.isPending
+                ? t("common.loading")
+                : t("admin.students_.sendResetLink", { defaultValue: "Send password reset link" })}
+            </Button>
+          </section>
           <section>
             <h3 className="mb-2 text-sm font-semibold">{t("admin.students_.grant")}</h3>
             <div className="flex gap-2">
