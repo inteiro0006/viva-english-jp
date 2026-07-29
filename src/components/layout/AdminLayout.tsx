@@ -56,6 +56,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
     { to: "/admin/videos", label: t("admin.videos"), icon: Video },
     { to: "/admin/students", label: t("admin.students"), icon: Users },
     { to: "/admin/orders", label: t("admin.orders"), icon: Receipt },
+    { to: "/admin/payments", label: t("admin.payments"), icon: CreditCard },
     { to: "/admin/audit", label: t("admin.audit"), icon: Shield },
     { to: "/admin/settings", label: t("admin.settings"), icon: Settings },
   ];
