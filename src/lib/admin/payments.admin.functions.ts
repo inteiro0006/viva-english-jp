@@ -65,14 +65,7 @@ export const listPaymentEvents = createServerFn({ method: "POST" })
     const enriched: PaymentEventRow[] = (rows ?? []).map((r) => {
       const md = extractMetadata(r.payload);
       return {
-        id: r.id,
-        provider: r.provider,
-        provider_event_id: r.provider_event_id,
-        event_type: r.event_type,
-        processed: r.processed,
-        processing_error: r.processing_error,
-        created_at: r.created_at,
-        payload: r.payload,
+        ...r,
         order_id: md.orderId,
         user_id: md.userId,
         course_id: md.courseId,
