@@ -114,6 +114,7 @@ function AdminStudentsPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>{t("admin.students_.name")}</TableHead>
+                    <TableHead>{t("admin.students_.allUsers.email")}</TableHead>
                     <TableHead>{t("admin.students_.language")}</TableHead>
                     <TableHead>{t("admin.students_.enrollments")}</TableHead>
                     <TableHead>{t("admin.students_.since")}</TableHead>
@@ -127,6 +128,9 @@ function AdminStudentsPage() {
                       className="cursor-pointer hover:bg-muted/50"
                     >
                       <TableCell className="font-medium">{s.full_name || "—"}</TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {(s as { email?: string | null }).email || "—"}
+                      </TableCell>
                       <TableCell>
                         <Badge variant="outline">{s.preferred_language.toUpperCase()}</Badge>
                       </TableCell>
@@ -140,7 +144,7 @@ function AdminStudentsPage() {
                   ))}
                   {(data?.rows ?? []).length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={4} className="py-12 text-center text-sm text-muted-foreground">
+                      <TableCell colSpan={5} className="py-12 text-center text-sm text-muted-foreground">
                         {t("common.empty")}
                       </TableCell>
                     </TableRow>
