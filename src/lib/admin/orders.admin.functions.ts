@@ -21,7 +21,7 @@ export const listOrders = createServerFn({ method: "POST" })
     let q = context.supabase
       .from("orders")
       .select(
-        "*, profiles(full_name), courses(title_ja, title_en, slug)",
+        "*, courses(title_ja, title_en, slug)",
         { count: "exact" },
       )
       .order("created_at", { ascending: false })
@@ -29,7 +29,20 @@ export const listOrders = createServerFn({ method: "POST" })
     if (data.status) q = q.eq("status", data.status);
     const { data: rows, error, count } = await q;
     if (error) throw new Error(error.message);
-    return { rows: rows ?? [], total: count ?? 0, pageSize };
+    const userIds = Array.from(new Set((rows ?? []).map((r) => r.user_id).filter(Boolean)));
+    const profilesMap = new Map<string, { full_name: string | null }>();
+    if (userIds.length) {
+      const { data: profs } = await context.supabase
+        .from("profiles")
+        .select("id, full_name")
+        .in("id", userIds);
+      (profs ?? []).forEach((p) => profilesMap.set(p.id, { full_name: p.full_name }));
+    }
+    const withProfiles = (rows ?? []).map((r) => ({
+      ...r,
+      profiles: profilesMap.get(r.user_id) ?? null,
+    }));
+    return { rows: withProfiles, total: count ?? 0, pageSize };
   });
 
 export const getOrderDetail = createServerFn({ method: "POST" })
