@@ -21,7 +21,8 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Plus, Trash2, ChevronDown, ChevronRight, Pencil } from "lucide-react";
+import { GripVertical, Plus, Trash2, ChevronDown, ChevronRight, Pencil, Video, Search, ExternalLink } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { getAdminCourse, updateCourse, deleteCourse } from "@/lib/admin/courses.admin.functions";
 import {
   createModule,
@@ -36,6 +37,7 @@ import {
   setLessonPublished,
   updateLesson,
 } from "@/lib/admin/lessons.admin.functions";
+import { listStreamVideos, setLessonVideo } from "@/lib/stream/stream.functions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -87,6 +89,7 @@ type Lesson = {
   lesson_type: string;
   position: number;
   is_preview: boolean;
+  cloudflare_video_uid: string | null;
 };
 type Module = {
   id: string;
