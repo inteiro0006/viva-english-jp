@@ -104,8 +104,22 @@ function AdminCoursesPage() {
       setOpen(false);
       setForm({ slug: "", title_ja: "", title_en: "", price_jpy: 49800 });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => {
+      let msg = e.message;
+      try {
+        const parsed = JSON.parse(e.message);
+        if (Array.isArray(parsed) && parsed[0]?.path?.[0] === "slug") {
+          msg = t("admin.courses_.errors.invalid_slug");
+        } else if (Array.isArray(parsed) && parsed[0]?.message) {
+          msg = parsed[0].message;
+        }
+      } catch {
+        // not JSON, keep original message
+      }
+      toast.error(msg);
+    },
   });
+
 
   return (
     <div className="space-y-6">
