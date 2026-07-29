@@ -1,35 +1,46 @@
 ## Diagnóstico
 
-O curso **foi criado com sucesso** no banco (id `1c5df4e4…`, slug `eye-olhos`, status `draft`), mas não aparece por dois motivos independentes:
+Verifiquei a conta `andre.montrezollo@gmail.com` no backend:
 
-### 1. Bug na listagem do admin (`/admin/courses`)
-`listAdminCourses` em `src/lib/admin/courses.admin.functions.ts` ordena por uma coluna que **não existe** na tabela `public.courses`:
+- Usuário existe (`id: bf7f06a3-…`)
+- E-mail já confirmado em 24/07
+- Conta **não** está banida/bloqueada
+- Tem senha cadastrada (`encrypted_password` presente)
+- **Último login bem-sucedido: 29/07 01:19 UTC** — cerca de 10 minutos antes da tentativa que falhou (01:30 UTC)
 
-```ts
-.order("position", { ascending: true, nullsFirst: false })
-.order("created_at", { ascending: true });
-```
+A resposta do backend na tentativa que falhou foi `400 invalid_credentials`. Como a conta está ativa, confirmada e teve login recente com sucesso, o único motivo para esse erro específico é **senha digitada não confere com o hash salvo**. Possíveis causas:
 
-Colunas reais em `public.courses`: `id, title_ja, title_en, slug, description_ja, description_en, thumbnail_url, cover_url, price_jpy, status, access_type, access_duration_days, created_at, updated_at` — **não há `position`**.
+1. A senha foi digitada com um caractere diferente (a que você compartilhou começa e termina com `*` — se esses `*` fizerem parte da senha real, ok; se foram só marcadores de "senha secreta" na sua mensagem, a senha real é diferente).
+2. Layout de teclado / Caps Lock / auto-preenchimento do navegador colocou um valor antigo.
+3. A senha foi trocada em outra sessão/dispositivo depois desse último login de 01:19.
 
-Resultado: o Postgres retorna erro `column "position" does not exist`, o server function lança exceção e a tabela do admin fica vazia/quebrada. O mesmo problema afeta cursos existentes (só o "Eigo Mastery" também sumiria da lista).
+Não é problema de código da plataforma — o fluxo de login está funcionando (você mesmo entrou com sucesso 10 min antes) e nenhuma outra conta está reclamando.
 
-### 2. Landing page pública não mostra rascunhos
-O novo curso foi salvo com `status = 'draft'`. A landing e o catálogo público filtram por `status = 'published'`, então mesmo com a listagem admin corrigida ele só aparece publicamente depois de publicar.
+## O que fazer agora
 
-## Correções
+Duas opções, você escolhe:
 
-1. **`src/lib/admin/courses.admin.functions.ts`** — em `listAdminCourses`, remover a ordenação por `position` e manter apenas `.order("created_at", { ascending: false })` (mais recentes primeiro, comportamento esperado no admin).
-2. Verificar rapidamente que nenhum outro `.from("courses")` no projeto usa `position` (grep). Se houver, remover também.
-3. Nenhuma migração é necessária — não vamos adicionar `position` em `courses` porque a ordenação por criação já resolve e não há UI de drag-and-drop na lista de cursos (o DnD existente é para módulos/aulas, que têm `position` próprio).
+### Opção A — Reset de senha pelo fluxo público (recomendado)
+1. Abrir `/forgot-password`
+2. Informar `andre.montrezollo@gmail.com`
+3. Clicar no link recebido por e-mail → cai em `/reset-password` → definir nova senha
+4. Voltar em `/login`
 
-## Como validar
+Esse fluxo já está implementado e testado na plataforma.
 
-- Após a correção, `/admin/courses` deve listar **"English" (draft)** e **"Eigo Mastery" (published)**.
-- Para exibir o novo curso na landing/catálogo, mudar o status para `published` na tela de edição do curso.
+### Opção B — Definir uma senha nova direto pelo admin (sem e-mail)
+Se preferir não depender do e-mail, eu posso, após você aprovar este plano:
+
+- Usar o cliente admin do backend (`supabaseAdmin.auth.admin.updateUserById`) para setar uma nova senha que você me indicar (ex.: `TempSenha!2026`), apenas para essa conta.
+- Você faz login com ela e troca em `/student/profile` (ou eu adiciono uma tela de troca de senha se ainda não houver).
+- Registrar a ação em `admin_audit_logs` para rastreabilidade.
+
+Nenhuma alteração de código de produto é necessária — é uma ação pontual de operação.
 
 ## Detalhes técnicos
 
-- Nada muda no schema Zod nem no formulário — a criação já funciona.
-- Sem impacto em RLS, tipos gerados, ou outras rotas.
-- Escopo: 1 arquivo alterado, ~2 linhas.
+- Endpoint que falhou: `POST /auth/v1/token?grant_type=password` → `{"code":"invalid_credentials"}`.
+- `auth.users` para esse e-mail: `email_confirmed_at` preenchido, `banned_until` nulo, `last_sign_in_at = 2026-07-29 01:19:16Z`.
+- Nenhuma mudança em RLS, políticas ou schema é necessária.
+
+Qual opção prefere: **A (reset por e-mail)** ou **B (eu redefino a senha via admin agora)**? Se for B, me diga qual senha temporária usar.
