@@ -773,11 +773,16 @@
       "duplicated": "コースを複製しました。",
       "statusUpdated": "ステータスを更新しました。",
       "reordered": "並び順を更新しました。",
+      "slugHint": "小文字・数字・ハイフンのみ使用できます。例: eigo-mastery",
+      "errors": {
+        "invalid_slug": "スラッグは小文字・数字・ハイフンのみ使用できます。"
+      },
       "tabs": {
         "details": "詳細",
         "curriculum": "カリキュラム"
       }
     },
+
     "modules_": {
       "subtitle": "モジュールは各コースの「カリキュラム」タブから管理します。",
       "editViaCourse": "モジュールの並び替えや編集は、コースを開いて「カリキュラム」タブで行ってください。",

@@ -773,11 +773,16 @@
       "duplicated": "Course duplicated.",
       "statusUpdated": "Status updated.",
       "reordered": "Order updated.",
+      "slugHint": "Lowercase letters, numbers and dashes only. Ex.: eigo-mastery",
+      "errors": {
+        "invalid_slug": "Slug must contain only lowercase letters, numbers and dashes."
+      },
       "tabs": {
         "details": "Details",
         "curriculum": "Curriculum"
       }
     },
+
     "modules_": {
       "subtitle": "Modules are managed inside each course's Curriculum tab.",
       "editViaCourse": "To reorder or edit modules, open the course and switch to the Curriculum tab.",
