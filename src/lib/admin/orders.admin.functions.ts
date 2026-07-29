@@ -21,7 +21,7 @@ export const listOrders = createServerFn({ method: "POST" })
     let q = context.supabase
       .from("orders")
       .select(
-        "*, profiles(full_name), courses(title_ja, title_en, slug)",
+        "*, courses(title_ja, title_en, slug)",
         { count: "exact" },
       )
       .order("created_at", { ascending: false })
@@ -29,7 +29,20 @@ export const listOrders = createServerFn({ method: "POST" })
     if (data.status) q = q.eq("status", data.status);
     const { data: rows, error, count } = await q;
     if (error) throw new Error(error.message);
-    return { rows: rows ?? [], total: count ?? 0, pageSize };
+    const userIds = Array.from(new Set((rows ?? []).map((r) => r.user_id).filter(Boolean)));
+    const profilesMap = new Map<string, { full_name: string | null }>();
+    if (userIds.length) {
+      const { data: profs } = await context.supabase
+        .from("profiles")
+        .select("id, full_name")
+        .in("id", userIds);
+      (profs ?? []).forEach((p) => profilesMap.set(p.id, { full_name: p.full_name }));
+    }
+    const withProfiles = (rows ?? []).map((r) => ({
+      ...r,
+      profiles: profilesMap.get(r.user_id) ?? null,
+    }));
+    return { rows: withProfiles, total: count ?? 0, pageSize };
   });
 
 export const getOrderDetail = createServerFn({ method: "POST" })
@@ -39,10 +52,19 @@ export const getOrderDetail = createServerFn({ method: "POST" })
     await assertAdmin(context);
     const { data: order, error } = await context.supabase
       .from("orders")
-      .select("*, profiles(full_name), courses(title_ja, title_en, slug)")
+      .select("*, courses(title_ja, title_en, slug)")
       .eq("id", data.id)
       .maybeSingle();
     if (error) throw new Error(error.message);
+    let orderWithProfile = order as (typeof order & { profiles: { full_name: string | null } | null }) | null;
+    if (order?.user_id) {
+      const { data: prof } = await context.supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", order.user_id)
+        .maybeSingle();
+      orderWithProfile = { ...order, profiles: prof ?? null } as typeof orderWithProfile;
+    }
     const { data: events } = await context.supabase
       .from("payment_events")
       .select("*")
@@ -57,7 +79,7 @@ export const getOrderDetail = createServerFn({ method: "POST" })
       )
       .order("created_at", { ascending: false })
       .limit(50);
-    return { order, events: events ?? [] };
+    return { order: orderWithProfile, events: events ?? [] };
   });
 
 /**
