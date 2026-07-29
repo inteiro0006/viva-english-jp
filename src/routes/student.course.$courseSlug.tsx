@@ -48,24 +48,26 @@ function formatMinutes(seconds: number) {
 
 function CoursePage() {
   const { courseSlug } = Route.useParams();
-  const { session } = useSession();
+  const { session, loading: sessionLoading } = useSession();
   const userId = session?.user?.id;
   const { t, i18n } = useTranslation();
   const q = useCourseWorkspace(userId, courseSlug);
 
-  if (q.isLoading) return <CourseSkeleton />;
-  if (q.isError) {
-    return (
-      <div className="mx-auto max-w-3xl px-4 py-16 text-center">
-        <h1 className="text-2xl font-semibold">{t("student.course.errorTitle")}</h1>
-        <p className="mt-2 text-muted-foreground">{q.error?.message}</p>
-        <Button className="mt-6" onClick={() => q.refetch()}>
-          {t("common.retry")}
-        </Button>
-      </div>
-    );
+  if (sessionLoading || !userId || q.isLoading || q.isPending || !q.data) {
+    if (q.isError) {
+      return (
+        <div className="mx-auto max-w-3xl px-4 py-16 text-center">
+          <h1 className="text-2xl font-semibold">{t("student.course.errorTitle")}</h1>
+          <p className="mt-2 text-muted-foreground">{q.error?.message}</p>
+          <Button className="mt-6" onClick={() => q.refetch()}>
+            {t("common.retry")}
+          </Button>
+        </div>
+      );
+    }
+    return <CourseSkeleton />;
   }
-  const data = q.data!;
+  const data = q.data;
   if (data.state === "not_found") {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16 text-center">
