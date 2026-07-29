@@ -259,6 +259,8 @@ export const setEnrollmentExpiry = createServerFn({ method: "POST" })
       entityId: data.enrollment_id,
       oldValues: prev,
       newValues: { expires_at: data.expires_at },
+    });
+    return { ok: true };
   });
 
 export const sendPasswordReset = createServerFn({ method: "POST" })
@@ -282,6 +284,4 @@ export const sendPasswordReset = createServerFn({ method: "POST" })
       newValues: { email },
     });
     return { ok: true, email };
-  });
-    return { ok: true };
   });
