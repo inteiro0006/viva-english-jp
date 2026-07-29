@@ -63,8 +63,12 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/admin/courses/$courseId")({
+  validateSearch: (s: Record<string, unknown>) => ({
+    tab: s.tab === "curriculum" ? ("curriculum" as const) : ("details" as const),
+  }),
   component: AdminCourseEditor,
 });
+
 
 type Lesson = {
   id: string;
@@ -88,10 +92,14 @@ type Module = {
 
 function AdminCourseEditor() {
   const { courseId } = Route.useParams();
+  const { tab } = Route.useSearch();
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const qc = useQueryClient();
   const fetchCourse = useServerFn(getAdminCourse);
   const patchCourse = useServerFn(updateCourse);
+
+
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin", "course", courseId],
@@ -132,11 +140,22 @@ function AdminCourseEditor() {
         <p className="font-mono text-xs text-muted-foreground">{data.slug}</p>
       </header>
 
-      <Tabs defaultValue="details">
+      <Tabs
+        value={tab}
+        onValueChange={(v) =>
+          navigate({
+            to: "/admin/courses/$courseId",
+            params: { courseId },
+            search: { tab: v === "curriculum" ? "curriculum" : "details" },
+            replace: true,
+          })
+        }
+      >
         <TabsList>
           <TabsTrigger value="details">{t("admin.courses_.tabs.details")}</TabsTrigger>
           <TabsTrigger value="curriculum">{t("admin.courses_.tabs.curriculum")}</TabsTrigger>
         </TabsList>
+
 
         <TabsContent value="details" className="pt-4">
           <CourseDetailsForm

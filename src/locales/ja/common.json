@@ -799,12 +799,17 @@
 
     "modules_": {
       "subtitle": "モジュールは各コースの「カリキュラム」タブから管理します。",
+      "browseSubtitle": "コースを開き、「カリキュラム」タブでモジュールを並び替え・編集できます。",
       "editViaCourse": "モジュールの並び替えや編集は、コースを開いて「カリキュラム」タブで行ってください。",
+      "editCurriculum": "カリキュラムを編集",
+      "moduleCount_one": "モジュール {{count}} 件",
+      "moduleCount_other": "モジュール {{count}} 件",
       "goToCourses": "コース一覧へ",
       "new": "モジュールを追加",
       "empty": "モジュールがありません。最初のモジュールを追加してください。",
       "confirmDelete": "このモジュールと配下のレッスンをすべて削除しますか?"
     },
+
     "lessons_": {
       "subtitle": "すべてのコースのレッスンを一覧します。",
       "search": "タイトルで検索…",

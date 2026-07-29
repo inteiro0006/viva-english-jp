@@ -10,11 +10,12 @@ export const listAdminCourses = createServerFn({ method: "GET" })
     await assertAdmin(context);
     const { data, error } = await context.supabase
       .from("courses")
-      .select("*")
+      .select("*, modules(count)")
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
     return data ?? [];
   });
+
 
 export const getAdminCourse = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

@@ -1,28 +1,40 @@
-## Situação atual
+## O que muda
 
-Hoje o painel `/admin/courses` **não tem botão para excluir cursos**. Só existe exclusão de módulos e aulas dentro do curso. Por isso o curso "English" que você criou continua aparecendo na lista sem forma de removê-lo pela UI.
+### 1. `/admin/modules` — lista de cursos com atalho para o currículo
+Substituir o cartão informativo atual por uma lista de todos os cursos (fetch via `listAdminCourses`, que já existe e é protegido por `assertAdmin`). Cada linha mostra:
 
-Existem dois caminhos — posso fazer os dois, mas normalmente um resolve:
+- Título (JA/EN conforme idioma atual) + slug em `font-mono`
+- Badge de status (`draft` / `published` / `archived`)
+- Contagem de módulos (via `courses` join com `modules`)
+- Botão **"Editar currículo"** que navega para `/admin/courses/{id}?tab=curriculum`
 
-### Opção A — Exclusão imediata via SQL (rápido, 1 curso)
-Rodo uma migração que apaga o curso "English" (id `90b2d71c-...`) e tudo que depende dele (stages, módulos, lições, matrículas, progresso). Como as tabelas foram criadas com `ON DELETE CASCADE`, um `DELETE FROM public.courses WHERE id = ...` já limpa o resto.
+Estados: skeleton no loading, mensagem vazia quando não há cursos.
 
-Ideal se você só quer se livrar desse curso de teste agora.
+### 2. `/admin/courses/$courseId` — aceitar `?tab=curriculum`
+Adicionar `validateSearch` (Zod) para `tab: "details" | "curriculum"` (default `details`). Passar `defaultValue` do `<Tabs>` a partir do search param. Trocar tab local passa a atualizar a URL (`navigate` com `search`), preservando o link compartilhável.
 
-### Opção B — Botão "Excluir curso" no admin (permanente)
-Implemento no painel para qualquer curso futuro:
+### 3. Server function auxiliar
+Estender `listAdminCourses` para trazer contagem de módulos com uma única query:
+```ts
+.select("*, modules(count)")
+```
+Sem migration necessária.
 
-1. **Server function** `deleteCourse` em `src/lib/admin/courses.admin.functions.ts`
-   - Protegida por `assertAdmin`
-   - Regra de segurança: bloqueia exclusão se o curso tiver **matrículas pagas** (`enrollments` com `order` confirmado). Nesse caso sugere arquivar (`status = 'archived'`) em vez de excluir — evita apagar histórico de alunos pagantes.
-   - Registra a ação em `admin_audit_logs` (quem excluiu, snapshot do curso).
-2. **UI em `/admin/courses/:courseId`** (página de edição)
-   - Botão "Excluir curso" em zona de perigo no rodapé
-   - `AlertDialog` do shadcn pedindo para digitar o slug do curso para confirmar
-   - Toast de sucesso + redirect para `/admin/courses`
-3. **i18n** — textos em JA/EN nos arquivos de locale do admin.
+### 4. i18n
+Novas chaves em `admin.modules_`:
+- `browseTitle` / `browseSubtitle` — "Reorder or edit modules by opening a course's Curriculum tab."
+- `editCurriculum` — "Edit curriculum"
+- `moduleCount` — "{{count}} module(s)"
+- `empty` já existe para o caso sem cursos
 
-### Recomendação
-Fazer as **duas**: A resolve o curso "English" agora, B previne o problema para sempre.
+Textos em JA e EN.
 
-Me diga qual seguir (A, B, ou ambas) que eu implemento.
+## Detalhes técnicos
+
+- `admin.courses.$courseId.tsx`: `validateSearch` no `createFileRoute`, ler `Route.useSearch()`, controlar `<Tabs value=... onValueChange=...>` com `navigate({ search: { tab } })`.
+- `admin.modules.tsx`: `useQuery(["admin","courses"], listAdminCourses)`. Renderizar tabela leve (Card com linhas). Link usando `<Link to="/admin/courses/$courseId" params={{courseId: c.id}} search={{tab: "curriculum"}}>`.
+- Sem mudanças de schema, sem migration, sem policies.
+
+## Fora de escopo
+- Reordenação de cursos (não existe coluna `position` em `courses`).
+- Edição inline de módulos fora da página do curso.
