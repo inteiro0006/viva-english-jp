@@ -32,6 +32,7 @@ import {
   refreshStreamVideo,
   listLessonsForVideo,
   testCloudflareConnection,
+  deleteStreamVideo,
 } from "@/lib/stream/stream.functions";
 
 export const Route = createFileRoute("/admin/videos")({
