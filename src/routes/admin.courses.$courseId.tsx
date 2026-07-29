@@ -52,6 +52,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -595,6 +602,14 @@ function LessonList({
                   setPub({
                     data: { id: l.id, status: l.status === "published" ? "draft" : "published" },
                   }).then(onChange).catch((e: Error) => toast.error(e.message))
+                }
+                onRename={(title_ja, title_en) =>
+                  updL({ data: { id: l.id, patch: { title_ja, title_en } } })
+                    .then(() => {
+                      toast.success(t("admin.lessons_.updated"));
+                      onChange();
+                    })
+                    .catch((e: Error) => toast.error(e.message))
                 }
                 onDelete={() => {
                   if (confirm(t("admin.lessons_.confirmDelete"))) {
