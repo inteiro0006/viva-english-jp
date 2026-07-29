@@ -799,12 +799,17 @@
 
     "modules_": {
       "subtitle": "Modules are managed inside each course's Curriculum tab.",
+      "browseSubtitle": "Open a course to reorder or edit its modules in the Curriculum tab.",
       "editViaCourse": "To reorder or edit modules, open the course and switch to the Curriculum tab.",
+      "editCurriculum": "Edit curriculum",
+      "moduleCount_one": "{{count}} module",
+      "moduleCount_other": "{{count}} modules",
       "goToCourses": "Go to courses",
       "new": "Add module",
       "empty": "No modules yet — add the first one.",
       "confirmDelete": "Delete this module and all its lessons?"
     },
+
     "lessons_": {
       "subtitle": "Browse lessons across all courses.",
       "search": "Search by title…",
