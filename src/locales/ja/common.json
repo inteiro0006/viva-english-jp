@@ -818,7 +818,15 @@
       "type": "種類",
       "status": "ステータス",
       "new": "レッスンを追加",
-      "confirmDelete": "このレッスンを削除しますか?"
+      "confirmDelete": "このレッスンを削除しますか?",
+      "edit": "編集",
+      "editTitle": "レッスン名を編集",
+      "titleJa": "タイトル(日本語)",
+      "titleEn": "タイトル(英語)",
+      "save": "保存",
+      "cancel": "キャンセル",
+      "updated": "レッスンを更新しました。",
+      "titleRequired": "両方のタイトルを入力してください。"
     },
     "students_": {
       "subtitle": "受講者・受講登録・アクセス権を管理します。",

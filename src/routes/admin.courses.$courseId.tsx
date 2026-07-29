@@ -21,7 +21,7 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Plus, Trash2, ChevronDown, ChevronRight } from "lucide-react";
+import { GripVertical, Plus, Trash2, ChevronDown, ChevronRight, Pencil } from "lucide-react";
 import { getAdminCourse, updateCourse, deleteCourse } from "@/lib/admin/courses.admin.functions";
 import {
   createModule,
@@ -34,6 +34,7 @@ import {
   deleteLesson,
   reorderLessons,
   setLessonPublished,
+  updateLesson,
 } from "@/lib/admin/lessons.admin.functions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -50,6 +51,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -538,6 +546,7 @@ function LessonList({
   const reorderL = useServerFn(reorderLessons);
   const setPub = useServerFn(setLessonPublished);
   const delL = useServerFn(deleteLesson);
+  const updL = useServerFn(updateLesson);
   const [order, setOrder] = useState(m.lessons.map((l) => l.id));
   useMemo(() => setOrder(m.lessons.map((l) => l.id)), [m.lessons.length]);
 
@@ -595,6 +604,14 @@ function LessonList({
                     data: { id: l.id, status: l.status === "published" ? "draft" : "published" },
                   }).then(onChange).catch((e: Error) => toast.error(e.message))
                 }
+                onRename={(title_ja, title_en) =>
+                  updL({ data: { id: l.id, patch: { title_ja, title_en } } })
+                    .then(() => {
+                      toast.success(t("admin.lessons_.updated"));
+                      onChange();
+                    })
+                    .catch((e: Error) => toast.error(e.message))
+                }
                 onDelete={() => {
                   if (confirm(t("admin.lessons_.confirmDelete"))) {
                     delL({ data: { id: l.id } }).then(onChange).catch((e: Error) => toast.error(e.message));
@@ -616,11 +633,13 @@ function SortableLesson({
   lesson: l,
   lang,
   onTogglePublish,
+  onRename,
   onDelete,
 }: {
   lesson: Lesson;
   lang: string;
   onTogglePublish: () => void;
+  onRename: (title_ja: string, title_en: string) => void;
   onDelete: () => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -628,6 +647,27 @@ function SortableLesson({
   });
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
   const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const [ja, setJa] = useState(l.title_ja);
+  const [en, setEn] = useState(l.title_en);
+
+  function openDialog() {
+    setJa(l.title_ja);
+    setEn(l.title_en);
+    setOpen(true);
+  }
+
+  function submit() {
+    const tja = ja.trim();
+    const ten = en.trim();
+    if (!tja || !ten) {
+      toast.error(t("admin.lessons_.titleRequired"));
+      return;
+    }
+    onRename(tja, ten);
+    setOpen(false);
+  }
+
   return (
     <div
       ref={setNodeRef}
@@ -638,6 +678,9 @@ function SortableLesson({
         <GripVertical className="size-4" />
       </button>
       <span className="flex-1 truncate">{lang === "en" ? l.title_en : l.title_ja}</span>
+      <Button size="icon" variant="ghost" onClick={openDialog} aria-label={t("admin.lessons_.edit")}>
+        <Pencil className="size-4" />
+      </Button>
       <Badge variant="outline" className="text-[10px] uppercase">{l.lesson_type}</Badge>
       {l.is_preview && <Badge variant="secondary">Preview</Badge>}
       <Button size="sm" variant="ghost" onClick={onTogglePublish}>
@@ -646,6 +689,29 @@ function SortableLesson({
       <Button size="icon" variant="ghost" onClick={onDelete} aria-label="Delete">
         <Trash2 className="size-4 text-destructive" />
       </Button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("admin.lessons_.editTitle")}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label>{t("admin.lessons_.titleJa")}</Label>
+              <Input value={ja} onChange={(e) => setJa(e.target.value)} maxLength={200} />
+            </div>
+            <div>
+              <Label>{t("admin.lessons_.titleEn")}</Label>
+              <Input value={en} onChange={(e) => setEn(e.target.value)} maxLength={200} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              {t("admin.lessons_.cancel")}
+            </Button>
+            <Button onClick={submit}>{t("admin.lessons_.save")}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

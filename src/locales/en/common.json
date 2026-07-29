@@ -818,7 +818,15 @@
       "type": "Type",
       "status": "Status",
       "new": "Add lesson",
-      "confirmDelete": "Delete this lesson?"
+      "confirmDelete": "Delete this lesson?",
+      "edit": "Edit",
+      "editTitle": "Edit lesson title",
+      "titleJa": "Title (Japanese)",
+      "titleEn": "Title (English)",
+      "save": "Save",
+      "cancel": "Cancel",
+      "updated": "Lesson updated.",
+      "titleRequired": "Both titles are required."
     },
     "students_": {
       "subtitle": "Manage students, enrollments and access.",
