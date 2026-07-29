@@ -10,6 +10,8 @@ import {
   duplicateCourse,
   setCourseStatus,
 } from "@/lib/admin/courses.admin.functions";
+import { slugify } from "@/lib/utils";
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
