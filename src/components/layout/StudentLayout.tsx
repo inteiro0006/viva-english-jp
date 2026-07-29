@@ -23,7 +23,7 @@ export function StudentLayout({ children }: { children: ReactNode }) {
 
   const nav = [
     { to: "/student/dashboard", label: t("nav.dashboard"), icon: LayoutDashboard },
-    { to: "/student/course/foundation", label: t("nav.course"), icon: BookOpen },
+    { to: "/student/course/eigo-mastery", label: t("nav.course"), icon: BookOpen },
     { to: "/student/profile", label: t("nav.profile"), icon: User },
     { to: "/student/support", label: t("nav.support"), icon: LifeBuoy },
   ] as const;
