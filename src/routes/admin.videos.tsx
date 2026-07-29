@@ -138,6 +138,11 @@ function VideoRow({
     setBusy(true);
     try {
       await refresh({ data: { cloudflareUid: video.cloudflare_uid } });
+      const result = await refresh({ data: { cloudflareUid: video.cloudflare_uid } });
+      if (!result.ok) {
+        toast.error(t("stream.admin.cloudflareAuthError"));
+        return;
+      }
       onChanged();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "error");
@@ -281,7 +286,12 @@ function UploadDialog({ onUploaded }: { onUploaded: () => void }) {
   const start = async () => {
     if (!file) return;
     try {
-      const { uploadURL } = await create({ data: { title: title || undefined } });
+      const result = await create({ data: { title: title || undefined } });
+      if (!result.ok) {
+        toast.error(t("stream.admin.cloudflareAuthError"));
+        return;
+      }
+      const { uploadURL } = result;
       setProgress(0);
       await new Promise<void>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
