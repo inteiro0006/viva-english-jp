@@ -651,12 +651,14 @@ function SortableLesson({
   onTogglePublish,
   onRename,
   onDelete,
+  onAttachVideo,
 }: {
   lesson: Lesson;
   lang: string;
   onTogglePublish: () => void;
   onRename: (title_ja: string, title_en: string) => void;
   onDelete: () => void;
+  onAttachVideo: (videoUid: string | null) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: l.id,
@@ -699,6 +701,10 @@ function SortableLesson({
       </Button>
       <Badge variant="outline" className="text-[10px] uppercase">{l.lesson_type}</Badge>
       {l.is_preview && <Badge variant="secondary">Preview</Badge>}
+      <AttachVideoButton
+        currentVideoUid={l.cloudflare_video_uid}
+        onAttach={onAttachVideo}
+      />
       <Button size="sm" variant="ghost" onClick={onTogglePublish}>
         {l.status === "published" ? t("admin.status.published") : t("admin.status.draft")}
       </Button>
