@@ -92,10 +92,13 @@ type Module = {
 
 function AdminCourseEditor() {
   const { courseId } = Route.useParams();
+  const { tab } = Route.useSearch();
+  const navigate = Route.useNavigate();
   const { t, i18n } = useTranslation();
   const qc = useQueryClient();
   const fetchCourse = useServerFn(getAdminCourse);
   const patchCourse = useServerFn(updateCourse);
+
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin", "course", courseId],
