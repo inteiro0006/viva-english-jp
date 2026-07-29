@@ -1,50 +1,35 @@
-## O que a mensagem significa
+## Diagnóstico
 
-O campo **Slug** do formulário "New course" só aceita letras minúsculas (a–z), números (0–9) e hífens (`-`) — nada de espaços, acentos, maiúsculas ou caracteres especiais. Essa regra está no schema Zod (`src/lib/admin/schemas.ts`):
+O curso **foi criado com sucesso** no banco (id `1c5df4e4…`, slug `eye-olhos`, status `draft`), mas não aparece por dois motivos independentes:
 
+### 1. Bug na listagem do admin (`/admin/courses`)
+`listAdminCourses` em `src/lib/admin/courses.admin.functions.ts` ordena por uma coluna que **não existe** na tabela `public.courses`:
+
+```ts
+.order("position", { ascending: true, nullsFirst: false })
+.order("created_at", { ascending: true });
 ```
-/^[a-z0-9-]+$/  → "slug must be lowercase-with-dashes"
-```
 
-Exemplos válidos: `eigo-mastery`, `business-english-2026`
-Exemplos inválidos: `Eigo Mastery`, `英語マスター`, `curso_ingles`, `EIGO`
+Colunas reais em `public.courses`: `id, title_ja, title_en, slug, description_ja, description_en, thumbnail_url, cover_url, price_jpy, status, access_type, access_duration_days, created_at, updated_at` — **não há `position`**.
 
-O slug é usado na URL pública do curso (`/course/<slug>`), por isso precisa ser "URL-safe".
+Resultado: o Postgres retorna erro `column "position" does not exist`, o server function lança exceção e a tabela do admin fica vazia/quebrada. O mesmo problema afeta cursos existentes (só o "Eigo Mastery" também sumiria da lista).
 
-## Como resolver
+### 2. Landing page pública não mostra rascunhos
+O novo curso foi salvo com `status = 'draft'`. A landing e o catálogo público filtram por `status = 'published'`, então mesmo com a listagem admin corrigida ele só aparece publicamente depois de publicar.
 
-Duas melhorias na UI de `/admin/courses`, sem mexer na regra de validação (que continua correta no backend):
+## Correções
 
-1. **Auto-slugify na digitação**
-   Ao digitar no campo Slug, transformar em tempo real:
-   - passar para minúsculas
-   - remover acentos (normalize NFD + strip diacríticos)
-   - trocar espaços/underscores por `-`
-   - remover qualquer caractere fora de `[a-z0-9-]`
-   - colapsar hífens repetidos
+1. **`src/lib/admin/courses.admin.functions.ts`** — em `listAdminCourses`, remover a ordenação por `position` e manter apenas `.order("created_at", { ascending: false })` (mais recentes primeiro, comportamento esperado no admin).
+2. Verificar rapidamente que nenhum outro `.from("courses")` no projeto usa `position` (grep). Se houver, remover também.
+3. Nenhuma migração é necessária — não vamos adicionar `position` em `courses` porque a ordenação por criação já resolve e não há UI de drag-and-drop na lista de cursos (o DnD existente é para módulos/aulas, que têm `position` próprio).
 
-2. **Sugestão automática a partir do título EN**
-   Se o campo Slug estiver vazio, preencher automaticamente com o slug derivado do `title_en` quando o usuário sair do campo (onBlur). O usuário ainda pode editar manualmente.
+## Como validar
 
-3. **Ajuda visual no campo**
-   - `placeholder` mais explícito: `eigo-mastery` (já existe).
-   - Texto de ajuda pequeno abaixo do input: "Somente minúsculas, números e hífens. Ex.: `eigo-mastery`."
-   - Mensagem de erro amigável exibida inline no dialog (em vez do JSON cru do Zod que aparece hoje via `toast.error(e.message)`).
-
-4. **Erro amigável no toast**
-   No `onError` do `createMut`, detectar quando `e.message` é um JSON do Zod e mostrar apenas a mensagem legível (ex.: "Slug deve conter apenas letras minúsculas, números e hífens.") com i18n em JA/EN.
-
-## Fora do escopo
-
-- Alterar a regex do schema (a regra atual está correta para URLs).
-- Refatorar outros formulários admin (módulos/lições) — pode ser feito depois com o mesmo helper `slugify`.
+- Após a correção, `/admin/courses` deve listar **"English" (draft)** e **"Eigo Mastery" (published)**.
+- Para exibir o novo curso na landing/catálogo, mudar o status para `published` na tela de edição do curso.
 
 ## Detalhes técnicos
 
-- Novo helper `slugify()` em `src/lib/utils.ts` (puro, sem dependências).
-- Alterar `src/routes/admin.courses.tsx`:
-  - `onChange` do campo slug passa por `slugify`.
-  - `onBlur` do `title_en`: se `form.slug` vazio, `setForm({ ...form, slug: slugify(form.title_en) })`.
-  - Adicionar `<p className="text-xs text-muted-foreground">` como hint.
-  - `onError` do `createMut`: tentar `JSON.parse(e.message)`; se for array Zod, mapear para `t("admin.courses_.errors.<code>")`.
-- Adicionar strings em `src/locales/ja/common.json` e `src/locales/en/common.json` (`admin.courses_.slugHint`, `admin.courses_.errors.invalid_slug`).
+- Nada muda no schema Zod nem no formulário — a criação já funciona.
+- Sem impacto em RLS, tipos gerados, ou outras rotas.
+- Escopo: 1 arquivo alterado, ~2 linhas.
