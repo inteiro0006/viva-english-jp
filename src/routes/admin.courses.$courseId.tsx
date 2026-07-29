@@ -21,7 +21,7 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Plus, Trash2, ChevronDown, ChevronRight } from "lucide-react";
+import { GripVertical, Plus, Trash2, ChevronDown, ChevronRight, Pencil } from "lucide-react";
 import { getAdminCourse, updateCourse, deleteCourse } from "@/lib/admin/courses.admin.functions";
 import {
   createModule,
@@ -34,6 +34,7 @@ import {
   deleteLesson,
   reorderLessons,
   setLessonPublished,
+  updateLesson,
 } from "@/lib/admin/lessons.admin.functions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
