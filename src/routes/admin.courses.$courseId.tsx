@@ -550,6 +550,7 @@ function LessonList({
   const setPub = useServerFn(setLessonPublished);
   const delL = useServerFn(deleteLesson);
   const updL = useServerFn(updateLesson);
+  const setVid = useServerFn(setLessonVideo);
   const [order, setOrder] = useState(m.lessons.map((l) => l.id));
   useMemo(() => setOrder(m.lessons.map((l) => l.id)), [m.lessons.length]);
 
@@ -620,6 +621,18 @@ function LessonList({
                     delL({ data: { id: l.id } }).then(onChange).catch((e: Error) => toast.error(e.message));
                   }
                 }}
+                onAttachVideo={(videoUid) =>
+                  setVid({ data: { lessonId: l.id, videoUid } })
+                    .then(() => {
+                      toast.success(
+                        videoUid
+                          ? t("admin.lessons_.videoAttached")
+                          : t("admin.lessons_.videoDetached"),
+                      );
+                      onChange();
+                    })
+                    .catch((e: Error) => toast.error(e.message))
+                }
               />
             );
           })}
