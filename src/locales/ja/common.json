@@ -775,11 +775,25 @@
       "reordered": "並び順を更新しました。",
       "slugHint": "小文字・数字・ハイフンのみ使用できます。例: eigo-mastery",
       "errors": {
-        "invalid_slug": "スラッグは小文字・数字・ハイフンのみ使用できます。"
+        "invalid_slug": "スラッグは小文字・数字・ハイフンのみ使用できます。",
+        "course_not_found": "コースが見つかりません。",
+        "confirm_slug_mismatch": "入力したスラッグが一致しません。",
+        "course_has_paid_enrollments": "このコースには有料の受講登録があります。学習履歴を保持するため、削除ではなくアーカイブしてください。"
       },
       "tabs": {
         "details": "詳細",
         "curriculum": "カリキュラム"
+      },
+      "danger": {
+        "title": "危険な操作",
+        "description": "コースを削除すると、ステージ・モジュール・レッスン・進捗がすべて完全に削除されます。この操作は取り消せません。",
+        "delete": "コースを削除",
+        "confirmTitle": "本当にこのコースを削除しますか？",
+        "confirmDesc": "この操作は取り消せません。確認のため、コースのスラッグを入力してください：",
+        "confirmPlaceholder": "確認のためスラッグを入力",
+        "cancel": "キャンセル",
+        "confirm": "完全に削除する",
+        "deleted": "コースを削除しました。"
       }
     },
 
