@@ -546,6 +546,7 @@ function LessonList({
   const reorderL = useServerFn(reorderLessons);
   const setPub = useServerFn(setLessonPublished);
   const delL = useServerFn(deleteLesson);
+  const updL = useServerFn(updateLesson);
   const [order, setOrder] = useState(m.lessons.map((l) => l.id));
   useMemo(() => setOrder(m.lessons.map((l) => l.id)), [m.lessons.length]);
 
