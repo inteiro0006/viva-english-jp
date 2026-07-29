@@ -39,6 +39,7 @@ export const listStudents = createServerFn({ method: "POST" })
     const rows = profiles ?? [];
     const ids = rows.map((r) => r.id);
     let enrollmentsByUser = new Map<string, EnrollmentRow[]>();
+    const emailsById = new Map<string, string | null>();
     if (ids.length > 0) {
       const { data: enrollments } = await context.supabase
         .from("enrollments")
@@ -49,9 +50,15 @@ export const listStudents = createServerFn({ method: "POST" })
         list.push(e);
         enrollmentsByUser.set(e.user_id, list);
       }
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: usersData } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 });
+      for (const u of usersData?.users ?? []) {
+        if (ids.includes(u.id)) emailsById.set(u.id, u.email ?? null);
+      }
     }
     let joined = rows.map((r) => ({
       ...r,
+      email: emailsById.get(r.id) ?? null,
       enrollments: enrollmentsByUser.get(r.id) ?? [],
     }));
     if (data.filter === "enrolled") {
