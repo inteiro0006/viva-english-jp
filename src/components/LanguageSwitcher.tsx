@@ -17,7 +17,7 @@ export function LanguageSwitcher() {
     >
       <Globe className="size-4" aria-hidden />
       <span className="font-medium">
-        {current === "ja" ? "日本語" : "English"}
+        {next === "ja" ? "日本語" : "English"}
       </span>
     </Button>
   );
