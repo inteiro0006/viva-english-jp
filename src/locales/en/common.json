@@ -1006,6 +1006,11 @@
       "chooseLesson": "Select a lesson…",
       "attachedTo": "Attached to",
       "notAttached": "Not attached",
+      "delete": "Delete",
+      "deleteConfirmTitle": "Delete this video?",
+      "deleteConfirmBody": "This permanently removes the video from Cloudflare Stream and detaches it from any lesson. This action cannot be undone.",
+      "deleteConfirm": "Delete video",
+      "deleted": "Video deleted",
       "status": {
         "pendingupload": "Waiting for upload",
         "downloading": "Downloading",
