@@ -275,6 +275,7 @@ function StudentDrawer({
   const listCourses = useServerFn(listAdminCourses);
   const grant = useServerFn(grantEnrollment);
   const revoke = useServerFn(revokeEnrollment);
+  const resetPw = useServerFn(sendPasswordReset);
   const [courseId, setCourseId] = useState("");
 
   const { data } = useQuery({
