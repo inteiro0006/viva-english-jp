@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Copy, RefreshCw, Upload, Link2, Unlink, Plug, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { Copy, RefreshCw, Upload, Link2, Unlink, Plug, CheckCircle2, XCircle, Loader2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,6 +32,7 @@ import {
   refreshStreamVideo,
   listLessonsForVideo,
   testCloudflareConnection,
+  deleteStreamVideo,
 } from "@/lib/stream/stream.functions";
 
 export const Route = createFileRoute("/admin/videos")({
@@ -135,8 +136,10 @@ function VideoRow({
   const { t } = useTranslation();
   const refresh = useServerFn(refreshStreamVideo);
   const attach = useServerFn(setLessonVideo);
+  const del = useServerFn(deleteStreamVideo);
   const [busy, setBusy] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<string>("");
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const doRefresh = async () => {
     setBusy(true);
@@ -173,6 +176,24 @@ function VideoRow({
     setBusy(true);
     try {
       await attach({ data: { lessonId: video.lesson.id, videoUid: null } });
+      onChanged();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "error");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const doDelete = async () => {
+    setBusy(true);
+    try {
+      const result = await del({ data: { cloudflareUid: video.cloudflare_uid } });
+      if (!result.ok) {
+        toast.error(t("stream.admin.cloudflareAuthError"));
+        return;
+      }
+      toast.success(t("stream.admin.deleted"));
+      setConfirmDelete(false);
       onChanged();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "error");
@@ -271,8 +292,40 @@ function VideoRow({
             <RefreshCw className={`mr-1 h-3.5 w-3.5 ${busy ? "animate-spin" : ""}`} />
             {t("stream.admin.refresh")}
           </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+            onClick={() => setConfirmDelete(true)}
+            disabled={busy}
+          >
+            <Trash2 className="mr-1 h-3.5 w-3.5" />
+            {t("stream.admin.delete")}
+          </Button>
         </div>
       </CardContent>
+      <Dialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("stream.admin.deleteConfirmTitle")}</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">{t("stream.admin.deleteConfirmBody")}</p>
+          <p className="mt-2 truncate text-sm font-medium">
+            {video.title ?? video.cloudflare_uid}
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmDelete(false)} disabled={busy}>
+              {t("common.cancel", "Cancel")}
+            </Button>
+            <Button variant="destructive" onClick={doDelete} disabled={busy}>
+              {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : (
+                <Trash2 className="mr-1 h-3.5 w-3.5" />
+              )}
+              {t("stream.admin.deleteConfirm")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

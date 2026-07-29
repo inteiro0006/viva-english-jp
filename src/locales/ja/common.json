@@ -1006,6 +1006,11 @@
       "chooseLesson": "レッスンを選択…",
       "attachedTo": "紐付け先",
       "notAttached": "未紐付け",
+      "delete": "削除",
+      "deleteConfirmTitle": "この動画を削除しますか？",
+      "deleteConfirmBody": "Cloudflare Stream から動画を完全に削除し、紐付いているレッスンからも解除します。この操作は取り消せません。",
+      "deleteConfirm": "動画を削除",
+      "deleted": "動画を削除しました",
       "status": {
         "pendingupload": "アップロード待ち",
         "downloading": "取得中",

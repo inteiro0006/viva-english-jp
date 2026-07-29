@@ -217,6 +217,55 @@ export const refreshStreamVideo = createServerFn({ method: "POST" })
   });
 
 /**
+ * Admin: permanently delete a video from Cloudflare Stream and detach it
+ * from any lesson that references it. Removes the local stream_videos row.
+ */
+export const deleteStreamVideo = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => z.object({ cloudflareUid: z.string().min(1) }).parse(data))
+  .handler(async ({ context, data }) => {
+    const { data: role } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!role) throw new Error("Forbidden");
+
+    const { deleteStreamVideo: cfDelete } = await import("@/lib/stream/stream.server");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    try {
+      await cfDelete(data.cloudflareUid);
+    } catch (error) {
+      const isCloudflareAuthError =
+        error instanceof Error &&
+        (error.message.includes('"code":10000') || error.message.includes("Authentication error"));
+      if (isCloudflareAuthError) {
+        return {
+          ok: false as const,
+          code: "cloudflare_auth" as const,
+          message:
+            "Cloudflare authentication failed. Update CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_STREAM_API_TOKEN.",
+        };
+      }
+      throw error;
+    }
+
+    // Detach from any lessons referencing this uid.
+    await supabaseAdmin
+      .from("lessons")
+      .update({ cloudflare_video_uid: null })
+      .eq("cloudflare_video_uid", data.cloudflareUid);
+
+    const { error } = await supabaseAdmin
+      .from("stream_videos")
+      .delete()
+      .eq("cloudflare_uid", data.cloudflareUid);
+    if (error) throw new Error(error.message);
+
+    return { ok: true as const };
+  });
+
+/**
  * Admin: list lessons available to associate a video to.
  */
 export const listLessonsForVideo = createServerFn({ method: "GET" })
