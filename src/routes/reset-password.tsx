@@ -121,7 +121,6 @@ function ResetPasswordPage() {
               aria-invalid={!!form.formState.errors.password}
               {...form.register("password")}
             />
-            <PasswordRequirements value={password ?? ""} />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="confirm_password">{t("auth.confirmPassword")}</Label>
