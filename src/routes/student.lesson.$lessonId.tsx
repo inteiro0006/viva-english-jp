@@ -96,15 +96,20 @@ function LessonPage() {
     );
   }
 
-  return <LessonView data={data} />;
+  return <LessonView data={data} userId={userId} />;
 }
 
-function LessonView({ data }: { data: Extract<LessonWorkspaceState, { state: "ok" }> }) {
+function LessonView({
+  data,
+  userId,
+}: {
+  data: Extract<LessonWorkspaceState, { state: "ok" }>;
+  userId: string;
+}) {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
-  const { session } = useSession();
-  const userId = session!.user!.id;
   const queryClient = useQueryClient();
+
   const navigate = useNavigate();
 
   const [isCompleting, setIsCompleting] = useState(false);
