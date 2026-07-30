@@ -19,7 +19,6 @@ import {
 import { localizeAuthError } from "@/lib/auth/messages";
 import { makeResetSchema } from "@/lib/auth/schemas";
 import { PasswordInput } from "@/components/auth/PasswordInput";
-import { PasswordRequirements } from "@/components/auth/PasswordRequirements";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -560,7 +559,6 @@ function PasswordCard() {
     }
   }
 
-  const password = form.watch("password") ?? "";
 
   return (
     <Card>
@@ -583,7 +581,6 @@ function PasswordCard() {
               aria-invalid={!!form.formState.errors.password}
               {...form.register("password")}
             />
-            <PasswordRequirements value={password} />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="confirm_password">
