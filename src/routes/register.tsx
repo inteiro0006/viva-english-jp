@@ -51,7 +51,6 @@ function RegisterPage() {
     mode: "onBlur",
   });
 
-  const password = form.watch("password");
 
   async function onSubmit(values: z.infer<typeof schema>) {
     if (submitting) return;

@@ -61,7 +61,6 @@ function ResetPasswordPage() {
     resolver: zodResolver(schema),
     defaultValues: { password: "", confirm_password: "" },
   });
-  const password = form.watch("password");
 
   async function onSubmit(values: z.infer<typeof schema>) {
     if (submitting) return;
