@@ -52,7 +52,7 @@ function LessonPage() {
   const { t } = useTranslation();
   const q = useLessonWorkspace(userId, lessonId);
 
-  if (q.isLoading) return <LessonSkeleton />;
+  if (q.isLoading || !userId) return <LessonSkeleton />;
   if (q.isError) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16 text-center">
@@ -64,7 +64,9 @@ function LessonPage() {
       </div>
     );
   }
-  const data = q.data!;
+  const data = q.data;
+  if (!data) return <LessonSkeleton />;
+
   if (data.state === "not_found") {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16 text-center">
