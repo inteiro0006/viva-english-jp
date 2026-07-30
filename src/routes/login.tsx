@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { PasswordInput } from "@/components/auth/PasswordInput";
+import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -97,6 +98,7 @@ function LoginPage() {
 
   return (
     <AuthShell title={t("auth.loginTitle")} subtitle={t("auth.loginSubtitle")}>
+      <SocialAuthButtons className="mb-6" />
       <form
         className="flex flex-col gap-4"
         onSubmit={form.handleSubmit(onSubmit)}
