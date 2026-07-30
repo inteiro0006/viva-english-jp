@@ -41,7 +41,7 @@ export const listAuditLogs = createServerFn({ method: "POST" })
     let q = context.supabase
       .from("admin_audit_logs")
       .select(
-        "id, admin_id, action, entity_type, entity_id, summary, changed_fields, old_values, new_values, ip_address, user_agent, created_at, profiles:admin_id(full_name)",
+        "id, admin_id, action, entity_type, entity_id, summary, changed_fields, old_values, new_values, ip_address, user_agent, created_at",
         { count: "exact" },
       )
       .order("created_at", { ascending: false })
@@ -54,26 +54,24 @@ export const listAuditLogs = createServerFn({ method: "POST" })
     if (data.to) q = q.lte("created_at", data.to);
     const { data: rows, error, count } = await q;
     if (error) throw new Error(error.message);
-    const mapped: AuditLogRow[] = (rows ?? []).map((r) => {
-      const rec = r as unknown as {
-        id: string;
-        admin_id: string | null;
-        action: string;
-        entity_type: string;
-        entity_id: string | null;
-        summary: string | null;
-        changed_fields: Json | null;
-        old_values: Json | null;
-        new_values: Json | null;
-        ip_address: string | null;
-        user_agent: string | null;
-        created_at: string;
-        profiles: { full_name: string } | null;
-      };
+
+    const adminIds = Array.from(
+      new Set((rows ?? []).map((r) => r.admin_id).filter((v): v is string => !!v)),
+    );
+    const names = new Map<string, string>();
+    if (adminIds.length > 0) {
+      const { data: profs } = await context.supabase
+        .from("profiles")
+        .select("id, full_name")
+        .in("id", adminIds);
+      for (const p of profs ?? []) names.set(p.id, p.full_name ?? p.id.slice(0, 8));
+    }
+
+    const mapped: AuditLogRow[] = (rows ?? []).map((rec) => {
       return {
         id: rec.id,
         admin_id: rec.admin_id,
-        admin_name: rec.profiles?.full_name ?? null,
+        admin_name: rec.admin_id ? (names.get(rec.admin_id) ?? null) : null,
         action: rec.action,
         entity_type: rec.entity_type,
         entity_id: rec.entity_id,
@@ -86,6 +84,7 @@ export const listAuditLogs = createServerFn({ method: "POST" })
         created_at: rec.created_at,
       };
     });
+
     return { rows: mapped, total: count ?? 0, pageSize };
   });
 
