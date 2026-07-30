@@ -95,19 +95,22 @@ export const listAuditAdmins = createServerFn({ method: "GET" })
     await assertAdmin(context);
     const { data, error } = await context.supabase
       .from("admin_audit_logs")
-      .select("admin_id, profiles:admin_id(full_name)")
+      .select("admin_id")
       .not("admin_id", "is", null)
       .limit(500);
     if (error) throw new Error(error.message);
+    const ids = Array.from(
+      new Set((data ?? []).map((r) => r.admin_id).filter((v): v is string => !!v)),
+    );
     const seen = new Map<string, string>();
-    for (const r of data ?? []) {
-      const rec = r as unknown as {
-        admin_id: string | null;
-        profiles: { full_name: string } | null;
-      };
-      if (rec.admin_id && !seen.has(rec.admin_id)) {
-        seen.set(rec.admin_id, rec.profiles?.full_name ?? rec.admin_id.slice(0, 8));
-      }
+    if (ids.length > 0) {
+      const { data: profs } = await context.supabase
+        .from("profiles")
+        .select("id, full_name")
+        .in("id", ids);
+      for (const p of profs ?? []) seen.set(p.id, p.full_name ?? p.id.slice(0, 8));
     }
+    for (const id of ids) if (!seen.has(id)) seen.set(id, id.slice(0, 8));
+
     return Array.from(seen.entries()).map(([id, name]) => ({ id, name }));
   });
