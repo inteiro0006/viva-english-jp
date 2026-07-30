@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { PasswordInput } from "@/components/auth/PasswordInput";
-import { PasswordRequirements } from "@/components/auth/PasswordRequirements";
+
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
@@ -61,7 +61,6 @@ function ResetPasswordPage() {
     resolver: zodResolver(schema),
     defaultValues: { password: "", confirm_password: "" },
   });
-  const password = form.watch("password");
 
   async function onSubmit(values: z.infer<typeof schema>) {
     if (submitting) return;
@@ -121,7 +120,6 @@ function ResetPasswordPage() {
               aria-invalid={!!form.formState.errors.password}
               {...form.register("password")}
             />
-            <PasswordRequirements value={password ?? ""} />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="confirm_password">{t("auth.confirmPassword")}</Label>
