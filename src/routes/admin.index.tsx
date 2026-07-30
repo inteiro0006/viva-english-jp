@@ -14,6 +14,8 @@ import {
 import { getAdminDashboard } from "@/lib/admin/dashboard.functions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SchemaHealthCard } from "@/components/admin/SchemaHealthCard";
+
 
 export const Route = createFileRoute("/admin/")({
   component: AdminDashboard,
@@ -127,7 +129,10 @@ function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      <SchemaHealthCard />
     </div>
+
   );
 }
 
