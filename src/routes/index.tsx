@@ -227,76 +227,49 @@ function LandingPage() {
               aria-hidden
               className="absolute -inset-6 -z-10 rounded-[2rem] bg-gradient-to-br from-[color:var(--brand)]/15 via-transparent to-[color:var(--highlight)]/15 blur-2xl"
             />
-            <div className="rounded-3xl border border-border bg-card p-5 shadow-xl">
-              <div className="flex items-center justify-between border-b border-border pb-3">
-                <div className="flex items-center gap-2 text-sm font-semibold">
-                  <span
-                    aria-hidden
-                    className="grid size-7 place-items-center rounded-md bg-[color:var(--brand)] font-display text-xs text-[color:var(--brand-foreground)]"
-                  >
-                    {t("brand.logoMark")}
-                  </span>
-                  {t("brand.name")}
-                </div>
-                <div className="flex items-center gap-1.5" aria-hidden>
-                  <span className="size-2 rounded-full bg-muted-foreground/40" />
-                  <span className="size-2 rounded-full bg-muted-foreground/40" />
-                  <span className="size-2 rounded-full bg-muted-foreground/40" />
-                </div>
+            <div className="rounded-3xl border border-border bg-card p-6 shadow-xl">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <span
+                  aria-hidden
+                  className="grid size-7 place-items-center rounded-md bg-[color:var(--brand)] font-display text-xs text-[color:var(--brand-foreground)]"
+                >
+                  {t("brand.logoMark")}
+                </span>
+                {t("brand.name")}
               </div>
-              <div className="mt-4 space-y-4">
-                <div>
-                  <div className="text-xs uppercase tracking-wide text-muted-foreground">
-                    {t("landing.hero.mockup.title")}
-                  </div>
-                  <div className="mt-1 text-base font-semibold">
-                    {t("landing.hero.mockup.lesson")}
-                  </div>
-                </div>
-                <div>
-                  <div className="mb-1 flex items-center justify-between text-xs text-muted-foreground">
-                    <span>{t("landing.hero.mockup.progressLabel")}</span>
-                    <span>32%</span>
-                  </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-muted">
-                    <div
-                      className="h-full rounded-full bg-[color:var(--brand)] motion-safe:transition-[width] motion-safe:duration-700"
-                      style={{ width: "32%" }}
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  {[1, 2, 3, 4, 5, 6].map((n) => (
-                    <div
-                      key={n}
-                      className={`aspect-square rounded-xl p-3 text-2xl font-bold ${
-                        n <= 2
-                          ? "bg-[color:var(--brand)] text-[color:var(--brand-foreground)]"
-                          : "bg-[color:var(--brand)]/10 text-[color:var(--brand)]"
-                      }`}
-                    >
-                      {n}
-                    </div>
-                  ))}
-                </div>
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="rounded-lg border border-border p-3">
-                    <div className="text-muted-foreground">
-                      {t("landing.hero.mockup.moduleLabel")}
-                    </div>
-                    <div className="mt-1 text-base font-semibold">4 / 30</div>
-                  </div>
-                  <div className="rounded-lg border border-border p-3">
-                    <div className="text-muted-foreground">
-                      {t("landing.hero.mockup.streakLabel")}
-                    </div>
-                    <div className="mt-1 text-base font-semibold">
-                      12 {t("landing.hero.mockup.days")}
-                    </div>
-                  </div>
-                </div>
-              </div>
+
+              <h2 className="mt-4 text-2xl font-bold tracking-tight">
+                {t("auth.registerTitle")}
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {t("auth.registerSubtitle")}
+              </p>
+
+              <SocialAuthButtons className="mt-5" />
+
+              <Button asChild size="lg" className="mt-4 w-full">
+                <Link to="/register">
+                  <UserPlus className="mr-2 size-4" aria-hidden />
+                  {t("landing.hero.ctaPrimary")}
+                </Link>
+              </Button>
+
+              <p className="mt-4 text-center text-sm text-muted-foreground">
+                {t("auth.haveAccount")}{" "}
+                <Link
+                  to="/login"
+                  className="font-medium text-[color:var(--brand)] underline-offset-4 hover:underline"
+                >
+                  {t("nav.login")}
+                </Link>
+              </p>
+
+              <p className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                <Shield className="size-3.5 text-[color:var(--brand)]" aria-hidden />
+                {t("landing.hero.note")}
+              </p>
             </div>
+
           </div>
         </div>
       </section>
