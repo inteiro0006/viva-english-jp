@@ -1,28 +1,9 @@
 import { z } from "zod";
 import type { TFunction } from "i18next";
 
-export const PASSWORD_MIN = 8;
+export const PASSWORD_MIN = 6;
 
-/** Password rule checks (used by UI hints and refined validators). */
-export function passwordChecks(value: string) {
-  return {
-    length: value.length >= PASSWORD_MIN,
-    lower: /[a-z]/.test(value),
-    upper: /[A-Z]/.test(value),
-    digit: /\d/.test(value),
-  };
-}
-
-export function isStrongPassword(value: string): boolean {
-  const c = passwordChecks(value);
-  return c.length && c.lower && c.upper && c.digit;
-}
-
-export const passwordField = () =>
-  z
-    .string()
-    .min(PASSWORD_MIN)
-    .refine(isStrongPassword);
+export const passwordField = () => z.string().min(PASSWORD_MIN);
 
 export const emailField = () => z.string().trim().email().max(255);
 
