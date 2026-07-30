@@ -127,7 +127,10 @@ function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      <SchemaHealthCard />
     </div>
+
   );
 }
 
