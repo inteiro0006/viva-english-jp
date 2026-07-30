@@ -29,6 +29,7 @@ import {
   X,
 } from "lucide-react";
 import { PublicLayout } from "@/components/layout/PublicLayout";
+import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
