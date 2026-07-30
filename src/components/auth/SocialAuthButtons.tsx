@@ -40,14 +40,14 @@ export function SocialAuthButtons({ className }: { className?: string }) {
     setPending(provider);
     try {
       const result = await lovable.auth.signInWithOAuth(provider, {
-        redirect_uri: window.location.origin,
+        redirect_uri: `${window.location.origin}/auth/callback`,
       });
       if (result.error) {
         toast.error(result.error.message ?? t("auth.errors.generic"));
         return;
       }
       if (result.redirected) return;
-      window.location.href = "/student/dashboard";
+      window.location.href = "/auth/callback";
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("auth.errors.generic"));
     } finally {

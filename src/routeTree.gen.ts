@@ -32,6 +32,7 @@ import { Route as StudentDashboardRouteImport } from './routes/student.dashboard
 import { Route as PaymentSuccessRouteImport } from './routes/payment.success'
 import { Route as PaymentCancelRouteImport } from './routes/payment.cancel'
 import { Route as CertificateVerificationCodeRouteImport } from './routes/certificate.$verificationCode'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AdminVideosRouteImport } from './routes/admin.videos'
 import { Route as AdminStudentsRouteImport } from './routes/admin.students'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
@@ -163,6 +164,11 @@ const CertificateVerificationCodeRoute =
     path: '/certificate/$verificationCode',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminVideosRoute = AdminVideosRouteImport.update({
   id: '/videos',
   path: '/videos',
@@ -260,6 +266,7 @@ export interface FileRoutesByFullPath {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/students': typeof AdminStudentsRoute
   '/admin/videos': typeof AdminVideosRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/certificate/$verificationCode': typeof CertificateVerificationCodeRoute
   '/payment/cancel': typeof PaymentCancelRoute
   '/payment/success': typeof PaymentSuccessRoute
@@ -297,6 +304,7 @@ export interface FileRoutesByTo {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/students': typeof AdminStudentsRoute
   '/admin/videos': typeof AdminVideosRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/certificate/$verificationCode': typeof CertificateVerificationCodeRoute
   '/payment/cancel': typeof PaymentCancelRoute
   '/payment/success': typeof PaymentSuccessRoute
@@ -337,6 +345,7 @@ export interface FileRoutesById {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/students': typeof AdminStudentsRoute
   '/admin/videos': typeof AdminVideosRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/certificate/$verificationCode': typeof CertificateVerificationCodeRoute
   '/payment/cancel': typeof PaymentCancelRoute
   '/payment/success': typeof PaymentSuccessRoute
@@ -378,6 +387,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/students'
     | '/admin/videos'
+    | '/auth/callback'
     | '/certificate/$verificationCode'
     | '/payment/cancel'
     | '/payment/success'
@@ -415,6 +425,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/students'
     | '/admin/videos'
+    | '/auth/callback'
     | '/certificate/$verificationCode'
     | '/payment/cancel'
     | '/payment/success'
@@ -454,6 +465,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/students'
     | '/admin/videos'
+    | '/auth/callback'
     | '/certificate/$verificationCode'
     | '/payment/cancel'
     | '/payment/success'
@@ -486,6 +498,7 @@ export interface RootRouteChildren {
   StudentRoute: typeof StudentRouteWithChildren
   TermsRoute: typeof TermsRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
   CertificateVerificationCodeRoute: typeof CertificateVerificationCodeRoute
   PaymentCancelRoute: typeof PaymentCancelRoute
   PaymentSuccessRoute: typeof PaymentSuccessRoute
@@ -656,6 +669,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CertificateVerificationCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/videos': {
       id: '/admin/videos'
       path: '/videos'
@@ -824,6 +844,7 @@ const rootRouteChildren: RootRouteChildren = {
   StudentRoute: StudentRouteWithChildren,
   TermsRoute: TermsRoute,
   VerifyEmailRoute: VerifyEmailRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
   CertificateVerificationCodeRoute: CertificateVerificationCodeRoute,
   PaymentCancelRoute: PaymentCancelRoute,
   PaymentSuccessRoute: PaymentSuccessRoute,
