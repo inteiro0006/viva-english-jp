@@ -119,29 +119,61 @@ export async function deleteStreamVideo(uid: string): Promise<void> {
 }
 
 /**
+ * Asks Cloudflare to mint a signed playback token for a video.
+ * Works with just the Stream API token (no local signing key needed).
+ */
+async function requestPlaybackTokenFromCloudflare(params: {
+  videoUid: string;
+  expiresInSeconds: number;
+}): Promise<string> {
+  const exp = Math.floor(Date.now() / 1000) + params.expiresInSeconds;
+  const result = await cfFetch<{ token: string }>(`/stream/${params.videoUid}/token`, {
+    method: "POST",
+    body: JSON.stringify({ exp }),
+  });
+  if (!result?.token) throw new Error("Cloudflare did not return a playback token");
+  return result.token;
+}
+
+/**
  * Signs a short-lived JWT that Cloudflare Stream accepts as a playback token.
- * Uses the Stream signing key (RS256, PKCS8 PEM).
+ * Prefers the local Stream signing key (RS256, PKCS8 PEM); when that key is
+ * missing or malformed, falls back to Cloudflare's token endpoint.
  */
 export async function signPlaybackToken(params: {
   videoUid: string;
   expiresInSeconds?: number;
 }): Promise<string> {
   const env = readCloudflareEnv();
-  if (!env.signingKeyId || !env.signingKeyPem) {
-    throw new Error("Signing key not configured");
-  }
   const ttl = params.expiresInSeconds ?? 60 * 60; // 1h default
-  const key = await importPKCS8(env.signingKeyPem, "RS256");
-  const now = Math.floor(Date.now() / 1000);
-  const jwt = await new SignJWT({})
-    .setProtectedHeader({ alg: "RS256", kid: env.signingKeyId })
-    .setIssuedAt(now)
-    .setNotBefore(now - 60)
-    .setExpirationTime(now + ttl)
-    .setSubject(params.videoUid)
-    .sign(key);
-  return jwt;
+  const hasLocalKey =
+    !!env.signingKeyId &&
+    !!env.signingKeyPem &&
+    env.signingKeyPem.includes("BEGIN") &&
+    env.signingKeyPem.includes("PRIVATE KEY");
+
+  if (hasLocalKey) {
+    try {
+      const key = await importPKCS8(env.signingKeyPem!, "RS256");
+      const now = Math.floor(Date.now() / 1000);
+      return await new SignJWT({})
+        .setProtectedHeader({ alg: "RS256", kid: env.signingKeyId })
+        .setIssuedAt(now)
+        .setNotBefore(now - 60)
+        .setExpirationTime(now + ttl)
+        .setSubject(params.videoUid)
+        .sign(key);
+    } catch {
+      // Fall through to the Cloudflare-hosted signing endpoint.
+    }
+  }
+
+  return requestPlaybackTokenFromCloudflare({
+    videoUid: params.videoUid,
+    expiresInSeconds: ttl,
+  });
 }
+
 
 /**
  * Verify a Cloudflare Stream webhook signature.
