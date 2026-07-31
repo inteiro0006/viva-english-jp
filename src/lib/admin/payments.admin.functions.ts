@@ -11,17 +11,20 @@ export type PaymentEventRow = Database["public"]["Tables"]["payment_events"]["Ro
   course_id: string | null;
 };
 
-function extractMetadata(payload: Record<string, unknown> | null): {
+type StripeEventLike = {
+  data?: { object?: { metadata?: Record<string, string | undefined> } };
+};
+
+function extractMetadata(payload: unknown): {
   orderId: string | null;
   userId: string | null;
   courseId: string | null;
 } {
-  const obj = payload?.data?.object ?? {};
-  const meta = obj?.metadata ?? {};
+  const meta = (payload as StripeEventLike | null)?.data?.object?.metadata ?? {};
   return {
-    orderId: (meta.orderId as string) ?? null,
-    userId: (meta.userId as string) ?? null,
-    courseId: (meta.courseId as string) ?? null,
+    orderId: meta.orderId ?? null,
+    userId: meta.userId ?? null,
+    courseId: meta.courseId ?? null,
   };
 }
 
