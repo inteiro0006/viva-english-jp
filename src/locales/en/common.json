@@ -504,7 +504,15 @@
     "trustInstant": "Your course unlocks automatically once payment is confirmed.",
     "alreadyEnrolled": "You already have access to this course.",
     "notConfigured": "Checkout is not available yet. Please try again later.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "errors": {
+      "already_enrolled": "You are already enrolled in this course.",
+      "course_unavailable": "This course is not available for purchase right now.",
+      "price_unavailable": "We could not load the price. Please try again shortly.",
+      "order_failed": "We could not create your order. Please try again shortly.",
+      "checkout_failed": "We could not start checkout. Please try again shortly.",
+      "not_configured": "Payments are currently unavailable."
+    }
   },
   "payment": {
     "successTitle": "Payment complete",
@@ -837,7 +845,6 @@
         "deleted": "Course deleted."
       }
     },
-
     "modules_": {
       "subtitle": "Modules are managed inside each course's Curriculum tab.",
       "browseSubtitle": "Open a course to reorder or edit its modules in the Curriculum tab.",
@@ -850,7 +857,6 @@
       "empty": "No modules yet — add the first one.",
       "confirmDelete": "Delete this module and all its lessons?"
     },
-
     "lessons_": {
       "subtitle": "Browse lessons across all courses.",
       "search": "Search by title…",
@@ -919,7 +925,6 @@
         }
       }
     },
-
     "orders_": {
       "subtitle": "All checkout transactions.",
       "id": "Order",

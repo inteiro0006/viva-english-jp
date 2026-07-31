@@ -532,6 +532,7 @@ export type Database = {
           created_at: string
           currency: string
           customer_email: string | null
+          environment: Database["public"]["Enums"]["payment_environment"]
           id: string
           paid_at: string | null
           provider: string
@@ -547,6 +548,7 @@ export type Database = {
           created_at?: string
           currency?: string
           customer_email?: string | null
+          environment?: Database["public"]["Enums"]["payment_environment"]
           id?: string
           paid_at?: string | null
           provider?: string
@@ -562,6 +564,7 @@ export type Database = {
           created_at?: string
           currency?: string
           customer_email?: string | null
+          environment?: Database["public"]["Enums"]["payment_environment"]
           id?: string
           paid_at?: string | null
           provider?: string
@@ -583,31 +586,40 @@ export type Database = {
       }
       payment_events: {
         Row: {
+          attempts: number
           created_at: string
+          environment: Database["public"]["Enums"]["payment_environment"]
           event_type: string
           id: string
           payload: Json
           processed: boolean
+          processed_at: string | null
           processing_error: string | null
           provider: string
           provider_event_id: string
         }
         Insert: {
+          attempts?: number
           created_at?: string
+          environment?: Database["public"]["Enums"]["payment_environment"]
           event_type: string
           id?: string
           payload?: Json
           processed?: boolean
+          processed_at?: string | null
           processing_error?: string | null
           provider: string
           provider_event_id: string
         }
         Update: {
+          attempts?: number
           created_at?: string
+          environment?: Database["public"]["Enums"]["payment_environment"]
           event_type?: string
           id?: string
           payload?: Json
           processed?: boolean
+          processed_at?: string | null
           processing_error?: string | null
           provider?: string
           provider_event_id?: string
@@ -862,6 +874,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      fulfill_paid_order: {
+        Args: {
+          _amount: number
+          _currency: string
+          _customer_email?: string
+          _environment: Database["public"]["Enums"]["payment_environment"]
+          _order_id: string
+          _provider_checkout_id: string
+          _provider_payment_id: string
+        }
+        Returns: Json
+      }
       get_course_progress: {
         Args: { _course_id: string; _uid: string }
         Returns: {
@@ -874,6 +898,10 @@ export type Database = {
       }
       get_next_lesson: {
         Args: { _course_id: string; _uid: string }
+        Returns: string
+      }
+      grant_enrollment: {
+        Args: { _course_id: string; _order_id?: string; _user_id: string }
         Returns: string
       }
       has_active_enrollment: {
@@ -945,6 +973,7 @@ export type Database = {
         | "failed"
         | "refunded"
         | "partially_refunded"
+      payment_environment: "sandbox" | "live"
       preferred_language: "ja" | "en"
       release_type: "immediate" | "date" | "after_previous"
       resource_type: "pdf" | "link" | "download" | "other"
@@ -1096,6 +1125,7 @@ export const Constants = {
         "refunded",
         "partially_refunded",
       ],
+      payment_environment: ["sandbox", "live"],
       preferred_language: ["ja", "en"],
       release_type: ["immediate", "date", "after_previous"],
       resource_type: ["pdf", "link", "download", "other"],

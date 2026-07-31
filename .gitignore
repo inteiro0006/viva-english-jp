@@ -32,3 +32,8 @@ dist-ssr
 *.sw?
 test-results/
 playwright-report/
+
+# Local environment files
+.env.local
+.env.*.local
+.env.production
