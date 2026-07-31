@@ -923,6 +923,15 @@
           "admin": "管理者のみ",
           "student": "受講者のみ"
         }
+      },
+      "dangerZone": "危険な操作",
+      "deleteAccount": "アカウントを削除",
+      "confirmDelete": "このアカウントを完全に削除しますか？",
+      "confirmDeleteDesc": "ユーザー、プロフィール、受講登録、学習進捗が削除されます。注文履歴は会計のため保持されます。この操作は取り消せません。",
+      "deleted": "アカウントを削除しました。",
+      "errors": {
+        "cannot_delete_self": "自分のアカウントは削除できません。",
+        "cannot_delete_admin": "管理者アカウントはここから削除できません。先に管理者権限を解除してください。"
       }
     },
     "orders_": {

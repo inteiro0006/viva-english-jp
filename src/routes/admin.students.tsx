@@ -11,6 +11,7 @@ import {
   grantEnrollment,
   revokeEnrollment,
   sendPasswordReset,
+  deleteUserAccount,
 } from "@/lib/admin/students.admin.functions";
 import { listAdminCourses } from "@/lib/admin/courses.admin.functions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -320,6 +321,7 @@ function StudentDrawer({
   const grant = useServerFn(grantEnrollment);
   const revoke = useServerFn(revokeEnrollment);
   const resetPw = useServerFn(sendPasswordReset);
+  const removeUser = useServerFn(deleteUserAccount);
   const [courseId, setCourseId] = useState("");
 
   const { data } = useQuery({
@@ -352,6 +354,16 @@ function StudentDrawer({
         }),
       ),
     onError: (e: Error) => toast.error(e.message),
+  });
+  const deleteMut = useMutation({
+    mutationFn: () => removeUser({ data: { userId: userId! } }),
+    onSuccess: () => {
+      toast.success(t("admin.students_.deleted"));
+      onChange();
+      onClose();
+    },
+    onError: (e: Error) =>
+      toast.error(t(`admin.students_.errors.${e.message}`, { defaultValue: e.message })),
   });
   const revokeMut = useMutation({
     mutationFn: (id: string) => revoke({ data: { enrollment_id: id } }),
@@ -486,6 +498,36 @@ function StudentDrawer({
                 <p className="text-sm text-muted-foreground">{t("common.empty")}</p>
               )}
             </ul>
+          </section>
+
+          <section className="rounded-lg border border-destructive/40 p-3">
+            <h3 className="mb-2 text-sm font-semibold text-destructive">
+              {t("admin.students_.dangerZone")}
+            </h3>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm" disabled={deleteMut.isPending}>
+                  {deleteMut.isPending ? t("common.loading") : t("admin.students_.deleteAccount")}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t("admin.students_.confirmDelete")}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {t("admin.students_.confirmDeleteDesc")}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    onClick={() => deleteMut.mutate()}
+                  >
+                    {t("admin.students_.deleteAccount")}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </section>
         </div>
       </SheetContent>

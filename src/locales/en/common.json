@@ -923,6 +923,15 @@
           "admin": "Admins only",
           "student": "Students only"
         }
+      },
+      "dangerZone": "Danger zone",
+      "deleteAccount": "Delete account",
+      "confirmDelete": "Delete this account permanently?",
+      "confirmDeleteDesc": "The user, their profile, enrollments and progress will be removed. Orders are kept for accounting. This cannot be undone.",
+      "deleted": "Account deleted.",
+      "errors": {
+        "cannot_delete_self": "You cannot delete your own account.",
+        "cannot_delete_admin": "Admin accounts cannot be deleted here. Remove the admin role first."
       }
     },
     "orders_": {
