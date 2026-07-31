@@ -11,6 +11,7 @@ import {
   setCourseStatus,
 } from "@/lib/admin/courses.admin.functions";
 import { slugify } from "@/lib/utils";
+import { DEFAULT_COURSE_PRICE_JPY } from "@/config/site";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
