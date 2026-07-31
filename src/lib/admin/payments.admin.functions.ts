@@ -183,7 +183,9 @@ export const reprocessPaymentEvent = createServerFn({ method: "POST" })
     const { dispatchStripeEvent, getStripeAdminClient, sanitizeError } =
       await import("@/lib/payments/stripe-handlers.server");
     const admin = getStripeAdminClient();
-    const payload = row.payload as Record<string, unknown>;
+    const payload = row.payload as {
+      data?: { object?: Record<string, unknown> };
+    } | null;
 
     let handled = false;
     let processingError: string | null = null;
@@ -192,7 +194,11 @@ export const reprocessPaymentEvent = createServerFn({ method: "POST" })
         {
           id: row.provider_event_id,
           type: row.event_type,
-          data: payload?.data ?? { object: payload },
+          data: {
+            object:
+              payload?.data?.object ??
+              ((payload ?? {}) as Record<string, unknown>),
+          },
         },
         row.environment,
       );
