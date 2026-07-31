@@ -51,7 +51,9 @@ function CheckoutPage() {
     return async (): Promise<string> => {
       // No client-supplied data: user, course, price, currency, environment
       // and return URL are all resolved server-side.
-      const result = await createCourseCheckoutSession({ data: {} });
+      const result = await createCourseCheckoutSession({
+        data: { origin: window.location.origin },
+      });
       if ("error" in result) {
         if (result.error === "already_enrolled") {
           navigate({ to: "/student/dashboard" });

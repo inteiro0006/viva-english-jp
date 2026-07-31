@@ -121,9 +121,10 @@ export async function dispatchStripeEvent(
 ): Promise<{ handled: boolean }> {
   const obj = event.data.object;
   switch (event.type) {
-    case "checkout.session.completed":
     // Deferred methods (Konbini / bank transfer, common in Japan) settle later:
-    // the session completes as `unpaid` and only this event confirms payment.
+    // the session completes as `unpaid` and only this event confirms payment,
+    // so both events run the same idempotent fulfillment.
+    case "checkout.session.completed":
     case "checkout.session.async_payment_succeeded":
       await handleCheckoutCompleted(obj, environment);
       return { handled: true };

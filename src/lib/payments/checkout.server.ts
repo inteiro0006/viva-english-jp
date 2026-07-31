@@ -63,14 +63,15 @@ async function resolveCustomer(
 export async function createCheckoutSessionForUser(args: {
   userId: string;
   email?: string;
+  origin?: string;
 }): Promise<CheckoutResult> {
-  const { userId, email } = args;
+  const { userId, email, origin } = args;
 
   let environment: "sandbox" | "live";
   let returnUrl: string;
   try {
     environment = resolvePaymentEnvironment();
-    returnUrl = getCheckoutReturnUrl();
+    returnUrl = getCheckoutReturnUrl(origin);
   } catch (err) {
     return fail("not_configured", err);
   }

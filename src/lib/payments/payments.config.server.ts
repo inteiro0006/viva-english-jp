@@ -6,6 +6,8 @@
  * at module scope.
  */
 
+import { SITE_URL as CANONICAL_SITE_URL } from "@/config/site";
+
 export type PaymentEnvironment = "sandbox" | "live";
 
 /** Stripe price lookup key — single source of truth for the charged amount. */
@@ -29,8 +31,9 @@ export function resolvePaymentEnvironment(): PaymentEnvironment {
 }
 
 /**
- * Allowlisted origin for checkout return URLs. Never derived from the request
- * or from client input.
+ * Canonical origin for checkout return URLs. `SITE_URL` wins when configured;
+ * otherwise we fall back to the project's public origin. Never taken from
+ * client input without passing `isAllowedOrigin()` first.
  */
 export function getAllowedOrigin(): string {
   const configured = process.env.SITE_URL?.trim();
@@ -42,11 +45,30 @@ export function getAllowedOrigin(): string {
     return url.origin;
   }
   if (process.env.NODE_ENV !== "production") return "http://localhost:8080";
-  throw new Error("SITE_URL is not configured");
+  return CANONICAL_SITE_URL;
 }
 
-export function getCheckoutReturnUrl(): string {
-  return `${getAllowedOrigin()}/payment/success?session_id={CHECKOUT_SESSION_ID}`;
+/**
+ * Preview/published deployments of this project may run on several hosts.
+ * A caller-supplied origin is only honoured when it is one of them, so the
+ * return URL can never be pointed at an attacker-controlled domain.
+ */
+export function isAllowedOrigin(origin: string): boolean {
+  let url: URL;
+  try {
+    url = new URL(origin);
+  } catch {
+    return false;
+  }
+  if (origin !== url.origin) return false;
+  if (url.origin === getAllowedOrigin()) return true;
+  if (url.protocol === "http:" && url.hostname === "localhost") return true;
+  return url.protocol === "https:" && /(^|\.)lovable\.app$/.test(url.hostname);
+}
+
+export function getCheckoutReturnUrl(origin?: string): string {
+  const base = origin && isAllowedOrigin(origin) ? new URL(origin).origin : getAllowedOrigin();
+  return `${base}/payment/success?session_id={CHECKOUT_SESSION_ID}`;
 }
 
 /** Only internal paths are ever accepted as a post-auth redirect target. */

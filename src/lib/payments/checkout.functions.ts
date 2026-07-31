@@ -28,15 +28,17 @@ export const createCourseCheckoutSession = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>
     z
-      .object({})
-      .optional()
+      .object({ origin: z.string().url().max(255).optional() })
+      .default({})
       .parse(data ?? {}),
   )
-  .handler(async ({ context }): Promise<CheckoutResult> => {
+  .handler(async ({ data, context }): Promise<CheckoutResult> => {
     const { createCheckoutSessionForUser } = await import("./checkout.server");
     return createCheckoutSessionForUser({
       userId: context.userId,
       email: context.claims?.email as string | undefined,
+      // Only honoured when it matches this project's own origins.
+      origin: data.origin,
     });
   });
 
