@@ -81,3 +81,25 @@ CLOUDFLARE_STREAM_WEBHOOK_SECRET
   environment, or redirect URLs — all are resolved server-side.
 - Sandbox payments never grant enrollment (`fulfill_paid_order` only grants
   when `environment = 'live'`).
+
+## Storage (Stage 7)
+
+All buckets (`avatars`, `support-attachments`, `certificates`) are **private**.
+
+| Bucket | Read | Write |
+| --- | --- | --- |
+| `avatars` | owner only (`<uid>/...`) | owner only, extensions `jpg/jpeg/png/webp`, max 2 MB (client) |
+| `support-attachments` | owner + admin | owner only, extensions `jpg/jpeg/png/pdf`, max 5 MB (client) |
+| `certificates` | owner + admin | **no client writes** — generated server-side only |
+
+Extension allow-lists are enforced by RLS policies on `storage.objects`; size limits are enforced in the upload UI.
+
+## CI (Stage 8/9)
+
+`.github/workflows/ci.yml` runs on every push to `main` and every PR:
+
+1. `quality` — install, `bun run lint`, `tsc --noEmit`, production build
+2. `e2e` — Playwright suite with report artifact
+3. `secret-scan` — Gitleaks over full history
+
+Required repo secrets: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PROJECT_ID`.
