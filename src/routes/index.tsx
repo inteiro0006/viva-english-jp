@@ -39,10 +39,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { COURSE_PRICE_JPY, formatJpy } from "@/config/site";
+import { COURSE_CURRENCY, COURSE_PRICE_JPY, SITE_URL, formatJpy } from "@/config/site";
 import { demoTestimonials } from "@/data/testimonials";
-
-const SITE_URL = "https://viva-english-jp.lovable.app";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -95,8 +93,8 @@ export const Route = createFileRoute("/")({
           },
           offers: {
             "@type": "Offer",
-            price: "49800",
-            priceCurrency: "JPY",
+            price: String(COURSE_PRICE_JPY ?? ""),
+            priceCurrency: COURSE_CURRENCY,
             availability: "https://schema.org/InStock",
             url: `${SITE_URL}/checkout`,
           },

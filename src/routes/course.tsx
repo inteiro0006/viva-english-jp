@@ -2,8 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { Placeholder } from "@/components/Placeholder";
-
-const SITE_URL = "https://viva-english-jp.lovable.app";
+import { SITE_URL } from "@/config/site";
 
 export const Route = createFileRoute("/course")({
   head: () => ({

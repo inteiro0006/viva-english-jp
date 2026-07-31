@@ -973,6 +973,13 @@
       "action": "アクション",
       "entity": "対象",
       "id": "ID"
+    },
+    "pagination": {
+      "label": "ページ送り",
+      "range": "{{from}}–{{to}} 件 / 全 {{total}} 件",
+      "page": "{{page}} / {{pages}} ページ",
+      "previous": "前へ",
+      "next": "次へ"
     }
   },
   "footer": {

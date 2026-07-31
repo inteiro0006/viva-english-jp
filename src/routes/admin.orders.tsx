@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AdminPagination } from "@/components/admin/AdminPagination";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -48,18 +49,17 @@ function AdminOrdersPage() {
   const list = useServerFn(listOrders);
   const refund = useServerFn(initiateRefund);
   const [status, setStatus] = useState<StatusFilter>("");
+  const [page, setPage] = useState(0);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["admin", "orders", status],
-    queryFn: () => list({ data: { status: status || undefined, page: 0 } }),
+    queryKey: ["admin", "orders", status, page],
+    queryFn: () => list({ data: { status: status || undefined, page } }),
   });
 
   const refundMut = useMutation({
     mutationFn: (id: string) => refund({ data: { id } }),
     onSuccess: (r) => {
-      toast.success(
-        r.pending ? t("admin.orders_.refundQueued") : t("admin.orders_.refundDone"),
-      );
+      toast.success(r.pending ? t("admin.orders_.refundQueued") : t("admin.orders_.refundDone"));
       qc.invalidateQueries({ queryKey: ["admin", "orders"] });
     },
     onError: (e: Error) => toast.error(e.message),
@@ -74,7 +74,10 @@ function AdminOrdersPage() {
         </div>
         <Select
           value={status || "all"}
-          onValueChange={(v) => setStatus(v === "all" ? "" : (v as StatusFilter))}
+          onValueChange={(v) => {
+            setPage(0);
+            setStatus(v === "all" ? "" : (v as StatusFilter));
+          }}
         >
           <SelectTrigger className="w-48">
             <SelectValue />
@@ -182,6 +185,13 @@ function AdminOrdersPage() {
           </Table>
         )}
       </Card>
+
+      <AdminPagination
+        page={page}
+        total={data?.total ?? 0}
+        pageSize={data?.pageSize ?? 25}
+        onPageChange={setPage}
+      />
     </div>
   );
 }

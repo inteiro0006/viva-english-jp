@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AdminPagination } from "@/components/admin/AdminPagination";
 import {
   Table,
   TableBody,
@@ -132,7 +133,6 @@ function AdminAuditPage() {
   const rows: AuditLogRow[] = data?.rows ?? [];
   const total = data?.total ?? 0;
   const pageSize = data?.pageSize ?? 50;
-  const pageCount = Math.max(1, Math.ceil(total / pageSize));
 
   const handleExport = () => {
     const csv = toCsv(rows);
@@ -352,31 +352,7 @@ function AdminAuditPage() {
         )}
       </Card>
 
-      {pageCount > 1 && (
-        <div className="flex items-center justify-between text-sm">
-          <div className="text-muted-foreground">
-            {total.toLocaleString()} · {page + 1} / {pageCount}
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page === 0}
-              onClick={() => setPage((p) => Math.max(0, p - 1))}
-            >
-              ‹
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page + 1 >= pageCount}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              ›
-            </Button>
-          </div>
-        </div>
-      )}
+      <AdminPagination page={page} total={total} pageSize={pageSize} onPageChange={setPage} />
     </div>
   );
 }
