@@ -11,6 +11,7 @@ import {
   Receipt,
   CreditCard,
   Settings,
+  ServerCog,
   LogOut,
   Menu,
   Shield,
@@ -59,6 +60,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
     { to: "/admin/payments", label: t("admin.payments"), icon: CreditCard },
     { to: "/admin/audit", label: t("admin.audit"), icon: Shield },
     { to: "/admin/settings", label: t("admin.settings"), icon: Settings },
+    { to: "/admin/system", label: t("admin.system"), icon: ServerCog },
   ];
 
   const crumbs = buildCrumbs(pathname, nav, t);
