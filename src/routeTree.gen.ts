@@ -34,6 +34,7 @@ import { Route as PaymentCancelRouteImport } from './routes/payment.cancel'
 import { Route as CertificateVerificationCodeRouteImport } from './routes/certificate.$verificationCode'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AdminVideosRouteImport } from './routes/admin.videos'
+import { Route as AdminSystemRouteImport } from './routes/admin.system'
 import { Route as AdminStudentsRouteImport } from './routes/admin.students'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
@@ -174,6 +175,11 @@ const AdminVideosRoute = AdminVideosRouteImport.update({
   path: '/videos',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminSystemRoute = AdminSystemRouteImport.update({
+  id: '/system',
+  path: '/system',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminStudentsRoute = AdminStudentsRouteImport.update({
   id: '/students',
   path: '/students',
@@ -265,6 +271,7 @@ export interface FileRoutesByFullPath {
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/students': typeof AdminStudentsRoute
+  '/admin/system': typeof AdminSystemRoute
   '/admin/videos': typeof AdminVideosRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/certificate/$verificationCode': typeof CertificateVerificationCodeRoute
@@ -303,6 +310,7 @@ export interface FileRoutesByTo {
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/students': typeof AdminStudentsRoute
+  '/admin/system': typeof AdminSystemRoute
   '/admin/videos': typeof AdminVideosRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/certificate/$verificationCode': typeof CertificateVerificationCodeRoute
@@ -344,6 +352,7 @@ export interface FileRoutesById {
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/students': typeof AdminStudentsRoute
+  '/admin/system': typeof AdminSystemRoute
   '/admin/videos': typeof AdminVideosRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/certificate/$verificationCode': typeof CertificateVerificationCodeRoute
@@ -386,6 +395,7 @@ export interface FileRouteTypes {
     | '/admin/payments'
     | '/admin/settings'
     | '/admin/students'
+    | '/admin/system'
     | '/admin/videos'
     | '/auth/callback'
     | '/certificate/$verificationCode'
@@ -424,6 +434,7 @@ export interface FileRouteTypes {
     | '/admin/payments'
     | '/admin/settings'
     | '/admin/students'
+    | '/admin/system'
     | '/admin/videos'
     | '/auth/callback'
     | '/certificate/$verificationCode'
@@ -464,6 +475,7 @@ export interface FileRouteTypes {
     | '/admin/payments'
     | '/admin/settings'
     | '/admin/students'
+    | '/admin/system'
     | '/admin/videos'
     | '/auth/callback'
     | '/certificate/$verificationCode'
@@ -683,6 +695,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminVideosRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/system': {
+      id: '/admin/system'
+      path: '/system'
+      fullPath: '/admin/system'
+      preLoaderRoute: typeof AdminSystemRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/students': {
       id: '/admin/students'
       path: '/students'
@@ -785,6 +804,7 @@ interface AdminRouteChildren {
   AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminStudentsRoute: typeof AdminStudentsRoute
+  AdminSystemRoute: typeof AdminSystemRoute
   AdminVideosRoute: typeof AdminVideosRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminCoursesCourseIdRoute: typeof AdminCoursesCourseIdRoute
@@ -799,6 +819,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminPaymentsRoute: AdminPaymentsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminStudentsRoute: AdminStudentsRoute,
+  AdminSystemRoute: AdminSystemRoute,
   AdminVideosRoute: AdminVideosRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminCoursesCourseIdRoute: AdminCoursesCourseIdRoute,
@@ -855,13 +876,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
