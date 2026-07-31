@@ -295,6 +295,13 @@ function AllUsersTab({ onSelect }: { onSelect: (id: string) => void }) {
           </Table>
         )}
       </Card>
+
+      <AdminPagination
+        page={page}
+        total={data?.total ?? 0}
+        pageSize={data?.pageSize ?? 25}
+        onPageChange={setPage}
+      />
     </>
   );
 }
