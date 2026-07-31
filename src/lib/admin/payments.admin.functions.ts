@@ -195,9 +195,7 @@ export const reprocessPaymentEvent = createServerFn({ method: "POST" })
           id: row.provider_event_id,
           type: row.event_type,
           data: {
-            object:
-              payload?.data?.object ??
-              ((payload ?? {}) as Record<string, unknown>),
+            object: payload?.data?.object ?? ((payload ?? {}) as Record<string, unknown>),
           },
         },
         row.environment,
