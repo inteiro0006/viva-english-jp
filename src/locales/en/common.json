@@ -939,8 +939,9 @@
       "refunded": "Refunded",
       "refund": "Refund",
       "confirmRefund": "Refund this order?",
-      "confirmRefundDesc": "This will initiate a refund. Access to the course will be revoked automatically once the refund settles.",
-      "refundQueued": "Refund intent recorded and audited."
+      "confirmRefundDesc": "This will refund the payment through Stripe. Access to the course is revoked automatically once the refund settles.",
+      "refundQueued": "Refund submitted to Stripe and pending confirmation.",
+      "refundDone": "Refund completed on Stripe. Access is revoked once Stripe confirms it."
     },
     "settings_": {
       "subtitle": "Platform-wide configuration.",
