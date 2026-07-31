@@ -59,9 +59,7 @@ function AdminOrdersPage() {
   const refundMut = useMutation({
     mutationFn: (id: string) => refund({ data: { id } }),
     onSuccess: (r) => {
-      toast.success(
-        r.pending ? t("admin.orders_.refundQueued") : t("admin.orders_.refundDone"),
-      );
+      toast.success(r.pending ? t("admin.orders_.refundQueued") : t("admin.orders_.refundDone"));
       qc.invalidateQueries({ queryKey: ["admin", "orders"] });
     },
     onError: (e: Error) => toast.error(e.message),

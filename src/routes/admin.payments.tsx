@@ -303,12 +303,7 @@ function AdminPaymentsPage() {
         )}
       </Card>
 
-      <AdminPagination
-        page={page}
-        total={total}
-        pageSize={pageSize}
-        onPageChange={setPage}
-      />
+      <AdminPagination page={page} total={total} pageSize={pageSize} onPageChange={setPage} />
 
       <AlertDialog open={!!confirmReprocess} onOpenChange={(o) => !o && setConfirmReprocess(null)}>
         <AlertDialogContent>

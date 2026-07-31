@@ -352,12 +352,7 @@ function AdminAuditPage() {
         )}
       </Card>
 
-      <AdminPagination
-        page={page}
-        total={total}
-        pageSize={pageSize}
-        onPageChange={setPage}
-      />
+      <AdminPagination page={page} total={total} pageSize={pageSize} onPageChange={setPage} />
     </div>
   );
 }

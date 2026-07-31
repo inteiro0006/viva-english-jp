@@ -33,7 +33,11 @@ export function AdminPagination({
       aria-label={t("admin.pagination.label")}
     >
       <p className="text-muted-foreground">
-        {t("admin.pagination.range", { from: nf.format(from), to: nf.format(to), total: nf.format(total) })}
+        {t("admin.pagination.range", {
+          from: nf.format(from),
+          to: nf.format(to),
+          total: nf.format(total),
+        })}
         {" · "}
         {t("admin.pagination.page", { page: nf.format(page + 1), pages: nf.format(pageCount) })}
       </p>

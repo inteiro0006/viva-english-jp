@@ -183,7 +183,6 @@ function AdminStudentsPage() {
           />
         </TabsContent>
 
-
         <TabsContent value="all" className="space-y-4">
           <AllUsersTab onSelect={setSelected} />
         </TabsContent>
