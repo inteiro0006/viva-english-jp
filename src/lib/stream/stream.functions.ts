@@ -230,6 +230,132 @@ export const refreshStreamVideo = createServerFn({ method: "POST" })
   });
 
 /**
+ * Admin: reconcile the local video library with Cloudflare Stream.
+ * - Imports videos that exist on Cloudflare but not locally
+ * - Refreshes status/duration/thumbnail for known videos
+ * - Flags local rows whose Cloudflare video no longer exists
+ * - Forces requireSignedURLs=true on any public video (private playback only)
+ * - Syncs lesson duration_seconds from the attached video
+ */
+export const reconcileStreamVideos = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: role } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!role) throw new Error("Forbidden");
+
+    const { listAllStreamVideos, enforceSignedUrls } = await import("@/lib/stream/stream.server");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    let remote: Awaited<ReturnType<typeof listAllStreamVideos>>;
+    try {
+      remote = await listAllStreamVideos();
+    } catch (error) {
+      const isCloudflareAuthError =
+        error instanceof Error &&
+        (error.message.includes('"code":10000') || error.message.includes("Authentication error"));
+      if (isCloudflareAuthError) {
+        return {
+          ok: false as const,
+          code: "cloudflare_auth" as const,
+          message:
+            "Cloudflare authentication failed. Update CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_STREAM_API_TOKEN.",
+        };
+      }
+      throw error;
+    }
+
+    const { data: localRows, error: localErr } = await supabaseAdmin
+      .from("stream_videos")
+      .select("id, cloudflare_uid");
+    if (localErr) throw new Error(localErr.message);
+    const localUids = new Set((localRows ?? []).map((r) => r.cloudflare_uid));
+
+    let imported = 0;
+    let updated = 0;
+    let secured = 0;
+
+    for (const v of remote) {
+      if (!v?.uid) continue;
+      if (!v.requireSignedURLs) {
+        try {
+          await enforceSignedUrls(v.uid);
+          secured++;
+        } catch {
+          /* keep reconciling other videos */
+        }
+      }
+      const row = {
+        cloudflare_uid: v.uid,
+        title: v.meta?.name ?? null,
+        status: v.status?.state ?? "unknown",
+        duration_seconds: v.duration ?? null,
+        thumbnail_url: v.thumbnail ?? null,
+        preview_url: v.preview ?? null,
+        ready_to_stream: !!v.readyToStream,
+        require_signed_urls: true,
+        meta: (v.meta ?? {}) as Record<string, string>,
+      };
+      const { error: upErr } = await supabaseAdmin
+        .from("stream_videos")
+        .upsert(row, { onConflict: "cloudflare_uid" });
+      if (upErr) throw new Error(upErr.message);
+      if (localUids.has(v.uid)) updated++;
+      else imported++;
+    }
+
+    const remoteUids = new Set(remote.map((v) => v.uid));
+    const missing = (localRows ?? [])
+      .map((r) => r.cloudflare_uid)
+      .filter((uid) => !remoteUids.has(uid));
+    if (missing.length) {
+      const { error: missErr } = await supabaseAdmin
+        .from("stream_videos")
+        .update({ status: "missing_on_cloudflare", ready_to_stream: false })
+        .in("cloudflare_uid", missing);
+      if (missErr) throw new Error(missErr.message);
+    }
+
+    // Keep lesson durations in sync with their attached video.
+    let lessonsSynced = 0;
+    const { data: lessons } = await supabaseAdmin
+      .from("lessons")
+      .select("id, cloudflare_video_uid, duration_seconds")
+      .not("cloudflare_video_uid", "is", null);
+    for (const lesson of lessons ?? []) {
+      const uid = lesson.cloudflare_video_uid;
+      if (!uid) continue;
+      const v = remote.find((r) => r.uid === uid);
+      const seconds = v?.duration ? Math.round(v.duration) : null;
+      if (seconds && seconds !== lesson.duration_seconds) {
+        await supabaseAdmin
+          .from("lessons")
+          .update({ duration_seconds: seconds })
+          .eq("id", lesson.id);
+        lessonsSynced++;
+      }
+    }
+
+    await logAdminAction(context.supabase, {
+      action: "stream.reconcile",
+      entityType: "stream_videos",
+      entityId: "all",
+      newValues: { imported, updated, secured, missing: missing.length, lessonsSynced },
+    });
+
+    return {
+      ok: true as const,
+      imported,
+      updated,
+      secured,
+      missing: missing.length,
+      lessonsSynced,
+    };
+  });
+
+/**
  * Admin: permanently delete a video from Cloudflare Stream and detach it
  * from any lesson that references it. Removes the local stream_videos row.
  */

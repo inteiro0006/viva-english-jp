@@ -95,6 +95,33 @@ export async function getVideoInfo(uid: string): Promise<StreamVideoInfo> {
   return cfFetch<StreamVideoInfo>(`/stream/${uid}`);
 }
 
+/** Lists every video in the Stream account (paginated by upload date). */
+export async function listAllStreamVideos(): Promise<StreamVideoInfo[]> {
+  const out: StreamVideoInfo[] = [];
+  let before: string | undefined;
+  for (let page = 0; page < 20; page++) {
+    const qs = new URLSearchParams({ limit: "1000" });
+    if (before) qs.set("before", before);
+    const batch = await cfFetch<(StreamVideoInfo & { created?: string })[]>(
+      `/stream?${qs.toString()}`,
+    );
+    if (!batch?.length) break;
+    out.push(...batch);
+    if (batch.length < 1000) break;
+    before = batch[batch.length - 1]?.created;
+    if (!before) break;
+  }
+  return out;
+}
+
+/** Forces a video to require signed URLs (private playback). */
+export async function enforceSignedUrls(uid: string): Promise<void> {
+  await cfFetch(`/stream/${uid}`, {
+    method: "POST",
+    body: JSON.stringify({ requireSignedURLs: true }),
+  });
+}
+
 export async function deleteStreamVideo(uid: string): Promise<void> {
   const env = readCloudflareEnv();
   const res = await fetch(`${CF_BASE}/accounts/${env.accountId}/stream/${uid}`, {
