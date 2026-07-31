@@ -40,7 +40,7 @@ export const getCourseCurriculum = createServerFn({ method: "GET" })
   .inputValidator((data) => z.object({ courseId: z.string().uuid() }).parse(data))
   .handler(async ({ data }) => {
     const supabase = publicClient();
-    const [stagesRes, modulesRes, lessonsRes] = await Promise.all([
+    const [stagesRes, modulesRes] = await Promise.all([
       supabase
         .from("course_stages")
         .select("id, title_ja, title_en, description_ja, description_en, position")
@@ -55,20 +55,40 @@ export const getCourseCurriculum = createServerFn({ method: "GET" })
         .eq("course_id", data.courseId)
         .eq("status", "published")
         .order("position"),
-      supabase
+    ]);
+    if (stagesRes.error) throw new Error(stagesRes.error.message);
+    if (modulesRes.error) throw new Error(modulesRes.error.message);
+
+    const modules = modulesRes.data ?? [];
+    const moduleIds = modules.map((m) => m.id);
+
+    let lessons: Array<{
+      id: string;
+      module_id: string;
+      title_ja: string;
+      title_en: string;
+      lesson_type: string;
+      duration_seconds: number;
+      position: number;
+      is_preview: boolean;
+    }> = [];
+
+    if (moduleIds.length > 0) {
+      const lessonsRes = await supabase
         .from("lessons")
         .select(
           "id, module_id, title_ja, title_en, lesson_type, duration_seconds, position, is_preview",
         )
+        .in("module_id", moduleIds)
         .eq("status", "published")
-        .order("position"),
-    ]);
-    if (stagesRes.error) throw new Error(stagesRes.error.message);
-    if (modulesRes.error) throw new Error(modulesRes.error.message);
-    if (lessonsRes.error) throw new Error(lessonsRes.error.message);
+        .order("position");
+      if (lessonsRes.error) throw new Error(lessonsRes.error.message);
+      lessons = lessonsRes.data ?? [];
+    }
+
     return {
       stages: stagesRes.data ?? [],
-      modules: modulesRes.data ?? [],
-      lessons: lessonsRes.data ?? [],
+      modules,
+      lessons,
     };
   });
