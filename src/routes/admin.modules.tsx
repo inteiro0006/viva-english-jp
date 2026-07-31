@@ -43,9 +43,7 @@ function AdminModulesPage() {
     <div className="space-y-4">
       <header>
         <h1 className="text-2xl font-bold tracking-tight">{t("admin.modules")}</h1>
-        <p className="text-sm text-muted-foreground">
-          {t("admin.modules_.browseSubtitle")}
-        </p>
+        <p className="text-sm text-muted-foreground">{t("admin.modules_.browseSubtitle")}</p>
       </header>
 
       {isLoading ? (

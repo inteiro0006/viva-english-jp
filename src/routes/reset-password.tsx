@@ -16,8 +16,10 @@ import { localizeAuthError } from "@/lib/auth/messages";
 
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
-    meta: [{ title: "新しいパスワード — Eigo Michi" },
-      { name: "robots", content: "noindex, nofollow" },],
+    meta: [
+      { title: "新しいパスワード — Eigo Michi" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
   }),
   component: ResetPasswordPage,
 });
@@ -26,9 +28,7 @@ function ResetPasswordPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
-  const [ready, setReady] = useState<"checking" | "valid" | "invalid">(
-    "checking",
-  );
+  const [ready, setReady] = useState<"checking" | "valid" | "invalid">("checking");
   const [done, setDone] = useState(false);
 
   // Supabase sends recovery link with tokens in the URL hash. The
@@ -87,10 +87,7 @@ function ResetPasswordPage() {
   }
 
   return (
-    <AuthShell
-      title={t("auth.newPassword")}
-      subtitle={t("auth.resetSubtitle")}
-    >
+    <AuthShell title={t("auth.newPassword")} subtitle={t("auth.resetSubtitle")}>
       {ready === "checking" ? (
         <p className="text-sm text-muted-foreground">{t("common.loading")}</p>
       ) : ready === "invalid" ? (
@@ -107,11 +104,7 @@ function ResetPasswordPage() {
           {t("auth.messages.resetSuccess")}
         </p>
       ) : (
-        <form
-          className="flex flex-col gap-4"
-          onSubmit={form.handleSubmit(onSubmit)}
-          noValidate
-        >
+        <form className="flex flex-col gap-4" onSubmit={form.handleSubmit(onSubmit)} noValidate>
           <div className="grid gap-2">
             <Label htmlFor="password">{t("auth.newPassword")}</Label>
             <PasswordInput

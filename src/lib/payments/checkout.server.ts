@@ -129,9 +129,7 @@ export async function createCheckoutSessionForUser(args: {
 
     if (pending?.provider_checkout_id) {
       try {
-        const existing = await stripe.checkout.sessions.retrieve(
-          pending.provider_checkout_id,
-        );
+        const existing = await stripe.checkout.sessions.retrieve(pending.provider_checkout_id);
         if (existing.status === "open" && existing.client_secret) {
           return { clientSecret: existing.client_secret };
         }

@@ -21,12 +21,15 @@ export function localizeAuthError(error: unknown, t: TFunction): string {
     s.includes("already been registered")
   )
     return t("auth.errors.emailTaken");
-  if (s.includes("rate limit") || s.includes("over_email_send_rate_limit") || s.includes("too many"))
+  if (
+    s.includes("rate limit") ||
+    s.includes("over_email_send_rate_limit") ||
+    s.includes("too many")
+  )
     return t("auth.errors.rateLimited");
-  if (s.includes("weak_password") || s.includes("password") && s.includes("pwned"))
+  if (s.includes("weak_password") || (s.includes("password") && s.includes("pwned")))
     return t("auth.errors.weakPassword");
-  if (s.includes("network") || s.includes("fetch"))
-    return t("auth.errors.network");
+  if (s.includes("network") || s.includes("fetch")) return t("auth.errors.network");
   if (s.includes("expired") || s.includes("invalid token") || s.includes("otp"))
     return t("auth.errors.linkExpired");
   return t("auth.errors.generic");

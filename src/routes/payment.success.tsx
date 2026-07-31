@@ -66,18 +66,14 @@ function PaymentSuccessPage() {
         {status === "loading" && (
           <>
             <Loader2 className="size-12 animate-spin text-[color:var(--brand)]" aria-hidden />
-            <h1 className="font-display text-2xl font-bold">
-              {t("payment.confirmingTitle")}
-            </h1>
+            <h1 className="font-display text-2xl font-bold">{t("payment.confirmingTitle")}</h1>
             <p className="text-muted-foreground">{t("payment.confirmingBody")}</p>
           </>
         )}
         {status === "paid" && (
           <>
             <CheckCircle2 className="size-14 text-[color:var(--brand)]" aria-hidden />
-            <h1 className="font-display text-3xl font-bold">
-              {t("payment.successTitle")}
-            </h1>
+            <h1 className="font-display text-3xl font-bold">{t("payment.successTitle")}</h1>
             <p className="text-muted-foreground">{t("payment.successBody")}</p>
             <Button
               size="lg"
@@ -91,9 +87,7 @@ function PaymentSuccessPage() {
         {status === "pending" && (
           <>
             <Loader2 className="size-12 text-[color:var(--highlight)]" aria-hidden />
-            <h1 className="font-display text-2xl font-bold">
-              {t("payment.pendingTitle")}
-            </h1>
+            <h1 className="font-display text-2xl font-bold">{t("payment.pendingTitle")}</h1>
             <p className="text-muted-foreground">{t("payment.pendingBody")}</p>
             <Button asChild size="lg" variant="outline" className="mt-4">
               <Link to="/student/dashboard">{t("nav.dashboard")}</Link>
@@ -103,9 +97,7 @@ function PaymentSuccessPage() {
         {status === "error" && (
           <>
             <AlertTriangle className="size-12 text-[color:var(--urgent)]" aria-hidden />
-            <h1 className="font-display text-2xl font-bold">
-              {t("payment.errorTitle")}
-            </h1>
+            <h1 className="font-display text-2xl font-bold">{t("payment.errorTitle")}</h1>
             <p className="text-muted-foreground">{t("payment.errorBody")}</p>
             <Button asChild size="lg" className="mt-4">
               <Link to="/checkout">{t("checkout.retry")}</Link>

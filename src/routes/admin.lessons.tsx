@@ -53,7 +53,10 @@ function AdminLessonsPage() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-64"
           />
-          <Select value={status || "all"} onValueChange={(v) => setStatus(v === "all" ? "" : (v as "draft" | "published"))}>
+          <Select
+            value={status || "all"}
+            onValueChange={(v) => setStatus(v === "all" ? "" : (v as "draft" | "published"))}
+          >
             <SelectTrigger className="w-40">
               <SelectValue placeholder={t("admin.status.all")} />
             </SelectTrigger>
@@ -68,7 +71,9 @@ function AdminLessonsPage() {
 
       <Card>
         {isLoading ? (
-          <div className="p-4"><Skeleton className="h-64 w-full" /></div>
+          <div className="p-4">
+            <Skeleton className="h-64 w-full" />
+          </div>
         ) : (
           <Table>
             <TableHeader>
@@ -116,7 +121,10 @@ function AdminLessonsPage() {
               })}
               {(data ?? []).length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={4} className="py-12 text-center text-sm text-muted-foreground">
+                  <TableCell
+                    colSpan={4}
+                    className="py-12 text-center text-sm text-muted-foreground"
+                  >
                     {t("common.empty")}
                   </TableCell>
                 </TableRow>

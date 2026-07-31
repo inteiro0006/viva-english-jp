@@ -37,12 +37,8 @@ export function AuthShell({ title, subtitle, children }: Props) {
         <main className="flex flex-1 items-center justify-center px-4 pb-10">
           <div className="w-full max-w-md">
             <div className="mb-6">
-              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                {title}
-              </h1>
-              {subtitle ? (
-                <p className="mt-2 text-sm text-muted-foreground">{subtitle}</p>
-              ) : null}
+              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{title}</h1>
+              {subtitle ? <p className="mt-2 text-sm text-muted-foreground">{subtitle}</p> : null}
             </div>
             {children}
           </div>
@@ -53,12 +49,8 @@ export function AuthShell({ title, subtitle, children }: Props) {
           <p className="text-sm font-medium uppercase tracking-widest opacity-80">
             {t("brand.tagline")}
           </p>
-          <h2 className="mt-4 text-3xl font-bold leading-tight">
-            {t("auth.shell.title")}
-          </h2>
-          <p className="mt-3 text-base opacity-90">
-            {t("auth.shell.subtitle")}
-          </p>
+          <h2 className="mt-4 text-3xl font-bold leading-tight">{t("auth.shell.title")}</h2>
+          <p className="mt-3 text-base opacity-90">{t("auth.shell.subtitle")}</p>
           <ul className="mt-8 flex flex-col gap-3">
             {bullets.map((b) => (
               <li key={b} className="flex items-start gap-3">

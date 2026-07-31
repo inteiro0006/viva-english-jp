@@ -4,7 +4,18 @@ import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Copy, RefreshCw, Upload, Link2, Unlink, Plug, CheckCircle2, XCircle, Loader2, Trash2 } from "lucide-react";
+import {
+  Copy,
+  RefreshCw,
+  Upload,
+  Link2,
+  Unlink,
+  Plug,
+  CheckCircle2,
+  XCircle,
+  Loader2,
+  Trash2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,10 +48,7 @@ import {
 
 export const Route = createFileRoute("/admin/videos")({
   head: () => ({
-    meta: [
-      { title: "Videos — Admin" },
-      { name: "robots", content: "noindex" },
-    ],
+    meta: [{ title: "Videos — Admin" }, { name: "robots", content: "noindex" }],
   }),
   component: AdminVideosPage,
 });
@@ -129,7 +137,12 @@ function VideoRow({
   onChanged,
 }: {
   video: StreamVideo;
-  lessons: Array<{ id: string; title_ja: string; title_en: string; cloudflare_video_uid: string | null }>;
+  lessons: Array<{
+    id: string;
+    title_ja: string;
+    title_en: string;
+    cloudflare_video_uid: string | null;
+  }>;
   lang: "ja" | "en";
   onChanged: () => void;
 }) {
@@ -211,7 +224,6 @@ function VideoRow({
       <CardContent className="grid gap-4 p-4 md:grid-cols-[160px_1fr_auto]">
         <div className="aspect-video overflow-hidden rounded-lg bg-neutral-900">
           {video.thumbnail_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={video.thumbnail_url}
               alt=""
@@ -234,9 +246,7 @@ function VideoRow({
           <div className="mt-2 flex flex-wrap gap-4 text-xs text-muted-foreground">
             <span>
               {t("stream.admin.duration")}:{" "}
-              {video.duration_seconds
-                ? `${Math.round(video.duration_seconds)}s`
-                : "—"}
+              {video.duration_seconds ? `${Math.round(video.duration_seconds)}s` : "—"}
             </span>
             <span>
               {t("stream.admin.createdAt")}:{" "}
@@ -244,7 +254,11 @@ function VideoRow({
             </span>
             <span>
               {t("stream.admin.attachedTo")}:{" "}
-              {video.lesson ? (lang === "ja" ? video.lesson.title_ja : video.lesson.title_en) : t("stream.admin.notAttached")}
+              {video.lesson
+                ? lang === "ja"
+                  ? video.lesson.title_ja
+                  : video.lesson.title_en
+                : t("stream.admin.notAttached")}
             </span>
           </div>
 
@@ -310,15 +324,15 @@ function VideoRow({
             <DialogTitle>{t("stream.admin.deleteConfirmTitle")}</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">{t("stream.admin.deleteConfirmBody")}</p>
-          <p className="mt-2 truncate text-sm font-medium">
-            {video.title ?? video.cloudflare_uid}
-          </p>
+          <p className="mt-2 truncate text-sm font-medium">{video.title ?? video.cloudflare_uid}</p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirmDelete(false)} disabled={busy}>
               {t("common.cancel", "Cancel")}
             </Button>
             <Button variant="destructive" onClick={doDelete} disabled={busy}>
-              {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : (
+              {busy ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
                 <Trash2 className="mr-1 h-3.5 w-3.5" />
               )}
               {t("stream.admin.deleteConfirm")}
@@ -356,7 +370,10 @@ function UploadDialog({ onUploaded }: { onUploaded: () => void }) {
         xhr.upload.onprogress = (e) => {
           if (e.lengthComputable) setProgress(Math.round((e.loaded / e.total) * 100));
         };
-        xhr.onload = () => (xhr.status >= 200 && xhr.status < 300 ? resolve() : reject(new Error(`Upload failed (${xhr.status})`)));
+        xhr.onload = () =>
+          xhr.status >= 200 && xhr.status < 300
+            ? resolve()
+            : reject(new Error(`Upload failed (${xhr.status})`));
         xhr.onerror = () => reject(new Error("Network error"));
         const fd = new FormData();
         fd.append("file", file);

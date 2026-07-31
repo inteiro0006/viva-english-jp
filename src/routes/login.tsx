@@ -99,11 +99,7 @@ function LoginPage() {
   return (
     <AuthShell title={t("auth.loginTitle")} subtitle={t("auth.loginSubtitle")}>
       <SocialAuthButtons className="mb-6" />
-      <form
-        className="flex flex-col gap-4"
-        onSubmit={form.handleSubmit(onSubmit)}
-        noValidate
-      >
+      <form className="flex flex-col gap-4" onSubmit={form.handleSubmit(onSubmit)} noValidate>
         <div className="grid gap-2">
           <Label htmlFor="email">{t("auth.email")}</Label>
           <Input
@@ -155,10 +151,7 @@ function LoginPage() {
         </Button>
         <p className="text-center text-sm text-muted-foreground">
           {t("auth.noAccount")}{" "}
-          <Link
-            to="/register"
-            className="font-medium text-[color:var(--brand)] hover:underline"
-          >
+          <Link to="/register" className="font-medium text-[color:var(--brand)] hover:underline">
             {t("nav.register")}
           </Link>
         </p>

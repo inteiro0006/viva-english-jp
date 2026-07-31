@@ -28,10 +28,7 @@ import type { DashboardLesson, DashboardProgressRow } from "@/lib/lms/dashboard-
 
 export const Route = createFileRoute("/student/course/$courseSlug")({
   head: () => ({
-    meta: [
-      { title: "コース — Eigo Michi" },
-      { name: "robots", content: "noindex" },
-    ],
+    meta: [{ title: "コース — Eigo Michi" }, { name: "robots", content: "noindex" }],
   }),
   component: CoursePage,
 });
@@ -134,8 +131,7 @@ function CourseView({
       .filter((p) => !p.completed && p.last_watched_at)
       .sort(
         (a, b) =>
-          new Date(b.last_watched_at ?? 0).getTime() -
-          new Date(a.last_watched_at ?? 0).getTime(),
+          new Date(b.last_watched_at ?? 0).getTime() - new Date(a.last_watched_at ?? 0).getTime(),
       );
     if (sortedProgress[0]) return sortedProgress[0].lesson_id;
     for (const mv of moduleViews) {
@@ -224,9 +220,7 @@ function CourseView({
               </li>
               {totalStudiedMinutes > 0 && totalStudiedSeconds > 0 ? (
                 <li className="flex justify-between">
-                  <span className="text-muted-foreground">
-                    {t("student.course.timeStudied")}
-                  </span>
+                  <span className="text-muted-foreground">{t("student.course.timeStudied")}</span>
                   <span className="font-medium">
                     {t("student.dashboard.durationMin", { min: totalStudiedMinutes })}
                   </span>
@@ -342,9 +336,7 @@ function ModuleCard({
             })}
           </p>
         ) : m.lockReason === "sequence" ? (
-          <p className="mt-3 text-xs text-muted-foreground">
-            {t("student.dashboard.lockedHint")}
-          </p>
+          <p className="mt-3 text-xs text-muted-foreground">{t("student.dashboard.lockedHint")}</p>
         ) : null}
         <div className="mt-4">
           <Progress value={m.progressPct} />
@@ -352,12 +344,17 @@ function ModuleCard({
         </div>
         <ul className="mt-4 space-y-1.5">
           {m.lessons.slice(0, 6).map((l, idx) => (
-            <LessonRow key={l.id} lesson={l} index={idx + 1} moduleLocked={isLocked} lang={lang} t={t} />
+            <LessonRow
+              key={l.id}
+              lesson={l}
+              index={idx + 1}
+              moduleLocked={isLocked}
+              lang={lang}
+              t={t}
+            />
           ))}
           {m.lessons.length > 6 ? (
-            <li className="pt-1 text-xs text-muted-foreground">
-              +{m.lessons.length - 6}
-            </li>
+            <li className="pt-1 text-xs text-muted-foreground">+{m.lessons.length - 6}</li>
           ) : null}
         </ul>
       </CardContent>

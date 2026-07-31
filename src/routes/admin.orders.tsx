@@ -70,8 +70,13 @@ function AdminOrdersPage() {
           <h1 className="text-2xl font-bold tracking-tight">{t("admin.orders")}</h1>
           <p className="text-sm text-muted-foreground">{t("admin.orders_.subtitle")}</p>
         </div>
-        <Select value={status || "all"} onValueChange={(v) => setStatus(v === "all" ? "" : (v as StatusFilter))}>
-          <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+        <Select
+          value={status || "all"}
+          onValueChange={(v) => setStatus(v === "all" ? "" : (v as StatusFilter))}
+        >
+          <SelectTrigger className="w-48">
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("admin.status.all")}</SelectItem>
             <SelectItem value="paid">{t("admin.orders_.paid")}</SelectItem>
@@ -84,7 +89,9 @@ function AdminOrdersPage() {
 
       <Card>
         {isLoading ? (
-          <div className="p-4"><Skeleton className="h-64 w-full" /></div>
+          <div className="p-4">
+            <Skeleton className="h-64 w-full" />
+          </div>
         ) : (
           <Table>
             <TableHeader>
@@ -120,9 +127,7 @@ function AdminOrdersPage() {
                           : row.courses.title_ja
                         : "—"}
                     </TableCell>
-                    <TableCell className="tabular-nums">
-                      ¥{row.amount.toLocaleString()}
-                    </TableCell>
+                    <TableCell className="tabular-nums">¥{row.amount.toLocaleString()}</TableCell>
                     <TableCell>
                       <Badge variant={row.status === "paid" ? "default" : "outline"}>
                         {row.status}
@@ -141,7 +146,9 @@ function AdminOrdersPage() {
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>{t("admin.orders_.confirmRefund")}</AlertDialogTitle>
+                              <AlertDialogTitle>
+                                {t("admin.orders_.confirmRefund")}
+                              </AlertDialogTitle>
                               <AlertDialogDescription>
                                 {t("admin.orders_.confirmRefundDesc")}
                               </AlertDialogDescription>
@@ -161,7 +168,10 @@ function AdminOrdersPage() {
               })}
               {(data?.rows ?? []).length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="py-12 text-center text-sm text-muted-foreground">
+                  <TableCell
+                    colSpan={7}
+                    className="py-12 text-center text-sm text-muted-foreground"
+                  >
                     {t("common.empty")}
                   </TableCell>
                 </TableRow>

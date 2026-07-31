@@ -26,7 +26,12 @@ export type CheckoutResult = { clientSecret: string } | { error: CheckoutErrorCo
  */
 export const createCourseCheckoutSession = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => z.object({}).optional().parse(data ?? {}))
+  .inputValidator((data: unknown) =>
+    z
+      .object({})
+      .optional()
+      .parse(data ?? {}),
+  )
   .handler(async ({ context }): Promise<CheckoutResult> => {
     const { createCheckoutSessionForUser } = await import("./checkout.server");
     return createCheckoutSessionForUser({

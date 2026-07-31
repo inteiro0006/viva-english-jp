@@ -174,7 +174,6 @@ export async function signPlaybackToken(params: {
   });
 }
 
-
 /**
  * Verify a Cloudflare Stream webhook signature.
  * Header format: "time=<unix>,sig1=<hex-hmac-sha256>"

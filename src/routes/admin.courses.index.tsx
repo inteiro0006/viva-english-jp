@@ -120,7 +120,6 @@ function AdminCoursesPage() {
     },
   });
 
-
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-3">
@@ -149,7 +148,12 @@ function AdminCoursesPage() {
                 />
                 <p className="text-xs text-muted-foreground">{t("admin.courses_.slugHint")}</p>
               </div>
-              <Field id="title_ja" label={t("admin.courses_.titleJa")} value={form.title_ja} onChange={(v) => setForm({ ...form, title_ja: v })} />
+              <Field
+                id="title_ja"
+                label={t("admin.courses_.titleJa")}
+                value={form.title_ja}
+                onChange={(v) => setForm({ ...form, title_ja: v })}
+              />
               <div className="space-y-1.5">
                 <Label htmlFor="title_en">{t("admin.courses_.titleEn")}</Label>
                 <Input
@@ -175,7 +179,9 @@ function AdminCoursesPage() {
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setOpen(false)}>{t("common.cancel")}</Button>
+              <Button variant="outline" onClick={() => setOpen(false)}>
+                {t("common.cancel")}
+              </Button>
               <Button onClick={() => createMut.mutate()} disabled={createMut.isPending}>
                 {t("common.create")}
               </Button>
@@ -186,7 +192,9 @@ function AdminCoursesPage() {
 
       <Card>
         {isLoading ? (
-          <div className="p-4"><Skeleton className="h-64 w-full" /></div>
+          <div className="p-4">
+            <Skeleton className="h-64 w-full" />
+          </div>
         ) : (
           <Table>
             <TableHeader>
@@ -210,7 +218,9 @@ function AdminCoursesPage() {
                       {i18n.language === "en" ? c.title_en : c.title_ja}
                     </Link>
                   </TableCell>
-                  <TableCell className="font-mono text-xs text-muted-foreground">{c.slug}</TableCell>
+                  <TableCell className="font-mono text-xs text-muted-foreground">
+                    {c.slug}
+                  </TableCell>
                   <TableCell className="tabular-nums">¥{c.price_jpy.toLocaleString()}</TableCell>
                   <TableCell>
                     <Select
@@ -256,7 +266,10 @@ function AdminCoursesPage() {
               ))}
               {(data ?? []).length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} className="py-12 text-center text-sm text-muted-foreground">
+                  <TableCell
+                    colSpan={5}
+                    className="py-12 text-center text-sm text-muted-foreground"
+                  >
                     {t("common.empty")}
                   </TableCell>
                 </TableRow>
@@ -285,7 +298,12 @@ function Field({
   return (
     <div className="space-y-1.5">
       <Label htmlFor={id}>{label}</Label>
-      <Input id={id} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />
+      <Input
+        id={id}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+      />
     </div>
   );
 }

@@ -53,9 +53,7 @@ export function useCourseWorkspace(userId: string | undefined, slug: string | un
       if (enrollRes.error) throw new Error(enrollRes.error.message);
       const enroll = enrollRes.data?.[0];
       const active =
-        enroll && (!enroll.expires_at || new Date(enroll.expires_at) > new Date())
-          ? enroll
-          : null;
+        enroll && (!enroll.expires_at || new Date(enroll.expires_at) > new Date()) ? enroll : null;
       if (!active) return { state: "no_access", course };
 
       const [stagesRes, modulesRes] = await Promise.all([
@@ -221,8 +219,7 @@ export function computeCourseProgress(
   const totalLessons = eligibleIds.size;
   const eligibleProgress = progress.filter((p) => eligibleIds.has(p.lesson_id));
   const completedLessons = eligibleProgress.filter((p) => p.completed).length;
-  const percentage =
-    totalLessons === 0 ? 0 : Math.round((completedLessons / totalLessons) * 100);
+  const percentage = totalLessons === 0 ? 0 : Math.round((completedLessons / totalLessons) * 100);
   const lastWatchedAt =
     progress
       .filter((p) => p.last_watched_at)

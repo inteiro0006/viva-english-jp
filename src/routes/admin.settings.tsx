@@ -50,9 +50,18 @@ function AdminSettingsPage() {
   if (isLoading) return <Skeleton className="h-96 w-full" />;
 
   const groups: Array<{ title: string; keys: string[] }> = [
-    { title: t("admin.settings_.groups.platform"), keys: ["platform_name", "support_email", "display_price_jpy"] },
-    { title: t("admin.settings_.groups.institutional"), keys: ["institutional_ja", "institutional_en"] },
-    { title: t("admin.settings_.groups.legal"), keys: ["terms_ja", "terms_en", "privacy_ja", "privacy_en"] },
+    {
+      title: t("admin.settings_.groups.platform"),
+      keys: ["platform_name", "support_email", "display_price_jpy"],
+    },
+    {
+      title: t("admin.settings_.groups.institutional"),
+      keys: ["institutional_ja", "institutional_en"],
+    },
+    {
+      title: t("admin.settings_.groups.legal"),
+      keys: ["terms_ja", "terms_en", "privacy_ja", "privacy_en"],
+    },
     { title: t("admin.settings_.groups.playback"), keys: ["video_completion_threshold"] },
   ];
 
@@ -65,7 +74,9 @@ function AdminSettingsPage() {
 
       {groups.map((g) => (
         <Card key={g.title}>
-          <CardHeader><CardTitle className="text-base">{g.title}</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-base">{g.title}</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-3">
             {g.keys.map((k) => (
               <SettingField
@@ -98,12 +109,17 @@ function SettingField({
   saving: boolean;
 }) {
   const { t } = useTranslation();
-  const isLong = keyName.startsWith("terms_") || keyName.startsWith("privacy_") || keyName.startsWith("institutional_");
+  const isLong =
+    keyName.startsWith("terms_") ||
+    keyName.startsWith("privacy_") ||
+    keyName.startsWith("institutional_");
   const isNumber = keyName === "display_price_jpy" || keyName === "video_completion_threshold";
 
   return (
     <div className="space-y-1.5">
-      <Label htmlFor={keyName}>{t(`admin.settings_.keys.${keyName}`, { defaultValue: keyName })}</Label>
+      <Label htmlFor={keyName}>
+        {t(`admin.settings_.keys.${keyName}`, { defaultValue: keyName })}
+      </Label>
       <div className="flex gap-2">
         {isLong ? (
           <Textarea

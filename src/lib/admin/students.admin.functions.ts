@@ -38,12 +38,14 @@ export const listStudents = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     const rows = profiles ?? [];
     const ids = rows.map((r) => r.id);
-    let enrollmentsByUser = new Map<string, EnrollmentRow[]>();
+    const enrollmentsByUser = new Map<string, EnrollmentRow[]>();
     const emailsById = new Map<string, string | null>();
     if (ids.length > 0) {
       const { data: enrollments } = await context.supabase
         .from("enrollments")
-        .select("id, user_id, course_id, status, expires_at, enrolled_at, courses(title_ja, title_en)")
+        .select(
+          "id, user_id, course_id, status, expires_at, enrolled_at, courses(title_ja, title_en)",
+        )
         .in("user_id", ids);
       for (const e of (enrollments ?? []) as EnrollmentRow[]) {
         const list = enrollmentsByUser.get(e.user_id) ?? [];
@@ -153,7 +155,6 @@ export const listAllUsers = createServerFn({ method: "POST" })
 
     return { rows, total: usersData?.total ?? rows.length, pageSize };
   });
-
 
 export const getStudentDetail = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

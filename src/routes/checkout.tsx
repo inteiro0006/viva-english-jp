@@ -64,7 +64,6 @@ function CheckoutPage() {
     };
   }, [navigate, t]);
 
-
   const options = useMemo(() => ({ fetchClientSecret }), [fetchClientSecret]);
 
   if (!isPaymentsConfigured()) {
@@ -104,9 +103,7 @@ function CheckoutPage() {
               {priceLabel ? (
                 <div className="text-right">
                   <p className="text-2xl font-bold tracking-tight">{priceLabel}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {t("checkout.oneTimePayment")}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{t("checkout.oneTimePayment")}</p>
                 </div>
               ) : null}
             </div>
@@ -125,11 +122,17 @@ function CheckoutPage() {
 
           <div className="space-y-3 rounded-2xl border border-dashed border-border bg-muted/40 p-5 text-sm text-muted-foreground">
             <div className="flex items-start gap-2">
-              <ShieldCheck className="mt-0.5 size-4 shrink-0 text-[color:var(--brand)]" aria-hidden />
+              <ShieldCheck
+                className="mt-0.5 size-4 shrink-0 text-[color:var(--brand)]"
+                aria-hidden
+              />
               <span>{t("checkout.trustSecure")}</span>
             </div>
             <div className="flex items-start gap-2">
-              <Sparkles className="mt-0.5 size-4 shrink-0 text-[color:var(--highlight)]" aria-hidden />
+              <Sparkles
+                className="mt-0.5 size-4 shrink-0 text-[color:var(--highlight)]"
+                aria-hidden
+              />
               <span>{t("checkout.trustInstant")}</span>
             </div>
           </div>
@@ -151,10 +154,7 @@ function CheckoutPage() {
               <Skeleton className="h-10 w-full" />
             </div>
           ) : (
-            <div
-              id="checkout"
-              className="overflow-hidden rounded-2xl border border-border bg-card"
-            >
+            <div id="checkout" className="overflow-hidden rounded-2xl border border-border bg-card">
               <ErrorBoundary onError={setError}>
                 <EmbeddedCheckoutProvider stripe={getStripe()} options={options}>
                   <EmbeddedCheckout />

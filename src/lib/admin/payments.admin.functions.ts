@@ -11,17 +11,20 @@ export type PaymentEventRow = Database["public"]["Tables"]["payment_events"]["Ro
   course_id: string | null;
 };
 
-function extractMetadata(payload: any): {
+type StripeEventLike = {
+  data?: { object?: { metadata?: Record<string, string | undefined> } };
+};
+
+function extractMetadata(payload: unknown): {
   orderId: string | null;
   userId: string | null;
   courseId: string | null;
 } {
-  const obj = payload?.data?.object ?? {};
-  const meta = obj?.metadata ?? {};
+  const meta = (payload as StripeEventLike | null)?.data?.object?.metadata ?? {};
   return {
-    orderId: (meta.orderId as string) ?? null,
-    userId: (meta.userId as string) ?? null,
-    courseId: (meta.courseId as string) ?? null,
+    orderId: meta.orderId ?? null,
+    userId: meta.userId ?? null,
+    courseId: meta.courseId ?? null,
   };
 }
 
@@ -51,8 +54,7 @@ export const listPaymentEvents = createServerFn({ method: "POST" })
     if (data.status === "processed") q = q.eq("processed", true);
     else if (data.status === "failed")
       q = q.eq("processed", false).not("processing_error", "is", null);
-    else if (data.status === "pending")
-      q = q.eq("processed", false).is("processing_error", null);
+    else if (data.status === "pending") q = q.eq("processed", false).is("processing_error", null);
 
     if (data.eventType) q = q.eq("event_type", data.eventType);
     if (data.search) q = q.ilike("provider_event_id", `%${data.search}%`);
@@ -75,9 +77,7 @@ export const listPaymentEvents = createServerFn({ method: "POST" })
     // KPI counters (all-time; cheap on this table).
     const [{ count: total }, { count: processed }, { count: pending }, failedRes] =
       await Promise.all([
-        context.supabase
-          .from("payment_events")
-          .select("*", { count: "exact", head: true }),
+        context.supabase.from("payment_events").select("*", { count: "exact", head: true }),
         context.supabase
           .from("payment_events")
           .select("*", { count: "exact", head: true })
@@ -100,9 +100,7 @@ export const listPaymentEvents = createServerFn({ method: "POST" })
       .select("event_type")
       .order("event_type", { ascending: true })
       .limit(500);
-    const eventTypes = Array.from(
-      new Set((typeRows ?? []).map((t) => t.event_type)),
-    );
+    const eventTypes = Array.from(new Set((typeRows ?? []).map((t) => t.event_type)));
 
     return {
       rows: enriched,
@@ -139,7 +137,9 @@ export const getPaymentEvent = createServerFn({ method: "POST" })
     if (md.orderId) {
       const { data: o } = await context.supabase
         .from("orders")
-        .select("id, status, amount, currency, paid_at, provider_payment_id, user_id, course_id, customer_email")
+        .select(
+          "id, status, amount, currency, paid_at, provider_payment_id, user_id, course_id, customer_email",
+        )
         .eq("id", md.orderId)
         .maybeSingle();
       order = o ?? null;
@@ -180,11 +180,12 @@ export const reprocessPaymentEvent = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     if (!row) throw new Error("not_found");
 
-    const { dispatchStripeEvent, getStripeAdminClient, sanitizeError } = await import(
-      "@/lib/payments/stripe-handlers.server"
-    );
+    const { dispatchStripeEvent, getStripeAdminClient, sanitizeError } =
+      await import("@/lib/payments/stripe-handlers.server");
     const admin = getStripeAdminClient();
-    const payload = row.payload as any;
+    const payload = row.payload as {
+      data?: { object?: Record<string, unknown> };
+    } | null;
 
     let handled = false;
     let processingError: string | null = null;
@@ -193,7 +194,9 @@ export const reprocessPaymentEvent = createServerFn({ method: "POST" })
         {
           id: row.provider_event_id,
           type: row.event_type,
-          data: payload?.data ?? { object: payload },
+          data: {
+            object: payload?.data?.object ?? ((payload ?? {}) as Record<string, unknown>),
+          },
         },
         row.environment,
       );
@@ -211,7 +214,6 @@ export const reprocessPaymentEvent = createServerFn({ method: "POST" })
         attempts: (row.attempts ?? 0) + 1,
       })
       .eq("id", row.id);
-
 
     await logAdminAction(context.supabase, {
       action: "payment_event.reprocess",
@@ -248,9 +250,7 @@ export const manualEnrollment = createServerFn({ method: "POST" })
   )
   .handler(async ({ context, data }) => {
     await assertAdmin(context);
-    const { getStripeAdminClient } = await import(
-      "@/lib/payments/stripe-handlers.server"
-    );
+    const { getStripeAdminClient } = await import("@/lib/payments/stripe-handlers.server");
     const admin = getStripeAdminClient();
 
     const { data: existing } = await admin
@@ -296,9 +296,7 @@ export const manualEnrollment = createServerFn({ method: "POST" })
       entityType: "enrollment",
       entityId: inserted.id,
       newValues: { ...data },
-      summary:
-        data.note ??
-        `Manual enrollment for user ${data.userId} in course ${data.courseId}`,
+      summary: data.note ?? `Manual enrollment for user ${data.userId} in course ${data.courseId}`,
     });
 
     return { ok: true, alreadyActive: false, enrollmentId: inserted.id };

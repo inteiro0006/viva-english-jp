@@ -16,9 +16,7 @@ export function LanguageSwitcher() {
       onClick={() => void i18n.changeLanguage(next)}
     >
       <Globe className="size-4" aria-hidden />
-      <span className="font-medium">
-        {next === "ja" ? "日本語" : "English"}
-      </span>
+      <span className="font-medium">{next === "ja" ? "日本語" : "English"}</span>
     </Button>
   );
 }

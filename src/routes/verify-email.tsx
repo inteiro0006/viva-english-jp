@@ -14,8 +14,7 @@ const searchSchema = z.object({ email: z.string().email().optional() });
 export const Route = createFileRoute("/verify-email")({
   validateSearch: (s) => searchSchema.parse(s),
   head: () => ({
-    meta: [{ title: "メール確認 — Eigo Michi" },
-      { name: "robots", content: "noindex, nofollow" },],
+    meta: [{ title: "メール確認 — Eigo Michi" }, { name: "robots", content: "noindex, nofollow" }],
   }),
   component: VerifyEmailPage,
 });
@@ -44,9 +43,7 @@ function VerifyEmailPage() {
     setResending(true);
     try {
       const emailRedirectTo =
-        typeof window !== "undefined"
-          ? `${window.location.origin}/verify-email`
-          : undefined;
+        typeof window !== "undefined" ? `${window.location.origin}/verify-email` : undefined;
       const { error } = await supabase.auth.resend({
         type: "signup",
         email,
@@ -70,9 +67,7 @@ function VerifyEmailPage() {
             <CheckCircle2 className="size-5 text-[color:var(--brand)]" aria-hidden />
             <span>{t("auth.verify.doneBody")}</span>
           </div>
-          <Button
-            onClick={() => void navigate({ to: "/student/dashboard", replace: true })}
-          >
+          <Button onClick={() => void navigate({ to: "/student/dashboard", replace: true })}>
             {t("common.continue")}
           </Button>
         </div>
@@ -87,20 +82,12 @@ function VerifyEmailPage() {
           <MailCheck className="mt-0.5 size-5 text-[color:var(--brand)]" aria-hidden />
           <div>
             <p className="font-medium">{t("auth.verify.checkInbox")}</p>
-            {email ? (
-              <p className="mt-1 text-muted-foreground">{email}</p>
-            ) : null}
-            <p className="mt-2 text-muted-foreground">
-              {t("auth.verify.instructions")}
-            </p>
+            {email ? <p className="mt-1 text-muted-foreground">{email}</p> : null}
+            <p className="mt-2 text-muted-foreground">{t("auth.verify.instructions")}</p>
           </div>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row">
-          <Button
-            variant="outline"
-            onClick={handleResend}
-            disabled={!email || resending}
-          >
+          <Button variant="outline" onClick={handleResend} disabled={!email || resending}>
             {resending ? t("common.loading") : t("auth.verify.resend")}
           </Button>
           <Button asChild variant="ghost">

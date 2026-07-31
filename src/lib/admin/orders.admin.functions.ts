@@ -8,9 +8,7 @@ export const listOrders = createServerFn({ method: "POST" })
   .inputValidator((d) =>
     z
       .object({
-        status: z
-          .enum(["pending", "paid", "failed", "refunded", "partially_refunded"])
-          .optional(),
+        status: z.enum(["pending", "paid", "failed", "refunded", "partially_refunded"]).optional(),
         page: z.number().int().min(0).default(0),
       })
       .parse(d ?? {}),
@@ -20,10 +18,7 @@ export const listOrders = createServerFn({ method: "POST" })
     const pageSize = 25;
     let q = context.supabase
       .from("orders")
-      .select(
-        "*, courses(title_ja, title_en, slug)",
-        { count: "exact" },
-      )
+      .select("*, courses(title_ja, title_en, slug)", { count: "exact" })
       .order("created_at", { ascending: false })
       .range(data.page * pageSize, data.page * pageSize + pageSize - 1);
     if (data.status) q = q.eq("status", data.status);
@@ -56,7 +51,9 @@ export const getOrderDetail = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .maybeSingle();
     if (error) throw new Error(error.message);
-    let orderWithProfile = order as (typeof order & { profiles: { full_name: string | null } | null }) | null;
+    let orderWithProfile = order as
+      | (typeof order & { profiles: { full_name: string | null } | null })
+      | null;
     if (order?.user_id) {
       const { data: prof } = await context.supabase
         .from("profiles")
@@ -69,11 +66,7 @@ export const getOrderDetail = createServerFn({ method: "POST" })
       .from("payment_events")
       .select("*")
       .or(
-        [
-          order?.provider_checkout_id
-            ? `payload->>orderId.eq.${order?.id}`
-            : null,
-        ]
+        [order?.provider_checkout_id ? `payload->>orderId.eq.${order?.id}` : null]
           .filter(Boolean)
           .join(",") || "id.eq.00000000-0000-0000-0000-000000000000",
       )
@@ -117,7 +110,6 @@ export const initiateRefund = createServerFn({ method: "POST" })
     return {
       ok: true,
       pending: true,
-      note:
-        "Refund intent recorded and audited. Stripe API refund call must be wired in a follow-up step.",
+      note: "Refund intent recorded and audited. Stripe API refund call must be wired in a follow-up step.",
     };
   });

@@ -102,10 +102,10 @@ export function useDashboardData(userId: string | undefined) {
 
       const profile = (profileRes.data as DashboardProfile | null) ?? null;
       const enrollRow = enrollRes.data?.[0];
-      const active = enrollRow &&
-        (!enrollRow.expires_at || new Date(enrollRow.expires_at) > new Date())
-        ? enrollRow
-        : null;
+      const active =
+        enrollRow && (!enrollRow.expires_at || new Date(enrollRow.expires_at) > new Date())
+          ? enrollRow
+          : null;
       const course = active?.courses as DashboardCourse | null | undefined;
       if (!active || !course) return { state: "no_enrollment", profile };
 

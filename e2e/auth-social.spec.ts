@@ -76,10 +76,10 @@ test.describe("social sign-in", () => {
     await page.waitForLoadState("networkidle");
     // Provider consent is mocked: the session is what a successful round trip
     // would have produced, written before the broker bounces back.
-    await page.evaluate(
-      ([key, value]) => window.localStorage.setItem(key, value),
-      ["sb-jzcqpytfqoikomnrdkfl-auth-token", JSON.stringify(session)] as const,
-    );
+    await page.evaluate(([key, value]) => window.localStorage.setItem(key, value), [
+      "sb-jzcqpytfqoikomnrdkfl-auth-token",
+      JSON.stringify(session),
+    ] as const);
 
     await page.getByRole("button", { name: /Google/i }).click();
     await page.waitForURL(/\/student\/dashboard/, { timeout: 25_000 });

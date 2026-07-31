@@ -32,12 +32,18 @@ const EXPECTED_TABLES: Array<{ table: keyof Database["public"]["Tables"]; column
   { table: "user_roles", columns: ["user_id", "role"] },
   { table: "courses", columns: ["id", "slug", "title_ja", "title_en", "status", "price_jpy"] },
   { table: "course_stages", columns: ["id", "course_id", "position", "status"] },
-  { table: "modules", columns: ["id", "course_id", "stage_id", "position", "release_type", "status"] },
+  {
+    table: "modules",
+    columns: ["id", "course_id", "stage_id", "position", "release_type", "status"],
+  },
   {
     table: "lessons",
     columns: ["id", "module_id", "position", "lesson_type", "cloudflare_video_uid", "status"],
   },
-  { table: "lesson_progress", columns: ["user_id", "lesson_id", "progress_percentage", "completed"] },
+  {
+    table: "lesson_progress",
+    columns: ["user_id", "lesson_id", "progress_percentage", "completed"],
+  },
   { table: "enrollments", columns: ["user_id", "course_id", "status", "expires_at"] },
   { table: "orders", columns: ["user_id", "course_id", "status", "amount", "currency"] },
   { table: "certificates", columns: ["user_id", "course_id", "verification_code", "revoked_at"] },
@@ -59,8 +65,18 @@ const EXPECTED_RELATIONSHIPS: Array<{
   table: keyof Database["public"]["Tables"];
   select: string;
 }> = [
-  { id: "modules->courses", label: "Modules → Course", table: "modules", select: "id, courses(id)" },
-  { id: "lessons->modules", label: "Lessons → Module", table: "lessons", select: "id, modules(id)" },
+  {
+    id: "modules->courses",
+    label: "Modules → Course",
+    table: "modules",
+    select: "id, courses(id)",
+  },
+  {
+    id: "lessons->modules",
+    label: "Lessons → Module",
+    table: "lessons",
+    select: "id, modules(id)",
+  },
   {
     id: "lesson_progress->lessons",
     label: "Progress → Lesson",

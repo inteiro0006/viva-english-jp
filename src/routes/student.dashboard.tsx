@@ -35,17 +35,18 @@ import { CertificateCard } from "@/components/lms/CertificateCard";
 
 export const Route = createFileRoute("/student/dashboard")({
   head: () => ({
-    meta: [
-      { title: "ダッシュボード — Eigo Michi" },
-      { name: "robots", content: "noindex" },
-    ],
+    meta: [{ title: "ダッシュボード — Eigo Michi" }, { name: "robots", content: "noindex" }],
   }),
   component: DashboardPage,
 });
 
 // ---------- helpers ----------
 
-function pickLang<T extends Record<string, unknown>>(row: T, base: "title" | "description", lang: string): string {
+function pickLang<T extends Record<string, unknown>>(
+  row: T,
+  base: "title" | "description",
+  lang: string,
+): string {
   const key = lang.startsWith("ja") ? `${base}_ja` : `${base}_en`;
   const val = row[key];
   return typeof val === "string" ? val : "";
@@ -92,7 +93,9 @@ function DashboardPage() {
 function EnrolledDashboard({ data }: { data: Extract<DashboardData, { state: "enrolled" }> }) {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
-  const [activeStageId, setActiveStageId] = useState<string | "all">(() => data.stages[0]?.id ?? "all");
+  const [activeStageId, setActiveStageId] = useState<string | "all">(
+    () => data.stages[0]?.id ?? "all",
+  );
 
   const moduleViews = useMemo(
     () => computeModuleViews(data.modules, data.lessons, data.progress),
@@ -137,7 +140,8 @@ function EnrolledDashboard({ data }: { data: Extract<DashboardData, { state: "en
   }, [data.lessons, moduleViews, progressByLesson]);
 
   const courseCompleted = totalLessons > 0 && completedLessons === totalLessons;
-  const displayName = data.profile?.full_name?.trim() || (lang.startsWith("ja") ? "ゲスト" : "friend");
+  const displayName =
+    data.profile?.full_name?.trim() || (lang.startsWith("ja") ? "ゲスト" : "friend");
 
   return (
     <div className="flex flex-col gap-6">
@@ -181,7 +185,11 @@ function EnrolledDashboard({ data }: { data: Extract<DashboardData, { state: "en
               {t("student.dashboard.overallProgress")}
             </p>
             <p className="mt-1 text-3xl font-semibold">{overallPct}%</p>
-            <Progress value={overallPct} className="mt-3 h-2 bg-white/25" aria-label={t("student.dashboard.overallProgress")} />
+            <Progress
+              value={overallPct}
+              className="mt-3 h-2 bg-white/25"
+              aria-label={t("student.dashboard.overallProgress")}
+            />
           </div>
         </div>
       </section>
@@ -192,11 +200,7 @@ function EnrolledDashboard({ data }: { data: Extract<DashboardData, { state: "en
 
       {/* Continue + up next */}
       <section className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-        <ContinueCard
-          data={data}
-          continueLesson={continueLesson}
-          moduleViews={moduleViews}
-        />
+        <ContinueCard data={data} continueLesson={continueLesson} moduleViews={moduleViews} />
         <UpNextList
           data={data}
           moduleViews={moduleViews}
@@ -358,14 +362,9 @@ function ContinueCard({
           </div>
           <div className="flex flex-wrap gap-2">
             <Button asChild size="lg" className="min-h-11">
-              <Link
-                to="/student/lesson/$lessonId"
-                params={{ lessonId: continueLesson.lesson.id }}
-              >
+              <Link to="/student/lesson/$lessonId" params={{ lessonId: continueLesson.lesson.id }}>
                 <PlayCircle className="mr-2 size-4" aria-hidden />
-                {started
-                  ? t("student.dashboard.continue")
-                  : t("student.dashboard.startLearning")}
+                {started ? t("student.dashboard.continue") : t("student.dashboard.startLearning")}
               </Link>
             </Button>
             {started && (
@@ -437,7 +436,10 @@ function UpNextList({
         {list.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("student.dashboard.noMoreLessons")}</p>
         ) : (
-          <ol className="flex flex-col divide-y divide-border" aria-label={t("student.dashboard.upNext")}>
+          <ol
+            className="flex flex-col divide-y divide-border"
+            aria-label={t("student.dashboard.upNext")}
+          >
             {list.map((item, idx) => {
               const locked = item.status === "locked";
               const completed = item.status === "completed";
@@ -570,7 +572,12 @@ function ModulesGrid({ modules, courseSlug }: { modules: ModuleView[]; courseSlu
                 aria-hidden
               >
                 {m.thumbnail_url ? (
-                  <img src={m.thumbnail_url} alt="" className="size-full object-cover" loading="lazy" />
+                  <img
+                    src={m.thumbnail_url}
+                    alt=""
+                    className="size-full object-cover"
+                    loading="lazy"
+                  />
                 ) : (
                   <BookOpen className="size-8 text-[color:var(--brand)]" />
                 )}
@@ -595,7 +602,11 @@ function ModulesGrid({ modules, courseSlug }: { modules: ModuleView[]; courseSlu
                     {m.completedCount}/{m.totalCount} · {m.progressPct}%
                   </span>
                 </div>
-                <Progress value={m.progressPct} className="h-1.5" aria-label={t("student.dashboard.moduleProgress")} />
+                <Progress
+                  value={m.progressPct}
+                  className="h-1.5"
+                  aria-label={t("student.dashboard.moduleProgress")}
+                />
                 {locked ? (
                   <p className="text-xs text-muted-foreground">
                     {m.lockReason === "date" && m.release_at
@@ -643,7 +654,9 @@ function SupportBlock() {
             <Link to="/student/support">{t("student.dashboard.supportCta")}</Link>
           </Button>
           <Button asChild size="sm" variant="outline">
-            <Link to="/" hash="faq">{t("student.dashboard.faqCta")}</Link>
+            <Link to="/" hash="faq">
+              {t("student.dashboard.faqCta")}
+            </Link>
           </Button>
         </div>
       </CardContent>
@@ -715,7 +728,12 @@ function NoEnrollmentState({ data }: { data: Extract<DashboardData, { state: "no
           <Button asChild size="lg" variant="secondary" className="min-h-11">
             <Link to="/checkout">{t("student.dashboard.goToCheckout")}</Link>
           </Button>
-          <Button asChild size="lg" variant="outline" className="min-h-11 bg-transparent text-[color:var(--brand-foreground)] border-white/40 hover:bg-white/10">
+          <Button
+            asChild
+            size="lg"
+            variant="outline"
+            className="min-h-11 bg-transparent text-[color:var(--brand-foreground)] border-white/40 hover:bg-white/10"
+          >
             <Link to="/student/support">{t("student.dashboard.supportCta")}</Link>
           </Button>
         </div>
@@ -776,9 +794,7 @@ function DashboardError({ onRetry }: { onRetry: () => void }) {
   const { t } = useTranslation();
   return (
     <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-8" role="alert">
-      <h2 className="text-lg font-semibold text-foreground">
-        {t("student.dashboard.errorTitle")}
-      </h2>
+      <h2 className="text-lg font-semibold text-foreground">{t("student.dashboard.errorTitle")}</h2>
       <Button onClick={onRetry} variant="outline" className="mt-4">
         {t("student.dashboard.errorRetry")}
       </Button>

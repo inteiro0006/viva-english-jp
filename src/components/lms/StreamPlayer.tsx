@@ -33,9 +33,7 @@ async function ensureStreamSdk(): Promise<void> {
   if (typeof window === "undefined") return;
   if (window.Stream) return;
   await new Promise<void>((resolve, reject) => {
-    const existing = document.querySelector<HTMLScriptElement>(
-      'script[data-cf-stream-sdk="1"]',
-    );
+    const existing = document.querySelector<HTMLScriptElement>('script[data-cf-stream-sdk="1"]');
     if (existing) {
       existing.addEventListener("load", () => resolve());
       existing.addEventListener("error", () => reject(new Error("sdk load failed")));
@@ -67,9 +65,10 @@ export function StreamPlayer({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const lastSavedRef = useRef<number>(0);
   const completedRef = useRef<boolean>(false);
-  const reducedMotion = typeof window !== "undefined"
-    ? window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
-    : false;
+  const reducedMotion =
+    typeof window !== "undefined"
+      ? window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+      : false;
 
   // Fetch signed token
   useEffect(() => {
@@ -176,7 +175,15 @@ export function StreamPlayer({
       window.removeEventListener("pagehide", onPageHide);
       document.removeEventListener("visibilitychange", onHide);
     };
-  }, [status, token, initialSeconds, durationSeconds, onProgress, onComplete, autoCompleteThreshold]);
+  }, [
+    status,
+    token,
+    initialSeconds,
+    durationSeconds,
+    onProgress,
+    onComplete,
+    autoCompleteThreshold,
+  ]);
 
   if (status === "loading") {
     return (

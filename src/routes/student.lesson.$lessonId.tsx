@@ -31,10 +31,7 @@ import { StreamPlayer } from "@/components/lms/StreamPlayer";
 
 export const Route = createFileRoute("/student/lesson/$lessonId")({
   head: () => ({
-    meta: [
-      { title: "レッスン — Eigo Michi" },
-      { name: "robots", content: "noindex" },
-    ],
+    meta: [{ title: "レッスン — Eigo Michi" }, { name: "robots", content: "noindex" }],
   }),
   component: LessonPage,
 });
@@ -114,9 +111,7 @@ function LessonView({
 
   const [isCompleting, setIsCompleting] = useState(false);
   const [completedLocal, setCompletedLocal] = useState<boolean>(data.progress?.completed ?? false);
-  const [progressPct, setProgressPct] = useState<number>(
-    data.progress?.progress_percentage ?? 0,
-  );
+  const [progressPct, setProgressPct] = useState<number>(data.progress?.progress_percentage ?? 0);
   const [drawerOpen, setDrawerOpen] = useState(false);
   // Video lessons persist through StreamPlayer's internal throttle.
 
@@ -149,7 +144,6 @@ function LessonView({
 
   // Video lessons persist progress through StreamPlayer's throttled saves.
   // Text/quiz lessons persist only when the user marks them complete.
-
 
   const goTo = (id: string | null) => {
     if (!id) return;
@@ -343,10 +337,7 @@ function LessonView({
 
           <div className="mt-8">
             <Button asChild variant="ghost">
-              <Link
-                to="/student/course/$courseSlug"
-                params={{ courseSlug: data.course.slug }}
-              >
+              <Link to="/student/course/$courseSlug" params={{ courseSlug: data.course.slug }}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 {t("student.lesson.backToCourse")}
               </Link>
@@ -407,13 +398,10 @@ function Sidebar({
                     >
                       <PlayCircle
                         className={
-                          "h-3.5 w-3.5 " +
-                          (isCurrent ? "text-primary" : "text-muted-foreground")
+                          "h-3.5 w-3.5 " + (isCurrent ? "text-primary" : "text-muted-foreground")
                         }
                       />
-                      <span className="min-w-0 flex-1 truncate">
-                        {pickLang(l, "title", lang)}
-                      </span>
+                      <span className="min-w-0 flex-1 truncate">{pickLang(l, "title", lang)}</span>
                       <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
                         {Math.max(1, Math.round((l.duration_seconds ?? 0) / 60))}m
                       </span>

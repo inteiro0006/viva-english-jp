@@ -11,11 +11,7 @@ import { Camera, Loader2, Trash2 } from "lucide-react";
 
 import i18n from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  getProfileOverview,
-  signAvatarUrl,
-  updateProfile,
-} from "@/lib/profile/profile.functions";
+import { getProfileOverview, signAvatarUrl, updateProfile } from "@/lib/profile/profile.functions";
 import { localizeAuthError } from "@/lib/auth/messages";
 import { makeResetSchema } from "@/lib/auth/schemas";
 import { PasswordInput } from "@/components/auth/PasswordInput";
@@ -66,9 +62,7 @@ function ProfilePage() {
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
           {t("student.profile.heading")}
         </h1>
-        <p className="text-sm text-muted-foreground">
-          {t("student.profile.subtitle")}
-        </p>
+        <p className="text-sm text-muted-foreground">{t("student.profile.subtitle")}</p>
       </header>
 
       {isLoading ? (
@@ -150,9 +144,7 @@ function IdentityCard({
   // Sign avatar URL for display when we have a path.
   const [displayAvatar, setDisplayAvatar] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [avatarPath, setAvatarPath] = useState<string | null>(
-    profile?.avatar_url ?? null,
-  );
+  const [avatarPath, setAvatarPath] = useState<string | null>(profile?.avatar_url ?? null);
   const fileRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -214,9 +206,7 @@ function IdentityCard({
       onSaved();
       toast.success(t("student.profile.actions.saved"));
     } catch (err) {
-      toast.error(
-        (err as Error).message || t("student.profile.errors.avatarUpload"),
-      );
+      toast.error((err as Error).message || t("student.profile.errors.avatarUpload"));
     } finally {
       setUploading(false);
       if (fileRef.current) fileRef.current.value = "";
@@ -346,9 +336,7 @@ function IdentityCard({
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="full_name">
-              {t("student.profile.fields.fullName")}
-            </Label>
+            <Label htmlFor="full_name">{t("student.profile.fields.fullName")}</Label>
             <Input
               id="full_name"
               maxLength={120}
@@ -358,9 +346,7 @@ function IdentityCard({
           </div>
 
           <div className="grid gap-2 sm:max-w-xs">
-            <Label htmlFor="preferred_language">
-              {t("student.profile.fields.language")}
-            </Label>
+            <Label htmlFor="preferred_language">{t("student.profile.fields.language")}</Label>
             <Select
               value={form.watch("preferred_language")}
               onValueChange={(v) =>
@@ -380,32 +366,24 @@ function IdentityCard({
           </div>
 
           <div className="grid gap-4">
-            <h3 className="text-sm font-medium">
-              {t("student.profile.sections.communication")}
-            </h3>
-            {(["product_updates", "learning_reminders", "marketing"] as const).map(
-              (key) => (
-                <div
-                  key={key}
-                  className="flex items-start justify-between gap-4 rounded-md border border-border/60 p-3"
-                >
-                  <div>
-                    <p className="text-sm font-medium">
-                      {t(`student.profile.prefs.${key}`)}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {t(`student.profile.prefs.${key}Desc`)}
-                    </p>
-                  </div>
-                  <Switch
-                    checked={form.watch(key)}
-                    onCheckedChange={(v) =>
-                      form.setValue(key, v, { shouldDirty: true })
-                    }
-                  />
+            <h3 className="text-sm font-medium">{t("student.profile.sections.communication")}</h3>
+            {(["product_updates", "learning_reminders", "marketing"] as const).map((key) => (
+              <div
+                key={key}
+                className="flex items-start justify-between gap-4 rounded-md border border-border/60 p-3"
+              >
+                <div>
+                  <p className="text-sm font-medium">{t(`student.profile.prefs.${key}`)}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t(`student.profile.prefs.${key}Desc`)}
+                  </p>
                 </div>
-              ),
-            )}
+                <Switch
+                  checked={form.watch(key)}
+                  onCheckedChange={(v) => form.setValue(key, v, { shouldDirty: true })}
+                />
+              </div>
+            ))}
           </div>
 
           <div className="flex justify-end">
@@ -433,9 +411,7 @@ function AccountReadonlyCard({ data }: { data: OverviewData }) {
   );
 
   const activeEnrollment =
-    data.enrollments.find((e) => e.status === "active") ??
-    data.enrollments[0] ??
-    null;
+    data.enrollments.find((e) => e.status === "active") ?? data.enrollments[0] ?? null;
   const activeOrder =
     data.orders.find(
       (o) =>
@@ -443,7 +419,9 @@ function AccountReadonlyCard({ data }: { data: OverviewData }) {
         (!activeEnrollment ||
           !activeEnrollment.courses ||
           o.course_id === activeEnrollment.courses.id),
-    ) ?? data.orders[0] ?? null;
+    ) ??
+    data.orders[0] ??
+    null;
 
   return (
     <Card>
@@ -460,9 +438,7 @@ function AccountReadonlyCard({ data }: { data: OverviewData }) {
           <ReadonlyRow
             label={t("student.profile.fields.memberSince")}
             value={
-              data.profile?.created_at
-                ? dateFmt.format(new Date(data.profile.created_at))
-                : "—"
+              data.profile?.created_at ? dateFmt.format(new Date(data.profile.created_at)) : "—"
             }
           />
           <ReadonlyRow
@@ -478,11 +454,7 @@ function AccountReadonlyCard({ data }: { data: OverviewData }) {
           <ReadonlyRow
             label={t("student.profile.fields.enrollmentStatus")}
             value={
-              activeEnrollment ? (
-                <Badge variant="outline">{activeEnrollment.status}</Badge>
-              ) : (
-                "—"
-              )
+              activeEnrollment ? <Badge variant="outline">{activeEnrollment.status}</Badge> : "—"
             }
           />
           <ReadonlyRow
@@ -520,13 +492,9 @@ function ReadonlyRow({
 }) {
   return (
     <div>
-      <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-        {label}
-      </dt>
+      <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</dt>
       <dd className="mt-1 text-sm">{value}</dd>
-      {helper ? (
-        <p className="mt-1 text-xs text-muted-foreground">{helper}</p>
-      ) : null}
+      {helper ? <p className="mt-1 text-xs text-muted-foreground">{helper}</p> : null}
     </div>
   );
 }
@@ -559,22 +527,15 @@ function PasswordCard() {
     }
   }
 
-
   return (
     <Card>
       <CardHeader>
         <CardTitle>{t("student.profile.sections.password")}</CardTitle>
       </CardHeader>
       <CardContent>
-        <form
-          className="grid gap-4 sm:max-w-md"
-          onSubmit={form.handleSubmit(onSubmit)}
-          noValidate
-        >
+        <form className="grid gap-4 sm:max-w-md" onSubmit={form.handleSubmit(onSubmit)} noValidate>
           <div className="grid gap-2">
-            <Label htmlFor="new_password">
-              {t("student.profile.password.new")}
-            </Label>
+            <Label htmlFor="new_password">{t("student.profile.password.new")}</Label>
             <PasswordInput
               id="new_password"
               autoComplete="new-password"
@@ -583,9 +544,7 @@ function PasswordCard() {
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="confirm_password">
-              {t("student.profile.password.confirm")}
-            </Label>
+            <Label htmlFor="confirm_password">{t("student.profile.password.confirm")}</Label>
             <PasswordInput
               id="confirm_password"
               autoComplete="new-password"
@@ -600,9 +559,7 @@ function PasswordCard() {
           </div>
           <div className="flex justify-end">
             <Button type="submit" disabled={submitting}>
-              {submitting
-                ? t("common.loading")
-                : t("student.profile.password.submit")}
+              {submitting ? t("common.loading") : t("student.profile.password.submit")}
             </Button>
           </div>
         </form>

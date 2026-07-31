@@ -47,9 +47,7 @@ export function initI18n() {
     i18n.on("languageChanged", applyLang);
     // Sync once after initial hydration.
     if (typeof requestAnimationFrame !== "undefined") {
-      requestAnimationFrame(() =>
-        applyLang(i18n.language || DEFAULT_LANGUAGE),
-      );
+      requestAnimationFrame(() => applyLang(i18n.language || DEFAULT_LANGUAGE));
     }
   }
 
