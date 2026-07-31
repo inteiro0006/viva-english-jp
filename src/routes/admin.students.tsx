@@ -174,7 +174,15 @@ function AdminStudentsPage() {
               </Table>
             )}
           </Card>
+
+          <AdminPagination
+            page={page}
+            total={data?.total ?? 0}
+            pageSize={data?.pageSize ?? 25}
+            onPageChange={setPage}
+          />
         </TabsContent>
+
 
         <TabsContent value="all" className="space-y-4">
           <AllUsersTab onSelect={setSelected} />
