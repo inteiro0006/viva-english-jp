@@ -357,7 +357,13 @@ function StudentDrawer({
   });
   const deleteMut = useMutation({
     mutationFn: () => removeUser({ data: { userId: userId! } }),
-    onSuccess: () => {
+    onSuccess: (r: { ok: boolean; reason?: string }) => {
+      if (!r.ok) {
+        toast.error(
+          t(`admin.students_.errors.${r.reason}`, { defaultValue: r.reason ?? "Error" }),
+        );
+        return;
+      }
       toast.success(t("admin.students_.deleted"));
       onChange();
       onClose();
