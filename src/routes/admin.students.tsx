@@ -28,6 +28,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AdminPagination } from "@/components/admin/AdminPagination";
 import {
   Sheet,
   SheetContent,
@@ -64,11 +65,12 @@ function AdminStudentsPage() {
   const list = useServerFn(listStudents);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "enrolled" | "not_enrolled">("all");
+  const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["admin", "students", search, filter],
-    queryFn: () => list({ data: { search: search || undefined, filter, page: 0 } }),
+    queryKey: ["admin", "students", search, filter, page],
+    queryFn: () => list({ data: { search: search || undefined, filter, page } }),
   });
 
   const invalidate = () => {
@@ -94,10 +96,19 @@ function AdminStudentsPage() {
             <Input
               placeholder={t("admin.students_.search")}
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setPage(0);
+                setSearch(e.target.value);
+              }}
               className="w-64"
             />
-            <Select value={filter} onValueChange={(v) => setFilter(v as never)}>
+            <Select
+              value={filter}
+              onValueChange={(v) => {
+                setPage(0);
+                setFilter(v as never);
+              }}
+            >
               <SelectTrigger className="w-48">
                 <SelectValue />
               </SelectTrigger>
@@ -180,10 +191,11 @@ function AllUsersTab({ onSelect }: { onSelect: (id: string) => void }) {
   const list = useServerFn(listAllUsers);
   const [search, setSearch] = useState("");
   const [role, setRole] = useState<"all" | "admin" | "student">("all");
+  const [page, setPage] = useState(0);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["admin", "all-users", search, role],
-    queryFn: () => list({ data: { search: search || undefined, role, page: 0 } }),
+    queryKey: ["admin", "all-users", search, role, page],
+    queryFn: () => list({ data: { search: search || undefined, role, page } }),
   });
 
   return (
@@ -193,10 +205,19 @@ function AllUsersTab({ onSelect }: { onSelect: (id: string) => void }) {
         <Input
           placeholder={t("admin.students_.allUsers.search")}
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setPage(0);
+            setSearch(e.target.value);
+          }}
           className="w-64"
         />
-        <Select value={role} onValueChange={(v) => setRole(v as never)}>
+        <Select
+          value={role}
+          onValueChange={(v) => {
+            setPage(0);
+            setRole(v as never);
+          }}
+        >
           <SelectTrigger className="w-48">
             <SelectValue />
           </SelectTrigger>

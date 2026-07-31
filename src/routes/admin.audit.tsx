@@ -133,7 +133,6 @@ function AdminAuditPage() {
   const rows: AuditLogRow[] = data?.rows ?? [];
   const total = data?.total ?? 0;
   const pageSize = data?.pageSize ?? 50;
-  const pageCount = Math.max(1, Math.ceil(total / pageSize));
 
   const handleExport = () => {
     const csv = toCsv(rows);

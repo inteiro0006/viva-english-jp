@@ -112,7 +112,6 @@ function AdminPaymentsPage() {
   const kpis = data?.kpis;
   const total = data?.total ?? 0;
   const pageSize = data?.pageSize ?? 25;
-  const pageCount = Math.max(1, Math.ceil(total / pageSize));
 
   const reprocessMut = useMutation({
     mutationFn: (id: string) => reprocess({ data: { id } }),
