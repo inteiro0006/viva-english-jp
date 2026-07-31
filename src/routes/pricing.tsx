@@ -4,8 +4,7 @@ import { Check } from "lucide-react";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-
-const SITE_URL = "https://viva-english-jp.lovable.app";
+import { SITE_URL } from "@/config/site";
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({

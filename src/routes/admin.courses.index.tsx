@@ -84,7 +84,7 @@ function AdminCoursesPage() {
     slug: "",
     title_ja: "",
     title_en: "",
-    price_jpy: 49800,
+    price_jpy: DEFAULT_COURSE_PRICE_JPY,
   });
   const createMut = useMutation({
     mutationFn: () =>
@@ -102,7 +102,7 @@ function AdminCoursesPage() {
       toast.success(t("admin.courses_.created"));
       qc.invalidateQueries({ queryKey: ["admin", "courses"] });
       setOpen(false);
-      setForm({ slug: "", title_ja: "", title_en: "", price_jpy: 49800 });
+      setForm({ slug: "", title_ja: "", title_en: "", price_jpy: DEFAULT_COURSE_PRICE_JPY });
     },
     onError: (e: Error) => {
       let msg = e.message;

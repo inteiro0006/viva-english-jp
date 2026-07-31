@@ -113,7 +113,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@context": "https://schema.org",
           "@type": "Organization",
           name: "Eigo Michi",
-          url: "https://viva-english-jp.lovable.app",
+          url: SITE_URL,
           description:
             "日本人学習者のための、日本語サポート付きオンライン英語学習プラットフォーム。",
         }),
