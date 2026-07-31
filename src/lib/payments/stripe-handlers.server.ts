@@ -65,32 +65,42 @@ export async function handleCheckoutCompleted(
   if (error) throw new Error(error.message);
 }
 
-export async function handleRefund(
-  paymentIntentId: string | undefined,
-  environment: PaymentEnvironment,
-) {
+export async function handleRefund(charge: StripeObject, environment: PaymentEnvironment) {
+  const paymentIntentId = str(charge.payment_intent);
   if (!paymentIntentId) return;
+
   const admin = getStripeAdminClient();
   const { data: order, error } = await admin
     .from("orders")
-    .select("id, user_id, course_id, environment")
+    .select("id, user_id, course_id, environment, amount, status")
     .eq("provider_payment_id", paymentIntentId)
     .maybeSingle();
   if (error) throw new Error(error.message);
   if (!order) return;
   if (order.environment !== environment) throw new Error("environment_mismatch");
 
-  const { error: orderErr } = await admin
-    .from("orders")
-    .update({ status: "refunded" })
-    .eq("id", order.id);
-  if (orderErr) throw new Error(orderErr.message);
+  const chargeAmount = Number(charge.amount ?? order.amount ?? 0);
+  const refunded = Number(charge.amount_refunded ?? 0);
+  const fullyRefunded =
+    charge.refunded === true || (chargeAmount > 0 && refunded >= chargeAmount) || refunded === 0;
 
-  const { error: enrollErr } = await admin
-    .from("enrollments")
-    .update({ status: "refunded" })
-    .eq("order_id", order.id);
-  if (enrollErr) throw new Error(enrollErr.message);
+  const nextStatus = fullyRefunded ? "refunded" : "partially_refunded";
+  if (order.status !== nextStatus) {
+    const { error: orderErr } = await admin
+      .from("orders")
+      .update({ status: nextStatus })
+      .eq("id", order.id);
+    if (orderErr) throw new Error(orderErr.message);
+  }
+
+  // Access is revoked only when the payment was fully refunded.
+  if (fullyRefunded) {
+    const { error: enrollErr } = await admin
+      .from("enrollments")
+      .update({ status: "refunded" })
+      .eq("order_id", order.id);
+    if (enrollErr) throw new Error(enrollErr.message);
+  }
 }
 
 async function markOrderFailed(orderId: string | undefined, environment: PaymentEnvironment) {
@@ -117,8 +127,10 @@ export async function dispatchStripeEvent(
     case "checkout.session.expired":
       await markOrderFailed(str(meta(obj).orderId), environment);
       return { handled: true };
+    case "charge.refund.updated":
+    case "refund.updated":
     case "charge.refunded":
-      await handleRefund(str(obj.payment_intent), environment);
+      await handleRefund(obj, environment);
       return { handled: true };
     case "payment_intent.payment_failed":
       await markOrderFailed(str(meta(obj).orderId), environment);
