@@ -973,6 +973,13 @@
       "action": "Action",
       "entity": "Entity",
       "id": "ID"
+    },
+    "pagination": {
+      "label": "Pagination",
+      "range": "{{from}}–{{to}} of {{total}}",
+      "page": "Page {{page}} / {{pages}}",
+      "previous": "Previous",
+      "next": "Next"
     }
   },
   "footer": {
