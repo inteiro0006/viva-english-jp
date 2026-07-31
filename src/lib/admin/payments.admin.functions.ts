@@ -11,7 +11,7 @@ export type PaymentEventRow = Database["public"]["Tables"]["payment_events"]["Ro
   course_id: string | null;
 };
 
-function extractMetadata(payload: any): {
+function extractMetadata(payload: Record<string, unknown> | null): {
   orderId: string | null;
   userId: string | null;
   courseId: string | null;
@@ -180,7 +180,7 @@ export const reprocessPaymentEvent = createServerFn({ method: "POST" })
     const { dispatchStripeEvent, getStripeAdminClient, sanitizeError } =
       await import("@/lib/payments/stripe-handlers.server");
     const admin = getStripeAdminClient();
-    const payload = row.payload as any;
+    const payload = row.payload as Record<string, unknown>;
 
     let handled = false;
     let processingError: string | null = null;

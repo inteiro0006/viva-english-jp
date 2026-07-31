@@ -38,7 +38,7 @@ export const listStudents = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     const rows = profiles ?? [];
     const ids = rows.map((r) => r.id);
-    let enrollmentsByUser = new Map<string, EnrollmentRow[]>();
+    const enrollmentsByUser = new Map<string, EnrollmentRow[]>();
     const emailsById = new Map<string, string | null>();
     if (ids.length > 0) {
       const { data: enrollments } = await context.supabase
