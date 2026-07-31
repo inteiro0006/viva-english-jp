@@ -286,3 +286,38 @@ export const sendPasswordReset = createServerFn({ method: "POST" })
     });
     return { ok: true, email };
   });
+
+/**
+ * Permanently delete a user account (auth user + profile cascade).
+ * Admin-only, refuses self-deletion and deleting other admins.
+ */
+export const deleteUserAccount = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ userId: z.string().uuid() }).parse(d))
+  .handler(async ({ context, data }) => {
+    await assertAdmin(context);
+    if (data.userId === context.userId) throw new Error("cannot_delete_self");
+
+    const { data: isAdmin, error: roleErr } = await context.supabase.rpc("has_role", {
+      _user_id: data.userId,
+      _role: "admin",
+    });
+    if (roleErr) throw new Error(roleErr.message);
+    if (isAdmin) throw new Error("cannot_delete_admin");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: userRes } = await supabaseAdmin.auth.admin.getUserById(data.userId);
+    const email = userRes?.user?.email ?? null;
+
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(data.userId);
+    if (error) throw new Error(error.message);
+
+    await logAdminAction(context.supabase, {
+      action: "user.deleted",
+      entityType: "user",
+      entityId: data.userId,
+      oldValues: { email },
+      summary: "Account permanently deleted",
+    });
+    return { ok: true };
+  });
