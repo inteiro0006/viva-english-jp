@@ -925,6 +925,10 @@ export type Database = {
         Returns: boolean
       }
       is_module_released: { Args: { _module_id: string }; Returns: boolean }
+      is_module_released_for: {
+        Args: { _module_id: string; _uid: string }
+        Returns: boolean
+      }
       log_admin_action:
         | {
             Args: {
