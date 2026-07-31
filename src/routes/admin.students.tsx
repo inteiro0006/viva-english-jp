@@ -363,9 +363,7 @@ function StudentDrawer({
       onClose();
     },
     onError: (e: Error) =>
-      toast.error(
-        t(`admin.students_.errors.${e.message}`, { defaultValue: e.message }),
-      ),
+      toast.error(t(`admin.students_.errors.${e.message}`, { defaultValue: e.message })),
   });
   const revokeMut = useMutation({
     mutationFn: (id: string) => revoke({ data: { enrollment_id: id } }),
