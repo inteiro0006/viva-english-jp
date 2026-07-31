@@ -44,6 +44,7 @@ import {
   listLessonsForVideo,
   testCloudflareConnection,
   deleteStreamVideo,
+  reconcileStreamVideos,
 } from "@/lib/stream/stream.functions";
 
 export const Route = createFileRoute("/admin/videos")({
@@ -95,6 +96,7 @@ function AdminVideosPage() {
         </div>
         <div className="flex items-center gap-2">
           <TestConnectionButton />
+          <ReconcileButton onDone={invalidate} />
           <UploadDialog onUploaded={invalidate} />
         </div>
       </div>
@@ -532,5 +534,41 @@ function TestConnectionButton() {
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+function ReconcileButton({ onDone }: { onDone: () => void }) {
+  const { t } = useTranslation();
+  const reconcile = useServerFn(reconcileStreamVideos);
+  const [busy, setBusy] = useState(false);
+
+  const run = async () => {
+    setBusy(true);
+    try {
+      const res = await reconcile();
+      if (!res.ok) {
+        toast.error(res.message);
+        return;
+      }
+      toast.success(
+        t("stream.admin.reconcileDone", {
+          imported: res.imported,
+          updated: res.updated,
+          secured: res.secured,
+          missing: res.missing,
+        }),
+      );
+      onDone();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "reconcile_failed");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Button size="sm" variant="outline" onClick={run} disabled={busy}>
+      {busy ? t("common.loading") : t("stream.admin.reconcile")}
+    </Button>
   );
 }
