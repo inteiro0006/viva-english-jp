@@ -8,7 +8,7 @@ import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
-import { getStripe, getStripeEnvironment, isPaymentsConfigured } from "@/lib/stripe";
+import { getStripe, isPaymentsConfigured } from "@/lib/stripe";
 import { createCourseCheckoutSession } from "@/lib/payments/checkout.functions";
 import { COURSE_PRICE_JPY, formatJpy } from "@/config/site";
 
