@@ -321,5 +321,5 @@ export const deleteUserAccount = createServerFn({ method: "POST" })
       oldValues: { email },
       summary: "Account permanently deleted",
     });
-    return { ok: true };
+    return { ok: true as const };
   });
