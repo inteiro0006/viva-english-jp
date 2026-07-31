@@ -77,15 +77,20 @@ export const getOrderDetail = createServerFn({ method: "POST" })
 
 /**
  * initiateRefund
- * Records an auditable admin intent to refund an order. The actual Stripe
- * refund API call is intentionally NOT executed here — a future prompt will
- * wire it. This function only validates admin, updates internal status, and
- * logs the intent so nothing happens silently.
+ * Calls the Stripe refund API for a paid order (full or partial) and audits it.
+ * Order/enrollment status is settled by the `charge.refunded` webhook, which is
+ * the single source of truth for fulfillment state.
  */
 export const initiateRefund = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
-    z.object({ id: z.string().uuid(), reason: z.string().max(500).optional() }).parse(d),
+    z
+      .object({
+        id: z.string().uuid(),
+        reason: z.string().max(500).optional(),
+        amount: z.number().int().positive().optional(),
+      })
+      .parse(d),
   )
   .handler(async ({ context, data }) => {
     await assertAdmin(context);
@@ -95,21 +100,57 @@ export const initiateRefund = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .maybeSingle();
     if (error || !order) throw new Error("not_found");
-    if (order.status !== "paid") throw new Error("only_paid_orders_refundable");
+    if (order.status !== "paid" && order.status !== "partially_refunded") {
+      throw new Error("only_paid_orders_refundable");
+    }
+    if (!order.provider_payment_id) throw new Error("missing_payment_intent");
+    if (data.amount && data.amount > order.amount) throw new Error("amount_exceeds_order");
+
+    const { createStripeRefund } = await import("@/lib/payments/refunds.server");
+    let refund;
+    try {
+      refund = await createStripeRefund({
+        environment: order.environment === "live" ? "live" : "sandbox",
+        paymentIntentId: order.provider_payment_id,
+        amount: data.amount,
+        reason: data.reason,
+        orderId: order.id,
+      });
+    } catch (e) {
+      await logAdminAction(context.supabase, {
+        action: "order.refund_failed",
+        entityType: "order",
+        entityId: order.id,
+        oldValues: { status: order.status },
+        newValues: {
+          error: e instanceof Error ? e.message : "refund_failed",
+          amount: data.amount ?? order.amount,
+          reason: data.reason ?? null,
+        },
+      });
+      throw e;
+    }
+
     await logAdminAction(context.supabase, {
-      action: "order.refund_initiated",
+      action: "order.refunded",
       entityType: "order",
       entityId: order.id,
       oldValues: { status: order.status },
       newValues: {
-        status: "refund_pending",
+        refund_id: refund.refundId,
+        refund_status: refund.status,
+        amount: refund.amount,
+        currency: refund.currency,
+        partial: Boolean(data.amount && data.amount < order.amount),
         reason: data.reason ?? null,
-        pending_provider_call: true,
       },
     });
+
     return {
       ok: true,
-      pending: true,
-      note: "Refund intent recorded and audited. Stripe API refund call must be wired in a follow-up step.",
+      pending: refund.status === "pending",
+      refundId: refund.refundId,
+      amount: refund.amount,
+      note: null as string | null,
     };
   });

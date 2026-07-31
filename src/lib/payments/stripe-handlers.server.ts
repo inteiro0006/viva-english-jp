@@ -127,8 +127,6 @@ export async function dispatchStripeEvent(
     case "checkout.session.expired":
       await markOrderFailed(str(meta(obj).orderId), environment);
       return { handled: true };
-    case "charge.refund.updated":
-    case "refund.updated":
     case "charge.refunded":
       await handleRefund(obj, environment);
       return { handled: true };
