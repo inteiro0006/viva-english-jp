@@ -224,7 +224,6 @@ function VideoRow({
       <CardContent className="grid gap-4 p-4 md:grid-cols-[160px_1fr_auto]">
         <div className="aspect-video overflow-hidden rounded-lg bg-neutral-900">
           {video.thumbnail_url ? (
-            
             <img
               src={video.thumbnail_url}
               alt=""
