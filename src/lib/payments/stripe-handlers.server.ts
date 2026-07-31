@@ -122,7 +122,13 @@ export async function dispatchStripeEvent(
   const obj = event.data.object;
   switch (event.type) {
     case "checkout.session.completed":
+    // Deferred methods (Konbini / bank transfer, common in Japan) settle later:
+    // the session completes as `unpaid` and only this event confirms payment.
+    case "checkout.session.async_payment_succeeded":
       await handleCheckoutCompleted(obj, environment);
+      return { handled: true };
+    case "checkout.session.async_payment_failed":
+      await markOrderFailed(str(meta(obj).orderId), environment);
       return { handled: true };
     case "checkout.session.expired":
       await markOrderFailed(str(meta(obj).orderId), environment);
