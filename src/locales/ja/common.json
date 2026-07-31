@@ -989,6 +989,25 @@
       "page": "{{page}} / {{pages}} ページ",
       "previous": "前へ",
       "next": "次へ"
+    },
+    "system": "システム",
+    "system_": {
+      "title": "システム",
+      "subtitle": "GitHub リポジトリの同期状況。",
+      "refresh": "更新",
+      "branch": "アクティブなブランチ",
+      "lastCommit": "最新のコミット",
+      "lastPush": "最終プッシュ",
+      "checkedAt": "確認日時: {{time}}",
+      "viewOnGitHub": "GitHub で表示",
+      "private": "プライベート",
+      "public": "パブリック",
+      "notConfigured": "リポジトリが未設定です",
+      "notConfiguredDesc": "リポジトリの状況を表示するには、次のサーバー変数を設定してください:",
+      "envRepo": "owner/name 形式のリポジトリ",
+      "envToken": "任意。プライベートリポジトリでは必須",
+      "error": "リポジトリの状況を取得できませんでした",
+      "errorDesc": "GitHub がエラーを返しました。リポジトリ名とアクセストークンを確認してください。"
     }
   },
   "footer": {

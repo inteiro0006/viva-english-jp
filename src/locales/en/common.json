@@ -989,6 +989,25 @@
       "page": "Page {{page}} / {{pages}}",
       "previous": "Previous",
       "next": "Next"
+    },
+    "system": "System",
+    "system_": {
+      "title": "System",
+      "subtitle": "GitHub repository synchronization status.",
+      "refresh": "Refresh",
+      "branch": "Active branch",
+      "lastCommit": "Last commit",
+      "lastPush": "Last push",
+      "checkedAt": "Checked at {{time}}",
+      "viewOnGitHub": "View on GitHub",
+      "private": "Private",
+      "public": "Public",
+      "notConfigured": "Repository not configured",
+      "notConfiguredDesc": "Set the following server variables to display the repository status:",
+      "envRepo": "repository in owner/name format",
+      "envToken": "optional; required for private repositories",
+      "error": "Could not read repository status",
+      "errorDesc": "GitHub returned an error. Check the repository name and the access token."
     }
   },
   "footer": {
