@@ -49,23 +49,21 @@ function CheckoutPage() {
 
   const fetchClientSecret = useMemo(() => {
     return async (): Promise<string> => {
-      const result = await createCourseCheckoutSession({
-        data: {
-          returnUrl: `${window.location.origin}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-          environment: getStripeEnvironment(),
-        },
-      });
+      // No client-supplied data: user, course, price, currency, environment
+      // and return URL are all resolved server-side.
+      const result = await createCourseCheckoutSession({ data: {} });
       if ("error" in result) {
         if (result.error === "already_enrolled") {
           navigate({ to: "/student/dashboard" });
           throw new Error(t("checkout.alreadyEnrolled"));
         }
-        throw new Error(result.error);
+        throw new Error(t(`checkout.errors.${result.error}`));
       }
-      if (!result.clientSecret) throw new Error("Missing client secret");
+      if (!result.clientSecret) throw new Error(t("checkout.errors.checkout_failed"));
       return result.clientSecret;
     };
   }, [navigate, t]);
+
 
   const options = useMemo(() => ({ fetchClientSecret }), [fetchClientSecret]);
 
