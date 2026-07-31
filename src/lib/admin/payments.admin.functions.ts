@@ -180,7 +180,7 @@ export const reprocessPaymentEvent = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     if (!row) throw new Error("not_found");
 
-    const { dispatchStripeEvent, getStripeAdminClient } = await import(
+    const { dispatchStripeEvent, getStripeAdminClient, sanitizeError } = await import(
       "@/lib/payments/stripe-handlers.server"
     );
     const admin = getStripeAdminClient();
@@ -189,22 +189,29 @@ export const reprocessPaymentEvent = createServerFn({ method: "POST" })
     let handled = false;
     let processingError: string | null = null;
     try {
-      const res = await dispatchStripeEvent({
-        type: row.event_type,
-        data: payload?.data ?? { object: payload },
-      });
+      const res = await dispatchStripeEvent(
+        {
+          id: row.provider_event_id,
+          type: row.event_type,
+          data: payload?.data ?? { object: payload },
+        },
+        row.environment,
+      );
       handled = res.handled;
     } catch (err) {
-      processingError = err instanceof Error ? err.message : String(err);
+      processingError = sanitizeError(err);
     }
 
     await admin
       .from("payment_events")
       .update({
         processed: !processingError,
+        processed_at: processingError ? null : new Date().toISOString(),
         processing_error: processingError,
+        attempts: (row.attempts ?? 0) + 1,
       })
       .eq("id", row.id);
+
 
     await logAdminAction(context.supabase, {
       action: "payment_event.reprocess",
