@@ -1030,7 +1030,9 @@
       },
       "duration": "長さ",
       "createdAt": "アップロード日",
-      "empty": "まだ動画がありません。上のボタンから最初の動画をアップロードしてください。"
+      "empty": "まだ動画がありません。上のボタンから最初の動画をアップロードしてください。",
+      "reconcile": "Cloudflareと同期",
+      "reconcileDone": "同期完了: 新規{{imported}}件 / 更新{{updated}}件 / 保護{{secured}}件 / Cloudflareに存在しない{{missing}}件"
     }
   },
   "certificate": {

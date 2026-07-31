@@ -1030,7 +1030,9 @@
       },
       "duration": "Duration",
       "createdAt": "Uploaded",
-      "empty": "No videos yet — start your first upload above."
+      "empty": "No videos yet — start your first upload above.",
+      "reconcile": "Reconcile with Cloudflare",
+      "reconcileDone": "Sync complete: {{imported}} imported, {{updated}} updated, {{secured}} secured, {{missing}} missing on Cloudflare."
     }
   },
   "certificate": {
