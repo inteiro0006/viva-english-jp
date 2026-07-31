@@ -18,6 +18,7 @@ export const Route = createFileRoute("/api/public/webhooks/cloudflare-stream")({
           thumbnail?: string;
           preview?: string;
           readyToStream?: boolean;
+          requireSignedURLs?: boolean;
           eventId?: string;
         };
         try {
@@ -48,6 +49,16 @@ export const Route = createFileRoute("/api/public/webhooks/cloudflare-stream")({
           return new Response("ok", { status: 200 });
         }
 
+        // Cloudflare must never serve these videos publicly.
+        if (payload.requireSignedURLs === false) {
+          const { enforceSignedUrls } = await import("@/lib/stream/stream.server");
+          try {
+            await enforceSignedUrls(payload.uid);
+          } catch (e) {
+            console.error("failed to enforce signed urls", e);
+          }
+        }
+
         await supabaseAdmin
           .from("stream_videos")
           .update({
@@ -56,8 +67,17 @@ export const Route = createFileRoute("/api/public/webhooks/cloudflare-stream")({
             thumbnail_url: payload.thumbnail ?? null,
             preview_url: payload.preview ?? null,
             ready_to_stream: !!payload.readyToStream,
+            require_signed_urls: true,
           })
           .eq("cloudflare_uid", payload.uid);
+
+        // Keep attached lessons' duration in sync with the encoded video.
+        if (payload.duration && payload.duration > 0) {
+          await supabaseAdmin
+            .from("lessons")
+            .update({ duration_seconds: Math.round(payload.duration) })
+            .eq("cloudflare_video_uid", payload.uid);
+        }
 
         return new Response("ok", { status: 200 });
       },
