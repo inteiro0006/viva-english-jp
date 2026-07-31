@@ -939,8 +939,9 @@
       "refunded": "返金済み",
       "refund": "返金する",
       "confirmRefund": "この注文を返金しますか?",
-      "confirmRefundDesc": "返金を開始します。返金が確定するとコースへのアクセスは自動的に取り消されます。",
-      "refundQueued": "返金の要求を記録しました。"
+      "confirmRefundDesc": "Stripe経由で決済を返金します。返金が確定するとコースへのアクセスは自動的に取り消されます。",
+      "refundQueued": "Stripeに返金を送信しました。確定待ちです。",
+      "refundDone": "Stripeで返金を実行しました。Stripeの確定後にアクセスが取り消されます。"
     },
     "settings_": {
       "subtitle": "プラットフォーム全体の設定。",
