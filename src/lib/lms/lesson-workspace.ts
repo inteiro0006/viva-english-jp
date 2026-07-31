@@ -110,11 +110,15 @@ export function useLessonWorkspace(userId: string | undefined, lessonId: string 
       if (!moduleRes.data) return { state: "not_found" };
       const mod = moduleRes.data as ModuleRow;
 
-      // Client-side release gate (RLS on modules does not check release_at)
-      const now = new Date();
-      if (mod.release_type === "date" && mod.release_at && new Date(mod.release_at) > now) {
-        return { state: "no_access" };
-      }
+      // Authoritative access gate (published chain + module release + preview/enrollment/admin),
+      // evaluated in the database — never trusted to the client.
+      const accessRes = await supabase.rpc("can_access_lesson", {
+        _uid: userId,
+        _lesson_id: lesson.id,
+      });
+      if (accessRes.error) throw new Error(accessRes.error.message);
+      if (accessRes.data !== true) return { state: "no_access" };
+
 
       const courseRes = await supabase
         .from("courses")
@@ -214,37 +218,30 @@ export function useLessonWorkspace(userId: string | undefined, lessonId: string 
   });
 }
 
-export async function markLessonComplete(userId: string, lessonId: string, durationSeconds: number) {
-  const { error } = await supabase.from("lesson_progress").upsert(
-    {
-      user_id: userId,
-      lesson_id: lessonId,
-      progress_seconds: Math.max(1, durationSeconds),
-      progress_percentage: 100,
-      completed: true,
-      completed_at: new Date().toISOString(),
-      last_watched_at: new Date().toISOString(),
-    },
-    { onConflict: "user_id,lesson_id" },
-  );
+/**
+ * Progress is written exclusively through the `record_lesson_progress` RPC.
+ * The database derives the percentage from the watched position vs. the real
+ * lesson duration and owns the completion flag, so a client can never mark a
+ * lesson (or a certificate) as complete without actually watching it.
+ */
+export async function markLessonComplete(_userId: string, lessonId: string, durationSeconds: number) {
+  const { error } = await supabase.rpc("record_lesson_progress", {
+    _lesson_id: lessonId,
+    _position_seconds: Math.max(1, Math.round(durationSeconds)),
+  });
   if (error) throw new Error(error.message);
 }
 
 export async function saveLessonPosition(
-  userId: string,
+  _userId: string,
   lessonId: string,
   progressSeconds: number,
-  progressPercentage: number,
+  _progressPercentage?: number,
 ) {
-  const { error } = await supabase.from("lesson_progress").upsert(
-    {
-      user_id: userId,
-      lesson_id: lessonId,
-      progress_seconds: Math.round(progressSeconds),
-      progress_percentage: Math.min(100, Math.max(0, Math.round(progressPercentage))),
-      last_watched_at: new Date().toISOString(),
-    },
-    { onConflict: "user_id,lesson_id" },
-  );
+  const { error } = await supabase.rpc("record_lesson_progress", {
+    _lesson_id: lessonId,
+    _position_seconds: Math.max(0, Math.round(progressSeconds)),
+  });
   if (error) throw new Error(error.message);
 }
+
