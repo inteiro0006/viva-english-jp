@@ -77,8 +77,15 @@ export const getStreamPlaybackToken = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => z.object({ lessonId: z.string().uuid() }).parse(data))
   .handler(async ({ context, data }) => {
-    // Access is enforced by RLS on `lessons` (published + preview OR enrolled).
-    // If the caller can't SELECT the row, they can't get a token.
+    // Authoritative access gate: published course/module/lesson, module released,
+    // and preview OR active enrollment OR admin. Evaluated in the database.
+    const { data: allowed, error: accessError } = await context.supabase.rpc("can_access_lesson", {
+      _uid: context.userId,
+      _lesson_id: data.lessonId,
+    });
+    if (accessError) throw new Error(accessError.message);
+    if (allowed !== true) throw new Error("Forbidden");
+
     const { data: lesson, error } = await context.supabase
       .from("lessons")
       .select("id, cloudflare_video_uid, module_id, status, is_preview")
@@ -89,6 +96,7 @@ export const getStreamPlaybackToken = createServerFn({ method: "POST" })
     if (!lesson || !lesson.cloudflare_video_uid) {
       throw new Error("Video unavailable");
     }
+
     if (lesson.status !== "published") {
       throw new Error("Video unavailable");
     }
