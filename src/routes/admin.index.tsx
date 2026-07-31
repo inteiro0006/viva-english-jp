@@ -2,20 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { useServerFn } from "@tanstack/react-start";
-import {
-  Users,
-  BookMarked,
-  Receipt,
-  JapaneseYen,
-  Activity,
-  Video,
-  LifeBuoy,
-} from "lucide-react";
+import { Users, BookMarked, Receipt, JapaneseYen, Activity, Video, LifeBuoy } from "lucide-react";
 import { getAdminDashboard } from "@/lib/admin/dashboard.functions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SchemaHealthCard } from "@/components/admin/SchemaHealthCard";
-
 
 export const Route = createFileRoute("/admin/")({
   component: AdminDashboard,
@@ -66,9 +57,7 @@ function AdminDashboard() {
         {kpis.map((k) => (
           <Card key={k.label}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {k.label}
-              </CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">{k.label}</CardTitle>
               <k.icon className="size-4 text-muted-foreground" aria-hidden />
             </CardHeader>
             <CardContent>
@@ -132,7 +121,6 @@ function AdminDashboard() {
 
       <SchemaHealthCard />
     </div>
-
   );
 }
 

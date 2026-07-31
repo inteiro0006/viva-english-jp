@@ -29,8 +29,8 @@ export const listAdminLessons = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     let out = rows ?? [];
     if (data.courseId) {
-      out = out.filter((l: { modules: { course_id: string } | null }) =>
-        l.modules?.course_id === data.courseId,
+      out = out.filter(
+        (l: { modules: { course_id: string } | null }) => l.modules?.course_id === data.courseId,
       );
     }
     return out;
@@ -132,9 +132,7 @@ export const deleteLesson = createServerFn({ method: "POST" })
 export const reorderLessons = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
-    z
-      .object({ moduleId: z.string().uuid(), ids: z.array(z.string().uuid()).min(1) })
-      .parse(d),
+    z.object({ moduleId: z.string().uuid(), ids: z.array(z.string().uuid()).min(1) }).parse(d),
   )
   .handler(async ({ context, data }) => {
     await assertAdmin(context);

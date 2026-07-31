@@ -25,11 +25,7 @@ function makeVerificationCode(): string {
 }
 
 function buildOrigin(): string {
-  const raw =
-    process.env.PUBLIC_APP_URL ||
-    process.env.APP_URL ||
-    process.env.SITE_URL ||
-    "";
+  const raw = process.env.PUBLIC_APP_URL || process.env.APP_URL || process.env.SITE_URL || "";
   if (raw) return raw.replace(/\/$/, "");
   const supa = process.env.SUPABASE_URL || "";
   // Best-effort: derive from published project url pattern
@@ -107,10 +103,10 @@ export const issueCertificate = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
 
     // 1. Server-side eligibility check
-    const { data: eligible, error: eErr } = await supabase.rpc(
-      "is_certificate_eligible",
-      { _uid: userId, _course_id: data.courseId },
-    );
+    const { data: eligible, error: eErr } = await supabase.rpc("is_certificate_eligible", {
+      _uid: userId,
+      _course_id: data.courseId,
+    });
     if (eErr) throw new Error(eErr.message);
     if (!eligible) throw new Error("not_eligible");
 
@@ -159,16 +155,13 @@ export const issueCertificate = createServerFn({ method: "POST" })
     if (!courseRes.data) throw new Error("course_not_found");
 
     const totalSeconds = (lessonsRes.data ?? []).reduce(
-      (acc: number, l: { duration_seconds: number | null }) =>
-        acc + (l.duration_seconds ?? 0),
+      (acc: number, l: { duration_seconds: number | null }) => acc + (l.duration_seconds ?? 0),
       0,
     );
     const totalHours = totalSeconds > 0 ? Math.round(totalSeconds / 3600) : null;
 
-
     const language: "ja" | "en" =
-      data.language ??
-      (profileRes.data.preferred_language === "en" ? "en" : "ja");
+      data.language ?? (profileRes.data.preferred_language === "en" ? "en" : "ja");
 
     const courseTitle =
       language === "ja"
@@ -178,19 +171,14 @@ export const issueCertificate = createServerFn({ method: "POST" })
     const settingsMap = new Map<string, unknown>(
       (settingsRes.data ?? []).map((r) => [r.key, r.value]),
     );
-    const institutionName =
-      (settingsMap.get("platform_name") as string) || "Eigo Academy";
+    const institutionName = (settingsMap.get("platform_name") as string) || "Eigo Academy";
     const institutionTagline =
-      ((settingsMap.get(
-        language === "ja" ? "institutional_ja" : "institutional_en",
-      ) as string) || "");
-    const signatoryName =
-      (settingsMap.get("certificate_signatory") as string | null) || null;
+      (settingsMap.get(language === "ja" ? "institutional_ja" : "institutional_en") as string) ||
+      "";
+    const signatoryName = (settingsMap.get("certificate_signatory") as string | null) || null;
 
     // 4. Insert certificate row (admin client to bypass client-side INSERT RLS)
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     let inserted: {
       id: string;
@@ -253,12 +241,10 @@ export const issueCertificate = createServerFn({ method: "POST" })
     });
 
     const pdfPath = `${userId}/${inserted.id}.pdf`;
-    const up = await supabaseAdmin.storage
-      .from("certificates")
-      .upload(pdfPath, pdfBytes, {
-        contentType: "application/pdf",
-        upsert: true,
-      });
+    const up = await supabaseAdmin.storage.from("certificates").upload(pdfPath, pdfBytes, {
+      contentType: "application/pdf",
+      upsert: true,
+    });
     if (up.error) throw new Error(up.error.message);
 
     const { data: updated, error: uErr } = await supabaseAdmin
@@ -290,9 +276,7 @@ export const getCertificateDownloadUrl = createServerFn({ method: "POST" })
     if (cert.revoked_at) throw new Error("revoked");
     if (!cert.pdf_path) throw new Error("pdf_missing");
 
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: signed, error: sErr } = await supabaseAdmin.storage
       .from("certificates")
       .createSignedUrl(cert.pdf_path, 60 * 5);
@@ -414,8 +398,7 @@ export const verifyCertificatePublic = createServerFn({ method: "POST" })
     });
     if (error) throw new Error(error.message);
     const row = rows?.[0];
-    if (!row || !row.certificate_number)
-      return { valid: false, status: "not_found" as const };
+    if (!row || !row.certificate_number) return { valid: false, status: "not_found" as const };
     return {
       valid: row.valid,
       status: row.status as "valid" | "revoked" | "not_found",

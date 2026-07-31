@@ -12,19 +12,13 @@ export function Placeholder({ title, description }: PlaceholderProps) {
   return (
     <section className="mx-auto flex w-full max-w-3xl flex-col gap-6 py-10">
       <header className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-          {title}
-        </h1>
-        {description ? (
-          <p className="text-muted-foreground">{description}</p>
-        ) : null}
+        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h1>
+        {description ? <p className="text-muted-foreground">{description}</p> : null}
       </header>
       <Card className="border-dashed">
         <CardContent className="flex items-start gap-3 py-6">
           <Sparkles className="mt-0.5 size-5 text-[color:var(--brand)]" aria-hidden />
-          <p className="text-sm text-muted-foreground">
-            {t("placeholder.note")}
-          </p>
+          <p className="text-sm text-muted-foreground">{t("placeholder.note")}</p>
         </CardContent>
       </Card>
     </section>

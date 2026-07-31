@@ -12,8 +12,7 @@ import type { Page } from "@playwright/test";
 
 export type MockRole = "student" | "admin";
 
-const SUPABASE_URL =
-  process.env.VITE_SUPABASE_URL ?? "https://jzcqpytfqoikomnrdkfl.supabase.co";
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL ?? "https://jzcqpytfqoikomnrdkfl.supabase.co";
 const PROJECT_REF = new URL(SUPABASE_URL).hostname.split(".")[0];
 export const STORAGE_KEY = `sb-${PROJECT_REF}-auth-token`;
 
@@ -93,10 +92,10 @@ export async function mockSupabase(
 /** Writes the mocked session into localStorage for the app origin. */
 export async function seedSession(page: Page, session: object, baseURL: string) {
   await page.goto(baseURL);
-  await page.evaluate(
-    ([key, value]) => window.localStorage.setItem(key, value),
-    [STORAGE_KEY, JSON.stringify(session)] as const,
-  );
+  await page.evaluate(([key, value]) => window.localStorage.setItem(key, value), [
+    STORAGE_KEY,
+    JSON.stringify(session),
+  ] as const);
 }
 
 /**

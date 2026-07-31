@@ -98,18 +98,24 @@ function AdminStudentsPage() {
               className="w-64"
             />
             <Select value={filter} onValueChange={(v) => setFilter(v as never)}>
-              <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-48">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t("admin.students_.filter.all")}</SelectItem>
                 <SelectItem value="enrolled">{t("admin.students_.filter.enrolled")}</SelectItem>
-                <SelectItem value="not_enrolled">{t("admin.students_.filter.notEnrolled")}</SelectItem>
+                <SelectItem value="not_enrolled">
+                  {t("admin.students_.filter.notEnrolled")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <Card>
             {isLoading ? (
-              <div className="p-4"><Skeleton className="h-64 w-full" /></div>
+              <div className="p-4">
+                <Skeleton className="h-64 w-full" />
+              </div>
             ) : (
               <Table>
                 <TableHeader>
@@ -145,7 +151,10 @@ function AdminStudentsPage() {
                   ))}
                   {(data?.rows ?? []).length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={5} className="py-12 text-center text-sm text-muted-foreground">
+                      <TableCell
+                        colSpan={5}
+                        className="py-12 text-center text-sm text-muted-foreground"
+                      >
                         {t("common.empty")}
                       </TableCell>
                     </TableRow>
@@ -161,11 +170,7 @@ function AdminStudentsPage() {
         </TabsContent>
       </Tabs>
 
-      <StudentDrawer
-        userId={selected}
-        onClose={() => setSelected(null)}
-        onChange={invalidate}
-      />
+      <StudentDrawer userId={selected} onClose={() => setSelected(null)} onChange={invalidate} />
     </div>
   );
 }
@@ -192,18 +197,24 @@ function AllUsersTab({ onSelect }: { onSelect: (id: string) => void }) {
           className="w-64"
         />
         <Select value={role} onValueChange={(v) => setRole(v as never)}>
-          <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-48">
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("admin.students_.allUsers.roleFilter.all")}</SelectItem>
             <SelectItem value="admin">{t("admin.students_.allUsers.roleFilter.admin")}</SelectItem>
-            <SelectItem value="student">{t("admin.students_.allUsers.roleFilter.student")}</SelectItem>
+            <SelectItem value="student">
+              {t("admin.students_.allUsers.roleFilter.student")}
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <Card>
         {isLoading ? (
-          <div className="p-4"><Skeleton className="h-64 w-full" /></div>
+          <div className="p-4">
+            <Skeleton className="h-64 w-full" />
+          </div>
         ) : (
           <Table>
             <TableHeader>
@@ -226,14 +237,10 @@ function AllUsersTab({ onSelect }: { onSelect: (id: string) => void }) {
                   <TableCell className="font-medium">{u.full_name || "—"}</TableCell>
                   <TableCell className="text-muted-foreground">{u.email || "—"}</TableCell>
                   <TableCell>
-                    <Badge variant={u.role === "admin" ? "default" : "outline"}>
-                      {u.role}
-                    </Badge>
+                    <Badge variant={u.role === "admin" ? "default" : "outline"}>{u.role}</Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">
-                      {(u.preferred_language ?? "ja").toUpperCase()}
-                    </Badge>
+                    <Badge variant="outline">{(u.preferred_language ?? "ja").toUpperCase()}</Badge>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {new Date(u.created_at).toLocaleDateString(i18n.language)}
@@ -247,7 +254,10 @@ function AllUsersTab({ onSelect }: { onSelect: (id: string) => void }) {
               ))}
               {(data?.rows ?? []).length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} className="py-12 text-center text-sm text-muted-foreground">
+                  <TableCell
+                    colSpan={6}
+                    className="py-12 text-center text-sm text-muted-foreground"
+                  >
                     {t("common.empty")}
                   </TableCell>
                 </TableRow>
@@ -259,7 +269,6 @@ function AllUsersTab({ onSelect }: { onSelect: (id: string) => void }) {
     </>
   );
 }
-
 
 function StudentDrawer({
   userId,
@@ -301,7 +310,12 @@ function StudentDrawer({
   const resetMut = useMutation({
     mutationFn: () => resetPw({ data: { userId: userId! } }),
     onSuccess: (r: { email: string }) =>
-      toast.success(t("admin.students_.resetSent", { email: r.email, defaultValue: `Password reset link sent to ${r.email}` })),
+      toast.success(
+        t("admin.students_.resetSent", {
+          email: r.email,
+          defaultValue: `Password reset link sent to ${r.email}`,
+        }),
+      ),
     onError: (e: Error) => toast.error(e.message),
   });
   const revokeMut = useMutation({
@@ -349,10 +363,7 @@ function StudentDrawer({
                   ))}
                 </SelectContent>
               </Select>
-              <Button
-                onClick={() => grantMut.mutate()}
-                disabled={!courseId || grantMut.isPending}
-              >
+              <Button onClick={() => grantMut.mutate()} disabled={!courseId || grantMut.isPending}>
                 {t("admin.students_.grantAction")}
               </Button>
             </div>
@@ -383,7 +394,10 @@ function StudentDrawer({
                           : "—"}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        <Badge variant={row.status === "active" ? "default" : "outline"} className="mr-2">
+                        <Badge
+                          variant={row.status === "active" ? "default" : "outline"}
+                          className="mr-2"
+                        >
                           {row.status}
                         </Badge>
                         {new Date(row.enrolled_at).toLocaleDateString(i18n.language)}
@@ -398,7 +412,9 @@ function StudentDrawer({
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>{t("admin.students_.confirmRevoke")}</AlertDialogTitle>
+                            <AlertDialogTitle>
+                              {t("admin.students_.confirmRevoke")}
+                            </AlertDialogTitle>
                             <AlertDialogDescription>
                               {t("admin.students_.confirmRevokeDesc")}
                             </AlertDialogDescription>

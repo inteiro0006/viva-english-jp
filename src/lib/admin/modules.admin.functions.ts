@@ -6,9 +6,7 @@ import { moduleInputSchema } from "@/lib/admin/schemas";
 
 export const listAdminModules = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
-    z.object({ courseId: z.string().uuid().optional() }).parse(d ?? {}),
-  )
+  .inputValidator((d) => z.object({ courseId: z.string().uuid().optional() }).parse(d ?? {}))
   .handler(async ({ context, data }) => {
     await assertAdmin(context);
     let q = context.supabase
@@ -94,9 +92,7 @@ export const deleteModule = createServerFn({ method: "POST" })
 export const reorderModules = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
-    z
-      .object({ courseId: z.string().uuid(), ids: z.array(z.string().uuid()).min(1) })
-      .parse(d),
+    z.object({ courseId: z.string().uuid(), ids: z.array(z.string().uuid()).min(1) }).parse(d),
   )
   .handler(async ({ context, data }) => {
     await assertAdmin(context);

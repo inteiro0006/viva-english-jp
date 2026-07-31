@@ -34,14 +34,12 @@ export const Route = createFileRoute("/api/public/webhooks/cloudflare-stream")({
         const eventId =
           payload.eventId ??
           `${payload.uid}:${payload.status?.state ?? "unknown"}:${payload.readyToStream ? "1" : "0"}`;
-        const { error: logErr } = await supabaseAdmin
-          .from("stream_webhook_events")
-          .insert({
-            event_id: eventId,
-            cloudflare_uid: payload.uid,
-            event_type: payload.status?.state ?? null,
-            payload,
-          });
+        const { error: logErr } = await supabaseAdmin.from("stream_webhook_events").insert({
+          event_id: eventId,
+          cloudflare_uid: payload.uid,
+          event_type: payload.status?.state ?? null,
+          payload,
+        });
         // duplicate key = already processed
         if (logErr && !/duplicate key/i.test(logErr.message)) {
           console.error("webhook log error", logErr);

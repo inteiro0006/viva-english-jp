@@ -75,9 +75,7 @@ function SupportPage() {
     if (!search.trim()) return items;
     const q = search.toLowerCase();
     return items.filter((f) => {
-      const hay = [f.question_ja, f.question_en, f.answer_ja, f.answer_en]
-        .join(" ")
-        .toLowerCase();
+      const hay = [f.question_ja, f.question_en, f.answer_ja, f.answer_en].join(" ").toLowerCase();
       return hay.includes(q);
     });
   }, [faqQuery.data, search]);
@@ -118,9 +116,7 @@ function SupportPage() {
       form.setValue("attachment_url", path, { shouldDirty: true });
       setAttachmentName(file.name);
     } catch (err) {
-      toast.error(
-        (err as Error).message || t("student.support.form.attachmentUploadFailed"),
-      );
+      toast.error((err as Error).message || t("student.support.form.attachmentUploadFailed"));
     } finally {
       setUploading(false);
       if (fileRef.current) fileRef.current.value = "";
@@ -169,9 +165,7 @@ function SupportPage() {
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
           {t("student.support.heading")}
         </h1>
-        <p className="text-sm text-muted-foreground">
-          {t("student.support.subtitle")}
-        </p>
+        <p className="text-sm text-muted-foreground">{t("student.support.subtitle")}</p>
       </header>
 
       {/* FAQ */}
@@ -195,9 +189,7 @@ function SupportPage() {
           {faqQuery.isLoading ? (
             <Skeleton className="h-40 w-full" />
           ) : filteredFaq.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              {t("student.support.faq.noResults")}
-            </p>
+            <p className="text-sm text-muted-foreground">{t("student.support.faq.noResults")}</p>
           ) : (
             <Accordion type="single" collapsible className="w-full">
               {filteredFaq.map((item) => (
@@ -227,17 +219,13 @@ function SupportPage() {
             noValidate
           >
             <div className="grid gap-2 sm:max-w-xs">
-              <Label htmlFor="category">
-                {t("student.support.form.category")}
-              </Label>
+              <Label htmlFor="category">{t("student.support.form.category")}</Label>
               <Select
                 value={form.watch("category")}
                 onValueChange={(v) =>
-                  form.setValue(
-                    "category",
-                    v as (typeof SUPPORT_CATEGORIES)[number],
-                    { shouldDirty: true },
-                  )
+                  form.setValue("category", v as (typeof SUPPORT_CATEGORIES)[number], {
+                    shouldDirty: true,
+                  })
                 }
               >
                 <SelectTrigger id="category">
@@ -254,9 +242,7 @@ function SupportPage() {
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="subject">
-                {t("student.support.form.subject")}
-              </Label>
+              <Label htmlFor="subject">{t("student.support.form.subject")}</Label>
               <Input
                 id="subject"
                 maxLength={160}
@@ -267,9 +253,7 @@ function SupportPage() {
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="message">
-                {t("student.support.form.message")}
-              </Label>
+              <Label htmlFor="message">{t("student.support.form.message")}</Label>
               <Textarea
                 id="message"
                 rows={6}
@@ -323,10 +307,7 @@ function SupportPage() {
             </div>
 
             <div className="flex justify-end">
-              <Button
-                type="submit"
-                disabled={submitMutation.isPending || uploading}
-              >
+              <Button type="submit" disabled={submitMutation.isPending || uploading}>
                 {submitMutation.isPending
                   ? t("student.support.form.submitting")
                   : t("student.support.form.submit")}
@@ -345,9 +326,7 @@ function SupportPage() {
           {requestsQuery.isLoading ? (
             <Skeleton className="h-32 w-full" />
           ) : (requestsQuery.data ?? []).length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              {t("student.support.history.empty")}
-            </p>
+            <p className="text-sm text-muted-foreground">{t("student.support.history.empty")}</p>
           ) : (
             <ul className="divide-y divide-border">
               {(requestsQuery.data ?? []).map((r) => (
@@ -364,9 +343,7 @@ function SupportPage() {
                       {dateFmt.format(new Date(r.created_at))}
                     </span>
                   </div>
-                  <p className="whitespace-pre-line text-sm text-muted-foreground">
-                    {r.message}
-                  </p>
+                  <p className="whitespace-pre-line text-sm text-muted-foreground">{r.message}</p>
                   {r.response ? (
                     <div className="rounded-md border border-border/60 bg-muted/40 p-3 text-sm">
                       <p className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">

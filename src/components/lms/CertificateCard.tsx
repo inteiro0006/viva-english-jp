@@ -30,8 +30,7 @@ export function CertificateCard({ courseId }: Props) {
   });
 
   const issueMut = useMutation({
-    mutationFn: (lang: "ja" | "en") =>
-      issueFn({ data: { courseId, language: lang } }),
+    mutationFn: (lang: "ja" | "en") => issueFn({ data: { courseId, language: lang } }),
     onSuccess: () => {
       toast.success(t("certificate.issuedToast"));
       qc.invalidateQueries({ queryKey: ["certificate-status", courseId] });
@@ -49,8 +48,7 @@ export function CertificateCard({ courseId }: Props) {
   });
 
   const downloadMut = useMutation({
-    mutationFn: (certificateId: string) =>
-      downloadFn({ data: { certificateId } }),
+    mutationFn: (certificateId: string) => downloadFn({ data: { certificateId } }),
     onSuccess: (res) => {
       window.open(res.url, "_blank", "noopener");
     },
@@ -81,9 +79,7 @@ export function CertificateCard({ courseId }: Props) {
               <Award className="h-6 w-6" aria-hidden />
             </div>
             <div>
-              <h3 className="text-lg font-semibold">
-                {t("certificate.issued.title")}
-              </h3>
+              <h3 className="text-lg font-semibold">{t("certificate.issued.title")}</h3>
               <p className="text-sm text-muted-foreground">
                 {t("certificate.issued.description", {
                   number: certificate.certificate_number,
@@ -128,19 +124,13 @@ export function CertificateCard({ courseId }: Props) {
               <ShieldCheck className="h-6 w-6" aria-hidden />
             </div>
             <div>
-              <h3 className="text-lg font-semibold">
-                {t("certificate.eligible.title")}
-              </h3>
+              <h3 className="text-lg font-semibold">{t("certificate.eligible.title")}</h3>
               <p className="text-sm text-muted-foreground">
                 {t("certificate.eligible.description")}
               </p>
             </div>
           </div>
-          <Button
-            size="lg"
-            onClick={() => issueMut.mutate(lang)}
-            disabled={issueMut.isPending}
-          >
+          <Button size="lg" onClick={() => issueMut.mutate(lang)} disabled={issueMut.isPending}>
             {issueMut.isPending ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
@@ -154,10 +144,7 @@ export function CertificateCard({ courseId }: Props) {
   }
 
   // ---- Not eligible: show progress remaining ----
-  const remaining = Math.max(
-    0,
-    progress.totalLessons - progress.completedLessons,
-  );
+  const remaining = Math.max(0, progress.totalLessons - progress.completedLessons);
   return (
     <Card className="border-dashed">
       <CardContent className="flex flex-col gap-3 py-6">
@@ -166,9 +153,7 @@ export function CertificateCard({ courseId }: Props) {
             <Award className="h-5 w-5" aria-hidden />
           </div>
           <div className="flex-1">
-            <h3 className="font-semibold">
-              {t("certificate.locked.title")}
-            </h3>
+            <h3 className="font-semibold">{t("certificate.locked.title")}</h3>
             <p className="text-sm text-muted-foreground">
               {t("certificate.locked.description", { remaining })}
             </p>

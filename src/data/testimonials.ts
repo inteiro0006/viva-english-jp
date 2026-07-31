@@ -53,8 +53,7 @@ export const demoTestimonials: Testimonial[] = [
     name: "サンプル 美咲",
     profession: "大学生 / University student",
     photoUrl: null,
-    quoteJa:
-      "TOEIC対策と旅行英会話の両方に役立ちました。スマホで復習できるのが本当に便利です。",
+    quoteJa: "TOEIC対策と旅行英会話の両方に役立ちました。スマホで復習できるのが本当に便利です。",
     quoteEn:
       "It helped me with both TOEIC and travel conversation. Being able to review on my phone is genuinely useful.",
     rating: 4,

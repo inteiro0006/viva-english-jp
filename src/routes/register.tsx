@@ -35,9 +35,7 @@ function RegisterPage() {
   const [submitting, setSubmitting] = useState(false);
 
   const schema = useMemo(() => makeRegisterSchema(t), [t]);
-  const currentLang: SupportedLanguage = i18n.language?.startsWith("ja")
-    ? "ja"
-    : "en";
+  const currentLang: SupportedLanguage = i18n.language?.startsWith("ja") ? "ja" : "en";
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -52,15 +50,12 @@ function RegisterPage() {
     mode: "onBlur",
   });
 
-
   async function onSubmit(values: z.infer<typeof schema>) {
     if (submitting) return;
     setSubmitting(true);
     try {
       const emailRedirectTo =
-        typeof window !== "undefined"
-          ? `${window.location.origin}/verify-email`
-          : undefined;
+        typeof window !== "undefined" ? `${window.location.origin}/verify-email` : undefined;
 
       const { data, error } = await supabase.auth.signUp({
         email: values.email,
@@ -97,16 +92,9 @@ function RegisterPage() {
   }
 
   return (
-    <AuthShell
-      title={t("auth.registerTitle")}
-      subtitle={t("auth.registerSubtitle")}
-    >
+    <AuthShell title={t("auth.registerTitle")} subtitle={t("auth.registerSubtitle")}>
       <SocialAuthButtons className="mb-6" />
-      <form
-        className="flex flex-col gap-4"
-        onSubmit={form.handleSubmit(onSubmit)}
-        noValidate
-      >
+      <form className="flex flex-col gap-4" onSubmit={form.handleSubmit(onSubmit)} noValidate>
         <div className="grid gap-2">
           <Label htmlFor="full_name">{t("auth.name")}</Label>
           <Input
@@ -217,9 +205,7 @@ function RegisterPage() {
               })
             }
           />
-          <span className="text-muted-foreground">
-            {t("auth.marketingConsent")}
-          </span>
+          <span className="text-muted-foreground">{t("auth.marketingConsent")}</span>
         </label>
 
         <Button type="submit" disabled={submitting} className="mt-2">
@@ -228,10 +214,7 @@ function RegisterPage() {
 
         <p className="text-center text-sm text-muted-foreground">
           {t("auth.haveAccount")}{" "}
-          <Link
-            to="/login"
-            className="font-medium text-[color:var(--brand)] hover:underline"
-          >
+          <Link to="/login" className="font-medium text-[color:var(--brand)] hover:underline">
             {t("nav.login")}
           </Link>
         </p>

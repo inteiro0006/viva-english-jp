@@ -56,8 +56,7 @@ export function StudentLayout({ children }: { children: ReactNode }) {
               to={item.to as never}
               activeOptions={{ exact: false }}
               activeProps={{
-                className:
-                  "border-b-2 border-[color:var(--brand)] text-foreground",
+                className: "border-b-2 border-[color:var(--brand)] text-foreground",
               }}
               inactiveProps={{ className: "text-muted-foreground" }}
               className="flex shrink-0 items-center gap-2 border-b-2 border-transparent px-3 py-3 text-sm font-medium hover:text-foreground"

@@ -54,17 +54,12 @@ function PricingPage() {
           <CardContent className="flex flex-col gap-6 py-8">
             <div>
               <h2 className="text-2xl font-semibold">{t("pricing.planTitle")}</h2>
-              <p className="text-sm text-muted-foreground">
-                {t("pricing.planDesc")}
-              </p>
+              <p className="text-sm text-muted-foreground">{t("pricing.planDesc")}</p>
             </div>
             <ul className="grid gap-2">
               {perks.map((p) => (
                 <li key={p} className="flex items-center gap-2 text-sm">
-                  <Check
-                    className="size-4 text-[color:var(--brand)]"
-                    aria-hidden
-                  />
+                  <Check className="size-4 text-[color:var(--brand)]" aria-hidden />
                   {p}
                 </li>
               ))}

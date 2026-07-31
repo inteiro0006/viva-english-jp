@@ -4,11 +4,9 @@ import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
 
 function publicClient() {
-  return createClient<Database>(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_PUBLISHABLE_KEY!,
-    { auth: { persistSession: false, autoRefreshToken: false } },
-  );
+  return createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
 }
 
 export const getPublishedCourseBySlug = createServerFn({ method: "GET" })
@@ -51,13 +49,17 @@ export const getCourseCurriculum = createServerFn({ method: "GET" })
         .order("position"),
       supabase
         .from("modules")
-        .select("id, stage_id, title_ja, title_en, description_ja, description_en, position, release_type, release_at")
+        .select(
+          "id, stage_id, title_ja, title_en, description_ja, description_en, position, release_type, release_at",
+        )
         .eq("course_id", data.courseId)
         .eq("status", "published")
         .order("position"),
       supabase
         .from("lessons")
-        .select("id, module_id, title_ja, title_en, lesson_type, duration_seconds, position, is_preview")
+        .select(
+          "id, module_id, title_ja, title_en, lesson_type, duration_seconds, position, is_preview",
+        )
         .eq("status", "published")
         .order("position"),
     ]);

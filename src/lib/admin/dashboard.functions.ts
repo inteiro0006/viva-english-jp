@@ -32,7 +32,10 @@ export const getAdminDashboard = createServerFn({ method: "GET" })
       recentEnrollRes,
     ] = await Promise.all([
       supabase.from("profiles").select("*", { count: "exact", head: true }),
-      supabase.from("enrollments").select("*", { count: "exact", head: true }).eq("status", "active"),
+      supabase
+        .from("enrollments")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "active"),
       supabase.from("orders").select("*", { count: "exact", head: true }).eq("status", "paid"),
       supabase.from("orders").select("amount").eq("status", "paid"),
       supabase.from("lesson_progress").select("progress_percentage"),
@@ -40,7 +43,10 @@ export const getAdminDashboard = createServerFn({ method: "GET" })
         .from("stream_videos")
         .select("*", { count: "exact", head: true })
         .in("status", ["pendingupload", "downloading", "queued", "inprogress"]),
-      supabase.from("support_requests").select("*", { count: "exact", head: true }).eq("status", "open"),
+      supabase
+        .from("support_requests")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "open"),
       supabase
         .from("lesson_progress")
         .select("lesson_id, lessons(id, title_ja, title_en)")
@@ -52,8 +58,10 @@ export const getAdminDashboard = createServerFn({ method: "GET" })
         .order("enrolled_at", { ascending: true }),
     ]);
 
-    const revenueJpy =
-      (revenueRes.data ?? []).reduce((sum, r: { amount: number | null }) => sum + (r.amount ?? 0), 0);
+    const revenueJpy = (revenueRes.data ?? []).reduce(
+      (sum, r: { amount: number | null }) => sum + (r.amount ?? 0),
+      0,
+    );
     const progressRows = (progressRes.data ?? []) as Array<{ progress_percentage: number | null }>;
     const averageCompletion = progressRows.length
       ? progressRows.reduce((s, r) => s + (r.progress_percentage ?? 0), 0) / progressRows.length

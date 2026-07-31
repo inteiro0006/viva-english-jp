@@ -40,7 +40,12 @@ export const lessonInputSchema = z.object({
   description_ja: z.string().nullable().optional(),
   description_en: z.string().nullable().optional(),
   lesson_type: z.enum(["video", "text", "quiz", "file"]).default("video"),
-  duration_seconds: z.number().int().min(0).max(60 * 60 * 24).default(0),
+  duration_seconds: z
+    .number()
+    .int()
+    .min(0)
+    .max(60 * 60 * 24)
+    .default(0),
   is_preview: z.boolean().default(false),
   status: z.enum(["draft", "published", "archived"]).default("draft"),
   cloudflare_video_uid: z.string().nullable().optional(),

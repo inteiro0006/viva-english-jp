@@ -43,8 +43,7 @@ export const getProfileOverview = createServerFn({ method: "GET" })
 
     const email =
       (claims as { email?: string } | null)?.email ??
-      (claims as { user_metadata?: { email?: string } } | null)?.user_metadata
-        ?.email ??
+      (claims as { user_metadata?: { email?: string } } | null)?.user_metadata?.email ??
       null;
 
     return {

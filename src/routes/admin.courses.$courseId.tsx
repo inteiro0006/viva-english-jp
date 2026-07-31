@@ -21,7 +21,17 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Plus, Trash2, ChevronDown, ChevronRight, Pencil, Video, Search, ExternalLink } from "lucide-react";
+import {
+  GripVertical,
+  Plus,
+  Trash2,
+  ChevronDown,
+  ChevronRight,
+  Pencil,
+  Video,
+  Search,
+  ExternalLink,
+} from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { getAdminCourse, updateCourse, deleteCourse } from "@/lib/admin/courses.admin.functions";
 import {
@@ -73,14 +83,11 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/admin/courses/$courseId")({
-  validateSearch: (
-    s: Record<string, unknown>,
-  ): { tab?: "details" | "curriculum" } => ({
+  validateSearch: (s: Record<string, unknown>): { tab?: "details" | "curriculum" } => ({
     tab: s.tab === "curriculum" ? "curriculum" : "details",
   }),
   component: AdminCourseEditor,
 });
-
 
 type Lesson = {
   id: string;
@@ -112,15 +119,12 @@ function AdminCourseEditor() {
   const fetchCourse = useServerFn(getAdminCourse);
   const patchCourse = useServerFn(updateCourse);
 
-
-
   const { data, isLoading } = useQuery({
     queryKey: ["admin", "course", courseId],
     queryFn: () => fetchCourse({ data: { id: courseId } }),
   });
 
-  const invalidate = () =>
-    qc.invalidateQueries({ queryKey: ["admin", "course", courseId] });
+  const invalidate = () => qc.invalidateQueries({ queryKey: ["admin", "course", courseId] });
 
   const saveCourse = useMutation({
     mutationFn: (patch: Record<string, unknown>) =>
@@ -169,7 +173,6 @@ function AdminCourseEditor() {
           <TabsTrigger value="curriculum">{t("admin.courses_.tabs.curriculum")}</TabsTrigger>
         </TabsList>
 
-
         <TabsContent value="details" className="pt-4">
           <CourseDetailsForm
             course={data as never}
@@ -217,10 +220,14 @@ function DangerZone({ courseId, slug }: { courseId: string; slug: string }) {
         <CardTitle className="text-destructive">{t("admin.courses_.danger.title")}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className="text-sm text-muted-foreground">
-          {t("admin.courses_.danger.description")}
-        </p>
-        <AlertDialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setConfirmSlug(""); }}>
+        <p className="text-sm text-muted-foreground">{t("admin.courses_.danger.description")}</p>
+        <AlertDialog
+          open={open}
+          onOpenChange={(o) => {
+            setOpen(o);
+            if (!o) setConfirmSlug("");
+          }}
+        >
           <AlertDialogTrigger asChild>
             <Button variant="destructive">
               <Trash2 className="mr-2 h-4 w-4" />
@@ -245,7 +252,10 @@ function DangerZone({ courseId, slug }: { courseId: string; slug: string }) {
               <AlertDialogCancel>{t("admin.courses_.danger.cancel")}</AlertDialogCancel>
               <AlertDialogAction
                 disabled={confirmSlug !== slug || remove.isPending}
-                onClick={(e) => { e.preventDefault(); remove.mutate(); }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  remove.mutate();
+                }}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
                 {t("admin.courses_.danger.confirm")}
@@ -295,22 +305,44 @@ function CourseDetailsForm({
             />
           </Group>
           <Group label={t("admin.courses_.titleJa")}>
-            <Input value={form.title_ja} onChange={(e) => setForm({ ...form, title_ja: e.target.value })} />
+            <Input
+              value={form.title_ja}
+              onChange={(e) => setForm({ ...form, title_ja: e.target.value })}
+            />
           </Group>
           <Group label={t("admin.courses_.titleEn")}>
-            <Input value={form.title_en} onChange={(e) => setForm({ ...form, title_en: e.target.value })} />
+            <Input
+              value={form.title_en}
+              onChange={(e) => setForm({ ...form, title_en: e.target.value })}
+            />
           </Group>
           <Group label={t("admin.courses_.descJa")}>
-            <Textarea rows={4} value={form.description_ja ?? ""} onChange={(e) => setForm({ ...form, description_ja: e.target.value })} />
+            <Textarea
+              rows={4}
+              value={form.description_ja ?? ""}
+              onChange={(e) => setForm({ ...form, description_ja: e.target.value })}
+            />
           </Group>
           <Group label={t("admin.courses_.descEn")}>
-            <Textarea rows={4} value={form.description_en ?? ""} onChange={(e) => setForm({ ...form, description_en: e.target.value })} />
+            <Textarea
+              rows={4}
+              value={form.description_en ?? ""}
+              onChange={(e) => setForm({ ...form, description_en: e.target.value })}
+            />
           </Group>
           <Group label={t("admin.courses_.thumbnail")}>
-            <Input value={form.thumbnail_url ?? ""} onChange={(e) => setForm({ ...form, thumbnail_url: e.target.value })} placeholder="https://…" />
+            <Input
+              value={form.thumbnail_url ?? ""}
+              onChange={(e) => setForm({ ...form, thumbnail_url: e.target.value })}
+              placeholder="https://…"
+            />
           </Group>
           <Group label={t("admin.courses_.cover")}>
-            <Input value={form.cover_url ?? ""} onChange={(e) => setForm({ ...form, cover_url: e.target.value })} placeholder="https://…" />
+            <Input
+              value={form.cover_url ?? ""}
+              onChange={(e) => setForm({ ...form, cover_url: e.target.value })}
+              placeholder="https://…"
+            />
           </Group>
         </div>
         <div className="flex justify-end">
@@ -419,12 +451,7 @@ function CurriculumTree({
               const m = modulesById.get(id);
               if (!m) return null;
               return (
-                <SortableModule
-                  key={m.id}
-                  module={m}
-                  lang={i18n.language}
-                  onChange={onChange}
-                />
+                <SortableModule key={m.id} module={m} lang={i18n.language} onChange={onChange} />
               );
             })}
             {order.length === 0 && (
@@ -462,7 +489,8 @@ function SortableModule({
   };
 
   const upd = useMutation({
-    mutationFn: (patch: Record<string, unknown>) => updateM({ data: { id: m.id, patch: patch as never } }),
+    mutationFn: (patch: Record<string, unknown>) =>
+      updateM({ data: { id: m.id, patch: patch as never } }),
     onSuccess: () => onChange(),
     onError: (e: Error) => toast.error(e.message),
   });
@@ -504,10 +532,7 @@ function SortableModule({
             }}
           />
         </CardTitle>
-        <Select
-          value={m.status}
-          onValueChange={(v) => upd.mutate({ status: v })}
-        >
+        <Select value={m.status} onValueChange={(v) => upd.mutate({ status: v })}>
           <SelectTrigger className="h-8 w-32">
             <SelectValue />
           </SelectTrigger>
@@ -556,9 +581,7 @@ function LessonList({
   const [order, setOrder] = useState(m.lessons.map((l) => l.id));
   useMemo(() => setOrder(m.lessons.map((l) => l.id)), [m.lessons.length]);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
-  );
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }));
   const byId = new Map(m.lessons.map((l) => [l.id, l]));
 
   const doReorder = useMutation({
@@ -608,7 +631,9 @@ function LessonList({
                 onTogglePublish={() =>
                   setPub({
                     data: { id: l.id, status: l.status === "published" ? "draft" : "published" },
-                  }).then(onChange).catch((e: Error) => toast.error(e.message))
+                  })
+                    .then(onChange)
+                    .catch((e: Error) => toast.error(e.message))
                 }
                 onRename={(title_ja, title_en) =>
                   updL({ data: { id: l.id, patch: { title_ja, title_en } } })
@@ -620,7 +645,9 @@ function LessonList({
                 }
                 onDelete={() => {
                   if (confirm(t("admin.lessons_.confirmDelete"))) {
-                    delL({ data: { id: l.id } }).then(onChange).catch((e: Error) => toast.error(e.message));
+                    delL({ data: { id: l.id } })
+                      .then(onChange)
+                      .catch((e: Error) => toast.error(e.message));
                   }
                 }}
                 onAttachVideo={(videoUid) =>
@@ -665,7 +692,11 @@ function SortableLesson({
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: l.id,
   });
-  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [ja, setJa] = useState(l.title_ja);
@@ -694,19 +725,28 @@ function SortableLesson({
       style={style}
       className="flex items-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-sm"
     >
-      <button className="cursor-grab text-muted-foreground" aria-label="Drag" {...attributes} {...listeners}>
+      <button
+        className="cursor-grab text-muted-foreground"
+        aria-label="Drag"
+        {...attributes}
+        {...listeners}
+      >
         <GripVertical className="size-4" />
       </button>
       <span className="flex-1 truncate">{lang === "en" ? l.title_en : l.title_ja}</span>
-      <Button size="icon" variant="ghost" onClick={openDialog} aria-label={t("admin.lessons_.edit")}>
+      <Button
+        size="icon"
+        variant="ghost"
+        onClick={openDialog}
+        aria-label={t("admin.lessons_.edit")}
+      >
         <Pencil className="size-4" />
       </Button>
-      <Badge variant="outline" className="text-[10px] uppercase">{l.lesson_type}</Badge>
+      <Badge variant="outline" className="text-[10px] uppercase">
+        {l.lesson_type}
+      </Badge>
       {l.is_preview && <Badge variant="secondary">Preview</Badge>}
-      <AttachVideoButton
-        currentVideoUid={l.cloudflare_video_uid}
-        onAttach={onAttachVideo}
-      />
+      <AttachVideoButton currentVideoUid={l.cloudflare_video_uid} onAttach={onAttachVideo} />
       <Button size="sm" variant="ghost" onClick={onTogglePublish}>
         {l.status === "published" ? t("admin.status.published") : t("admin.status.draft")}
       </Button>
@@ -775,8 +815,7 @@ function AttachVideoButton({
     const q = query.toLowerCase();
     return rows.filter(
       (v) =>
-        (v.title ?? "").toLowerCase().includes(q) ||
-        v.cloudflare_uid.toLowerCase().includes(q),
+        (v.title ?? "").toLowerCase().includes(q) || v.cloudflare_uid.toLowerCase().includes(q),
     );
   }, [videosQ.data, query]);
 
@@ -794,11 +833,7 @@ function AttachVideoButton({
         variant={attached ? "default" : "ghost"}
         onClick={() => setOpen(true)}
         aria-label={t(attached ? "admin.lessons_.changeVideo" : "admin.lessons_.attachVideo")}
-        title={
-          attached
-            ? t("admin.lessons_.changeVideo")
-            : t("admin.lessons_.attachVideo")
-        }
+        title={attached ? t("admin.lessons_.changeVideo") : t("admin.lessons_.attachVideo")}
       >
         <Video className="size-4" />
       </Button>
@@ -806,9 +841,7 @@ function AttachVideoButton({
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>
-              {attached
-                ? t("admin.lessons_.changeVideo")
-                : t("admin.lessons_.attachVideo")}
+              {attached ? t("admin.lessons_.changeVideo") : t("admin.lessons_.attachVideo")}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
@@ -852,11 +885,7 @@ function AttachVideoButton({
                     <div className="h-14 w-24 shrink-0 overflow-hidden rounded bg-muted">
                       {v.thumbnail_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={v.thumbnail_url}
-                          alt=""
-                          className="h-full w-full object-cover"
-                        />
+                        <img src={v.thumbnail_url} alt="" className="h-full w-full object-cover" />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center">
                           <Video className="size-5 text-muted-foreground" />
@@ -879,11 +908,7 @@ function AttachVideoButton({
                         )}
                       </div>
                     </div>
-                    {isCurrent && (
-                      <Badge variant="secondary">
-                        {t("admin.lessons_.attached")}
-                      </Badge>
-                    )}
+                    {isCurrent && <Badge variant="secondary">{t("admin.lessons_.attached")}</Badge>}
                   </button>
                 );
               })}

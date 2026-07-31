@@ -110,7 +110,10 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                 <NavList onNavigate={() => setMobileOpen(false)} />
               </SheetContent>
             </Sheet>
-            <nav aria-label="Breadcrumb" className="hidden items-center gap-1 text-sm text-muted-foreground sm:flex">
+            <nav
+              aria-label="Breadcrumb"
+              className="hidden items-center gap-1 text-sm text-muted-foreground sm:flex"
+            >
               {crumbs.map((c, i) => (
                 <span key={c.to ?? i} className="flex items-center gap-1">
                   {i > 0 && <ChevronRight className="size-3.5" aria-hidden />}
@@ -160,9 +163,7 @@ function buildCrumbs(
 ): Array<{ label: string; to?: string }> {
   const parts = pathname.split("/").filter(Boolean);
   if (parts.length === 0) return [];
-  const crumbs: Array<{ label: string; to?: string }> = [
-    { label: t("admin.title"), to: "/admin" },
-  ];
+  const crumbs: Array<{ label: string; to?: string }> = [{ label: t("admin.title"), to: "/admin" }];
   if (parts.length > 1) {
     const section = "/" + parts.slice(0, 2).join("/");
     const found = nav.find((n) => n.to === section);

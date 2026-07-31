@@ -59,8 +59,7 @@ export const Route = createFileRoute("/")({
       },
       {
         property: "og:description",
-        content:
-          "実践型オンライン英語コース。自分のペースで、仕事・旅行・日常で使える英語力を。",
+        content: "実践型オンライン英語コース。自分のペースで、仕事・旅行・日常で使える英語力を。",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: `${SITE_URL}/` },
@@ -71,8 +70,7 @@ export const Route = createFileRoute("/")({
       { name: "twitter:title", content: "Eigo Michi — 日本人のための本格英語オンライン講座" },
       {
         name: "twitter:description",
-        content:
-          "日本語で丁寧に導く、実践型オンライン英語コース。自分のペースで、使える英語力を。",
+        content: "日本語で丁寧に導く、実践型オンライン英語コース。自分のペースで、使える英語力を。",
       },
     ],
     links: [
@@ -88,8 +86,7 @@ export const Route = createFileRoute("/")({
           "@context": "https://schema.org",
           "@type": "Course",
           name: "Eigo Michi — 日本人のための本格英語オンライン講座",
-          description:
-            "日本語のサポート付きで学ぶ、実践型オンライン英語プログラム。",
+          description: "日本語のサポート付きで学ぶ、実践型オンライン英語プログラム。",
           inLanguage: ["ja", "en"],
           provider: {
             "@type": "Organization",
@@ -109,7 +106,6 @@ export const Route = createFileRoute("/")({
   }),
   component: LandingPage,
 });
-
 
 const trustIcons = [Save, Clock, Smartphone, LineChart, MessageCircle] as const;
 
@@ -201,9 +197,7 @@ function LandingPage() {
             <h1 className="text-4xl font-bold leading-[1.15] tracking-tight sm:text-5xl md:text-6xl">
               {t("landing.hero.title")}
             </h1>
-            <p className="max-w-xl text-lg text-muted-foreground">
-              {t("landing.hero.subtitle")}
-            </p>
+            <p className="max-w-xl text-lg text-muted-foreground">{t("landing.hero.subtitle")}</p>
             <div className="flex flex-wrap gap-3">
               <Button asChild size="lg">
                 <Link to="/register">
@@ -239,12 +233,8 @@ function LandingPage() {
                 {t("brand.name")}
               </div>
 
-              <h2 className="mt-4 text-2xl font-bold tracking-tight">
-                {t("auth.registerTitle")}
-              </h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {t("auth.registerSubtitle")}
-              </p>
+              <h2 className="mt-4 text-2xl font-bold tracking-tight">{t("auth.registerTitle")}</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{t("auth.registerSubtitle")}</p>
 
               <SocialAuthButtons className="mt-5" />
 
@@ -270,7 +260,6 @@ function LandingPage() {
                 {t("landing.hero.note")}
               </p>
             </div>
-
           </div>
         </div>
       </section>
@@ -297,9 +286,7 @@ function LandingPage() {
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
               {t("landing.problem.title")}
             </h2>
-            <p className="mt-3 text-muted-foreground">
-              {t("landing.problem.subtitle")}
-            </p>
+            <p className="mt-3 text-muted-foreground">{t("landing.problem.subtitle")}</p>
           </header>
           <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {(["years", "fear", "consistency", "materials", "listening", "needs"] as const).map(
@@ -327,9 +314,7 @@ function LandingPage() {
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
               {t("landing.transformation.title")}
             </h2>
-            <p className="mt-3 text-muted-foreground">
-              {t("landing.transformation.subtitle")}
-            </p>
+            <p className="mt-3 text-muted-foreground">{t("landing.transformation.subtitle")}</p>
           </header>
           <div className="mt-10 grid gap-6 md:grid-cols-2">
             <Card className="border-dashed">
@@ -340,7 +325,10 @@ function LandingPage() {
                 <ul className="mt-4 space-y-2">
                   {beforeItems.map((item) => (
                     <li key={item} className="flex items-start gap-2 text-sm">
-                      <X className="mt-0.5 size-4 shrink-0 text-[color:var(--urgent)]" aria-hidden />
+                      <X
+                        className="mt-0.5 size-4 shrink-0 text-[color:var(--urgent)]"
+                        aria-hidden
+                      />
                       <span className="text-muted-foreground">{item}</span>
                     </li>
                   ))}
@@ -349,9 +337,7 @@ function LandingPage() {
             </Card>
             <Card className="border-[color:var(--brand)]/30 shadow-sm">
               <CardContent className="py-6">
-                <h3 className="text-lg font-semibold">
-                  {t("landing.transformation.afterTitle")}
-                </h3>
+                <h3 className="text-lg font-semibold">{t("landing.transformation.afterTitle")}</h3>
                 <ul className="mt-4 space-y-2">
                   {afterItems.map((item) => (
                     <li key={item} className="flex items-start gap-2 text-sm">
@@ -380,10 +366,7 @@ function LandingPage() {
           </header>
           <ol className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {howSteps.map((s, i) => (
-              <li
-                key={s.key}
-                className="relative rounded-2xl border border-border bg-card p-5"
-              >
+              <li key={s.key} className="relative rounded-2xl border border-border bg-card p-5">
                 <div className="flex items-center gap-3">
                   <span
                     aria-hidden
@@ -441,9 +424,7 @@ function LandingPage() {
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
               {t("landing.curriculum.title")}
             </h2>
-            <p className="mt-3 text-muted-foreground">
-              {t("landing.curriculum.subtitle")}
-            </p>
+            <p className="mt-3 text-muted-foreground">{t("landing.curriculum.subtitle")}</p>
           </header>
           <div className="mt-10 grid gap-4 md:grid-cols-2">
             {stageKeys.map((k, i) => {
@@ -559,18 +540,14 @@ function LandingPage() {
                   <Laptop className="size-4" aria-hidden />
                   <span>{t("landing.platform.mockup.greeting")}</span>
                 </div>
-                <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs">
-                  32%
-                </span>
+                <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs">32%</span>
               </div>
               <div className="mt-4 grid gap-3 sm:grid-cols-3">
                 <div className="rounded-xl bg-white/8 p-3 sm:col-span-2">
                   <div className="text-xs text-white/70">
                     {t("landing.platform.mockup.todayLesson")}
                   </div>
-                  <div className="mt-1 text-base font-semibold">
-                    Stage 2 — Making Questions
-                  </div>
+                  <div className="mt-1 text-base font-semibold">Stage 2 — Making Questions</div>
                   <button className="mt-3 inline-flex items-center gap-2 rounded-full bg-[color:var(--brand)] px-3 py-1.5 text-xs font-semibold text-[color:var(--brand-foreground)]">
                     <Play className="size-3" aria-hidden />
                     {t("landing.platform.mockup.resume")}
@@ -624,9 +601,7 @@ function LandingPage() {
         <div className="mx-auto grid w-full max-w-6xl gap-6 px-4 py-20 md:grid-cols-2">
           <Card>
             <CardContent className="py-6">
-              <h3 className="text-lg font-semibold">
-                {t("landing.audience.forTitle")}
-              </h3>
+              <h3 className="text-lg font-semibold">{t("landing.audience.forTitle")}</h3>
               <ul className="mt-4 grid gap-2">
                 {audienceForKeys.map((k) => (
                   <li key={k} className="flex items-start gap-2 text-sm">
@@ -648,10 +623,7 @@ function LandingPage() {
               <ul className="mt-4 grid gap-2">
                 {audienceNotForKeys.map((k) => (
                   <li key={k} className="flex items-start gap-2 text-sm">
-                    <X
-                      className="mt-0.5 size-4 shrink-0 text-muted-foreground"
-                      aria-hidden
-                    />
+                    <X className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
                     <span className="text-muted-foreground">
                       {t(`landing.audience.notFor.${k}`)}
                     </span>
@@ -670,9 +642,7 @@ function LandingPage() {
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
               {t("landing.offer.title")}
             </h2>
-            <p className="mt-3 text-muted-foreground">
-              {t("landing.offer.subtitle")}
-            </p>
+            <p className="mt-3 text-muted-foreground">{t("landing.offer.subtitle")}</p>
           </header>
           <Card className="mt-10 overflow-hidden border-[color:var(--brand)]/30 shadow-lg">
             <CardContent className="grid gap-8 p-8 md:grid-cols-[1.1fr_0.9fr]">
@@ -686,9 +656,7 @@ function LandingPage() {
                 <div className="mt-4">
                   {priceLabel ? (
                     <div className="flex items-baseline gap-2">
-                      <span className="text-4xl font-bold tracking-tight">
-                        {priceLabel}
-                      </span>
+                      <span className="text-4xl font-bold tracking-tight">{priceLabel}</span>
                       <span className="text-sm text-muted-foreground">
                         / {t("landing.offer.oneTime")}
                       </span>
@@ -711,14 +679,10 @@ function LandingPage() {
                     <Link to="/pricing">{t("nav.pricing")}</Link>
                   </Button>
                 </div>
-                <p className="mt-4 text-xs text-muted-foreground">
-                  {t("landing.offer.notice")}
-                </p>
+                <p className="mt-4 text-xs text-muted-foreground">{t("landing.offer.notice")}</p>
               </div>
               <div className="rounded-2xl border border-border bg-background/60 p-5">
-                <h4 className="text-sm font-semibold">
-                  {t("landing.offer.includedTitle")}
-                </h4>
+                <h4 className="text-sm font-semibold">{t("landing.offer.includedTitle")}</h4>
                 <ul className="mt-3 space-y-2">
                   {includedItems.map((item) => (
                     <li key={item} className="flex items-start gap-2 text-sm">
@@ -743,9 +707,7 @@ function LandingPage() {
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
               {t("landing.testimonials.title")}
             </h2>
-            <p className="mt-3 text-muted-foreground">
-              {t("landing.testimonials.subtitle")}
-            </p>
+            <p className="mt-3 text-muted-foreground">{t("landing.testimonials.subtitle")}</p>
           </header>
           <div
             role="note"
@@ -762,10 +724,7 @@ function LandingPage() {
                   <Card key={tItem.id} className="border-border/70">
                     <CardContent className="flex h-full flex-col gap-4 py-6">
                       <div className="flex items-center justify-between">
-                        <div
-                          className="flex items-center gap-1"
-                          aria-label={`${tItem.rating} / 5`}
-                        >
+                        <div className="flex items-center gap-1" aria-label={`${tItem.rating} / 5`}>
                           {Array.from({ length: 5 }).map((_, i) => (
                             <Star
                               key={i}
@@ -794,9 +753,7 @@ function LandingPage() {
                         </div>
                         <div>
                           <div className="text-sm font-semibold">{tItem.name}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {tItem.profession}
-                          </div>
+                          <div className="text-xs text-muted-foreground">{tItem.profession}</div>
                         </div>
                       </div>
                     </CardContent>

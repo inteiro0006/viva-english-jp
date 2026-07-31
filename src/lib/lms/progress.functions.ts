@@ -49,4 +49,3 @@ export const upsertLessonProgress = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return rows?.[0] ?? { ok: true };
   });
-

@@ -12,7 +12,12 @@ export const createStreamUpload = createServerFn({ method: "POST" })
     z
       .object({
         title: z.string().min(1).max(300).optional(),
-        maxDurationSeconds: z.number().int().min(30).max(60 * 60 * 6).optional(),
+        maxDurationSeconds: z
+          .number()
+          .int()
+          .min(30)
+          .max(60 * 60 * 6)
+          .optional(),
       })
       .parse(data),
   )

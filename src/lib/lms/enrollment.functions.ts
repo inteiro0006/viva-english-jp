@@ -7,7 +7,9 @@ export const listMyEnrollments = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase
       .from("enrollments")
-      .select("id, course_id, status, enrolled_at, expires_at, courses(slug, title_ja, title_en, thumbnail_url)")
+      .select(
+        "id, course_id, status, enrolled_at, expires_at, courses(slug, title_ja, title_en, thumbnail_url)",
+      )
       .eq("user_id", context.userId);
     if (error) throw new Error(error.message);
     return data ?? [];

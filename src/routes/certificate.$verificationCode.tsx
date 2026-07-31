@@ -12,8 +12,7 @@ export const Route = createFileRoute("/certificate/$verificationCode")({
       { title: `Certificate ${params.verificationCode} — Eigo Michi` },
       {
         name: "description",
-        content:
-          "Verify the authenticity of an Eigo Michi course completion certificate.",
+        content: "Verify the authenticity of an Eigo Michi course completion certificate.",
       },
       { name: "robots", content: "noindex" },
     ],
@@ -26,8 +25,7 @@ function VerifyPage() {
   const { verificationCode } = Route.useParams();
   const q = useQuery({
     queryKey: ["cert-verify", verificationCode],
-    queryFn: () =>
-      verifyCertificatePublic({ data: { code: verificationCode } }),
+    queryFn: () => verifyCertificatePublic({ data: { code: verificationCode } }),
     staleTime: 60_000,
   });
 
@@ -39,9 +37,7 @@ function VerifyPage() {
         <Link to="/" className="text-2xl font-bold text-primary">
           Eigo Michi
         </Link>
-        <p className="mt-2 text-sm text-muted-foreground">
-          {t("certificate.verify.pageTitle")}
-        </p>
+        <p className="mt-2 text-sm text-muted-foreground">{t("certificate.verify.pageTitle")}</p>
       </div>
 
       {q.isLoading && (
@@ -85,10 +81,7 @@ function VerifyPage() {
                       ? t("certificate.verify.revoked")
                       : t("certificate.verify.notFound")}
                 </h1>
-                <Badge
-                  variant={q.data.valid ? "default" : "destructive"}
-                  className="mt-1"
-                >
+                <Badge variant={q.data.valid ? "default" : "destructive"} className="mt-1">
                   {q.data.status}
                 </Badge>
               </div>
@@ -102,9 +95,7 @@ function VerifyPage() {
                 />
                 <Field
                   label={t("certificate.verify.field.course")}
-                  value={
-                    (isJa ? q.data.courseTitleJa : q.data.courseTitleEn) || "—"
-                  }
+                  value={(isJa ? q.data.courseTitleJa : q.data.courseTitleEn) || "—"}
                 />
                 <Field
                   label={t("certificate.verify.field.number")}
@@ -114,26 +105,20 @@ function VerifyPage() {
                   label={t("certificate.verify.field.issued")}
                   value={
                     q.data.issuedAt
-                      ? new Date(q.data.issuedAt).toLocaleDateString(
-                          isJa ? "ja-JP" : "en-US",
-                        )
+                      ? new Date(q.data.issuedAt).toLocaleDateString(isJa ? "ja-JP" : "en-US")
                       : "—"
                   }
                 />
                 {q.data.revokedAt && (
                   <Field
                     label={t("certificate.verify.field.revoked")}
-                    value={new Date(q.data.revokedAt).toLocaleDateString(
-                      isJa ? "ja-JP" : "en-US",
-                    )}
+                    value={new Date(q.data.revokedAt).toLocaleDateString(isJa ? "ja-JP" : "en-US")}
                   />
                 )}
               </dl>
             )}
 
-            <p className="text-xs text-muted-foreground">
-              {t("certificate.verify.privacyNote")}
-            </p>
+            <p className="text-xs text-muted-foreground">{t("certificate.verify.privacyNote")}</p>
           </CardContent>
         </Card>
       )}
@@ -144,9 +129,7 @@ function VerifyPage() {
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <dt className="text-xs uppercase tracking-wide text-muted-foreground">
-        {label}
-      </dt>
+      <dt className="text-xs uppercase tracking-wide text-muted-foreground">{label}</dt>
       <dd className="font-medium">{value}</dd>
     </div>
   );

@@ -4,22 +4,15 @@ import fontkit from "@pdf-lib/fontkit";
 
 // Public Google Fonts static CDN — serves the OTF directly, Worker-fetchable.
 // If the fetch fails we fall back to Helvetica (Latin glyphs only).
-const NOTO_SANS_JP_URL =
-  "https://fonts.gstatic.com/ea/notosansjp/v5/NotoSansJP-Regular.otf";
-const NOTO_SANS_JP_BOLD_URL =
-  "https://fonts.gstatic.com/ea/notosansjp/v5/NotoSansJP-Bold.otf";
+const NOTO_SANS_JP_URL = "https://fonts.gstatic.com/ea/notosansjp/v5/NotoSansJP-Regular.otf";
+const NOTO_SANS_JP_BOLD_URL = "https://fonts.gstatic.com/ea/notosansjp/v5/NotoSansJP-Bold.otf";
 
 let fontCache: { regular: ArrayBuffer; bold: ArrayBuffer } | null = null;
 
-async function loadJpFonts(): Promise<
-  { regular: ArrayBuffer; bold: ArrayBuffer } | null
-> {
+async function loadJpFonts(): Promise<{ regular: ArrayBuffer; bold: ArrayBuffer } | null> {
   if (fontCache) return fontCache;
   try {
-    const [reg, bold] = await Promise.all([
-      fetch(NOTO_SANS_JP_URL),
-      fetch(NOTO_SANS_JP_BOLD_URL),
-    ]);
+    const [reg, bold] = await Promise.all([fetch(NOTO_SANS_JP_URL), fetch(NOTO_SANS_JP_BOLD_URL)]);
     if (!reg.ok || !bold.ok) return null;
     const cache = {
       regular: await reg.arrayBuffer(),
@@ -89,9 +82,7 @@ function formatDate(d: Date, lang: "ja" | "en"): string {
   });
 }
 
-export async function renderCertificatePdf(
-  f: CertificateFields,
-): Promise<Uint8Array> {
+export async function renderCertificatePdf(f: CertificateFields): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
   doc.registerFontkit(fontkit);
 

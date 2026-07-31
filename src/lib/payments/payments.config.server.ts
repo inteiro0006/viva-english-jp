@@ -12,8 +12,7 @@ export type PaymentEnvironment = "sandbox" | "live";
 export const COURSE_PRICE_LOOKUP_KEY = "eigo_academy_onetime";
 
 /** Slug of the course sold by the public checkout. */
-export const CHECKOUT_COURSE_SLUG =
-  process.env.CHECKOUT_COURSE_SLUG || "eigo-mastery";
+export const CHECKOUT_COURSE_SLUG = process.env.CHECKOUT_COURSE_SLUG || "eigo-mastery";
 
 /**
  * Resolve the Stripe environment from server configuration only.

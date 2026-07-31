@@ -261,10 +261,7 @@ function AdminAuditPage() {
                   row.changed_fields &&
                   typeof row.changed_fields === "object" &&
                   !Array.isArray(row.changed_fields)
-                    ? (row.changed_fields as Record<
-                        string,
-                        { from: unknown; to: unknown }
-                      >)
+                    ? (row.changed_fields as Record<string, { from: unknown; to: unknown }>)
                     : null;
                 const changedKeys = changed ? Object.keys(changed) : [];
                 const hasDetail =
@@ -281,9 +278,7 @@ function AdminAuditPage() {
                           <button
                             type="button"
                             aria-label={isOpen ? "Collapse" : "Expand"}
-                            onClick={() =>
-                              setExpanded((s) => ({ ...s, [row.id]: !s[row.id] }))
-                            }
+                            onClick={() => setExpanded((s) => ({ ...s, [row.id]: !s[row.id] }))}
                             className="rounded p-1 hover:bg-muted"
                           >
                             {isOpen ? (
@@ -311,9 +306,7 @@ function AdminAuditPage() {
                           {row.action}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {row.entity_type}
-                      </TableCell>
+                      <TableCell className="text-muted-foreground">{row.entity_type}</TableCell>
                       <TableCell
                         className="max-w-[8rem] truncate font-mono text-xs text-muted-foreground"
                         title={row.entity_id ?? undefined}
@@ -434,12 +427,8 @@ function AuditDetail({
                 {Object.entries(changed).map(([field, delta]) => (
                   <tr key={field} className="border-t">
                     <td className="p-2 font-mono">{field}</td>
-                    <td className="p-2 font-mono text-red-700 break-all">
-                      {fmt(delta.from)}
-                    </td>
-                    <td className="p-2 font-mono text-emerald-700 break-all">
-                      {fmt(delta.to)}
-                    </td>
+                    <td className="p-2 font-mono text-red-700 break-all">{fmt(delta.from)}</td>
+                    <td className="p-2 font-mono text-emerald-700 break-all">{fmt(delta.to)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -451,11 +440,7 @@ function AuditDetail({
         <details className="text-xs">
           <summary className="cursor-pointer text-muted-foreground">Raw payload</summary>
           <pre className="mt-2 max-h-64 overflow-auto rounded bg-background p-2">
-            {JSON.stringify(
-              { old: row.old_values, new: row.new_values },
-              null,
-              2,
-            )}
+            {JSON.stringify({ old: row.old_values, new: row.new_values }, null, 2)}
           </pre>
         </details>
       )}

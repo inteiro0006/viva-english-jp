@@ -136,11 +136,7 @@ function AdminPaymentsPage() {
       {/* KPIs */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <KpiCard label={t("admin.payments_.kpiTotal")} value={kpis?.total} />
-        <KpiCard
-          label={t("admin.payments_.kpiProcessed")}
-          value={kpis?.processed}
-          tone="emerald"
-        />
+        <KpiCard label={t("admin.payments_.kpiProcessed")} value={kpis?.processed} tone="emerald" />
         <KpiCard label={t("admin.payments_.kpiPending")} value={kpis?.pending} tone="amber" />
         <KpiCard label={t("admin.payments_.kpiFailed")} value={kpis?.failed} tone="red" />
       </div>
@@ -224,9 +220,7 @@ function AdminPaymentsPage() {
                         <button
                           type="button"
                           aria-label={isOpen ? "Collapse" : "Expand"}
-                          onClick={() =>
-                            setExpanded((s) => ({ ...s, [row.id]: !s[row.id] }))
-                          }
+                          onClick={() => setExpanded((s) => ({ ...s, [row.id]: !s[row.id] }))}
                           className="rounded p-1 hover:bg-muted"
                         >
                           {isOpen ? (
@@ -335,10 +329,7 @@ function AdminPaymentsPage() {
         </div>
       )}
 
-      <AlertDialog
-        open={!!confirmReprocess}
-        onOpenChange={(o) => !o && setConfirmReprocess(null)}
-      >
+      <AlertDialog open={!!confirmReprocess} onOpenChange={(o) => !o && setConfirmReprocess(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t("admin.payments_.reprocess")}</AlertDialogTitle>
@@ -508,10 +499,7 @@ function ManualEnrollmentDialog({
           </div>
           {row.order_id && (
             <label className="flex items-center gap-2">
-              <Checkbox
-                checked={markPaid}
-                onCheckedChange={(v) => setMarkPaid(!!v)}
-              />
+              <Checkbox checked={markPaid} onCheckedChange={(v) => setMarkPaid(!!v)} />
               <span>{t("admin.payments_.markOrderPaid")}</span>
             </label>
           )}

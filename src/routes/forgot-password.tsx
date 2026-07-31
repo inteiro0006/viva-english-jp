@@ -16,8 +16,10 @@ import { localizeAuthError } from "@/lib/auth/messages";
 
 export const Route = createFileRoute("/forgot-password")({
   head: () => ({
-    meta: [{ title: "パスワード再設定 — Eigo Michi" },
-      { name: "robots", content: "noindex, nofollow" },],
+    meta: [
+      { title: "パスワード再設定 — Eigo Michi" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
   }),
   component: ForgotPasswordPage,
 });
@@ -37,9 +39,7 @@ function ForgotPasswordPage() {
     setSubmitting(true);
     try {
       const redirectTo =
-        typeof window !== "undefined"
-          ? `${window.location.origin}/reset-password`
-          : undefined;
+        typeof window !== "undefined" ? `${window.location.origin}/reset-password` : undefined;
       const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
         redirectTo,
       });
@@ -56,10 +56,7 @@ function ForgotPasswordPage() {
   }
 
   return (
-    <AuthShell
-      title={t("auth.resetTitle")}
-      subtitle={t("auth.resetSubtitle")}
-    >
+    <AuthShell title={t("auth.resetTitle")} subtitle={t("auth.resetSubtitle")}>
       {sent ? (
         <div className="flex flex-col gap-4">
           <p className="rounded-md border border-border bg-muted/40 p-4 text-sm">
@@ -70,11 +67,7 @@ function ForgotPasswordPage() {
           </Button>
         </div>
       ) : (
-        <form
-          className="flex flex-col gap-4"
-          onSubmit={form.handleSubmit(onSubmit)}
-          noValidate
-        >
+        <form className="flex flex-col gap-4" onSubmit={form.handleSubmit(onSubmit)} noValidate>
           <div className="grid gap-2">
             <Label htmlFor="email">{t("auth.email")}</Label>
             <Input

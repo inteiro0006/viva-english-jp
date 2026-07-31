@@ -66,7 +66,13 @@ export type LessonWorkspaceState =
         title_ja: string;
         title_en: string;
         position: number;
-        lessons: { id: string; title_ja: string; title_en: string; position: number; duration_seconds: number }[];
+        lessons: {
+          id: string;
+          title_ja: string;
+          title_en: string;
+          position: number;
+          duration_seconds: number;
+        }[];
       }[];
       resources: ResourceRow[];
       progress: ProgressRow | null;
@@ -118,7 +124,6 @@ export function useLessonWorkspace(userId: string | undefined, lessonId: string 
       });
       if (accessRes.error) throw new Error(accessRes.error.message);
       if (accessRes.data !== true) return { state: "no_access" };
-
 
       const courseRes = await supabase
         .from("courses")
@@ -224,7 +229,11 @@ export function useLessonWorkspace(userId: string | undefined, lessonId: string 
  * lesson duration and owns the completion flag, so a client can never mark a
  * lesson (or a certificate) as complete without actually watching it.
  */
-export async function markLessonComplete(_userId: string, lessonId: string, durationSeconds: number) {
+export async function markLessonComplete(
+  _userId: string,
+  lessonId: string,
+  durationSeconds: number,
+) {
   const { error } = await supabase.rpc("record_lesson_progress", {
     _lesson_id: lessonId,
     _position_seconds: Math.max(1, Math.round(durationSeconds)),
@@ -244,4 +253,3 @@ export async function saveLessonPosition(
   });
   if (error) throw new Error(error.message);
 }
-

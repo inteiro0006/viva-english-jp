@@ -16,7 +16,6 @@ export const listAdminCourses = createServerFn({ method: "GET" })
     return data ?? [];
   });
 
-
 export const getAdminCourse = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
@@ -91,15 +90,7 @@ export const duplicateCourse = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .single();
     if (srcErr || !source) throw new Error(srcErr?.message ?? "not_found");
-    const {
-      id: _id,
-      created_at: _c,
-      updated_at: _u,
-      slug,
-      title_ja,
-      title_en,
-      ...rest
-    } = source;
+    const { id: _id, created_at: _c, updated_at: _u, slug, title_ja, title_en, ...rest } = source;
     const suffix = `-copy-${Date.now().toString(36)}`;
     const { data: copy, error } = await context.supabase
       .from("courses")
@@ -190,10 +181,7 @@ export const deleteCourse = createServerFn({ method: "POST" })
       throw new Error("course_has_paid_enrollments");
     }
 
-    const { error: delErr } = await context.supabase
-      .from("courses")
-      .delete()
-      .eq("id", data.id);
+    const { error: delErr } = await context.supabase.from("courses").delete().eq("id", data.id);
     if (delErr) throw new Error(delErr.message);
 
     await logAdminAction(context.supabase, {
