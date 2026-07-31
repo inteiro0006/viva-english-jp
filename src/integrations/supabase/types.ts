@@ -1,1108 +1,1127 @@
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5";
-  };
+    PostgrestVersion: "14.5"
+  }
   public: {
     Tables: {
       admin_audit_logs: {
         Row: {
-          action: string;
-          admin_id: string | null;
-          changed_fields: Json | null;
-          created_at: string;
-          entity_id: string | null;
-          entity_type: string;
-          id: string;
-          ip_address: unknown;
-          new_values: Json | null;
-          old_values: Json | null;
-          summary: string | null;
-          user_agent: string | null;
-        };
+          action: string
+          admin_id: string | null
+          changed_fields: Json | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          id: string
+          ip_address: unknown
+          new_values: Json | null
+          old_values: Json | null
+          summary: string | null
+          user_agent: string | null
+        }
         Insert: {
-          action: string;
-          admin_id?: string | null;
-          changed_fields?: Json | null;
-          created_at?: string;
-          entity_id?: string | null;
-          entity_type: string;
-          id?: string;
-          ip_address?: unknown;
-          new_values?: Json | null;
-          old_values?: Json | null;
-          summary?: string | null;
-          user_agent?: string | null;
-        };
+          action: string
+          admin_id?: string | null
+          changed_fields?: Json | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          ip_address?: unknown
+          new_values?: Json | null
+          old_values?: Json | null
+          summary?: string | null
+          user_agent?: string | null
+        }
         Update: {
-          action?: string;
-          admin_id?: string | null;
-          changed_fields?: Json | null;
-          created_at?: string;
-          entity_id?: string | null;
-          entity_type?: string;
-          id?: string;
-          ip_address?: unknown;
-          new_values?: Json | null;
-          old_values?: Json | null;
-          summary?: string | null;
-          user_agent?: string | null;
-        };
-        Relationships: [];
-      };
+          action?: string
+          admin_id?: string | null
+          changed_fields?: Json | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          ip_address?: unknown
+          new_values?: Json | null
+          old_values?: Json | null
+          summary?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       certificates: {
         Row: {
-          certificate_number: string;
-          course_id: string;
-          course_title_snapshot: string;
-          created_at: string;
-          hours_snapshot: number | null;
-          id: string;
-          issued_at: string;
-          language: string;
-          pdf_path: string | null;
-          revoke_reason: string | null;
-          revoked_at: string | null;
-          revoked_by: string | null;
-          student_name_snapshot: string;
-          updated_at: string;
-          user_id: string;
-          verification_code: string;
-        };
+          certificate_number: string
+          course_id: string
+          course_title_snapshot: string
+          created_at: string
+          hours_snapshot: number | null
+          id: string
+          issued_at: string
+          language: string
+          pdf_path: string | null
+          revoke_reason: string | null
+          revoked_at: string | null
+          revoked_by: string | null
+          student_name_snapshot: string
+          updated_at: string
+          user_id: string
+          verification_code: string
+        }
         Insert: {
-          certificate_number: string;
-          course_id: string;
-          course_title_snapshot: string;
-          created_at?: string;
-          hours_snapshot?: number | null;
-          id?: string;
-          issued_at?: string;
-          language?: string;
-          pdf_path?: string | null;
-          revoke_reason?: string | null;
-          revoked_at?: string | null;
-          revoked_by?: string | null;
-          student_name_snapshot: string;
-          updated_at?: string;
-          user_id: string;
-          verification_code: string;
-        };
+          certificate_number: string
+          course_id: string
+          course_title_snapshot: string
+          created_at?: string
+          hours_snapshot?: number | null
+          id?: string
+          issued_at?: string
+          language?: string
+          pdf_path?: string | null
+          revoke_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          student_name_snapshot: string
+          updated_at?: string
+          user_id: string
+          verification_code: string
+        }
         Update: {
-          certificate_number?: string;
-          course_id?: string;
-          course_title_snapshot?: string;
-          created_at?: string;
-          hours_snapshot?: number | null;
-          id?: string;
-          issued_at?: string;
-          language?: string;
-          pdf_path?: string | null;
-          revoke_reason?: string | null;
-          revoked_at?: string | null;
-          revoked_by?: string | null;
-          student_name_snapshot?: string;
-          updated_at?: string;
-          user_id?: string;
-          verification_code?: string;
-        };
+          certificate_number?: string
+          course_id?: string
+          course_title_snapshot?: string
+          created_at?: string
+          hours_snapshot?: number | null
+          id?: string
+          issued_at?: string
+          language?: string
+          pdf_path?: string | null
+          revoke_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          student_name_snapshot?: string
+          updated_at?: string
+          user_id?: string
+          verification_code?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "certificates_course_id_fkey";
-            columns: ["course_id"];
-            isOneToOne: false;
-            referencedRelation: "courses";
-            referencedColumns: ["id"];
+            foreignKeyName: "certificates_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       course_stages: {
         Row: {
-          course_id: string;
-          created_at: string;
-          description_en: string | null;
-          description_ja: string | null;
-          id: string;
-          position: number;
-          status: Database["public"]["Enums"]["content_status"];
-          title_en: string;
-          title_ja: string;
-          updated_at: string;
-        };
+          course_id: string
+          created_at: string
+          description_en: string | null
+          description_ja: string | null
+          id: string
+          position: number
+          status: Database["public"]["Enums"]["content_status"]
+          title_en: string
+          title_ja: string
+          updated_at: string
+        }
         Insert: {
-          course_id: string;
-          created_at?: string;
-          description_en?: string | null;
-          description_ja?: string | null;
-          id?: string;
-          position?: number;
-          status?: Database["public"]["Enums"]["content_status"];
-          title_en: string;
-          title_ja: string;
-          updated_at?: string;
-        };
+          course_id: string
+          created_at?: string
+          description_en?: string | null
+          description_ja?: string | null
+          id?: string
+          position?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          title_en: string
+          title_ja: string
+          updated_at?: string
+        }
         Update: {
-          course_id?: string;
-          created_at?: string;
-          description_en?: string | null;
-          description_ja?: string | null;
-          id?: string;
-          position?: number;
-          status?: Database["public"]["Enums"]["content_status"];
-          title_en?: string;
-          title_ja?: string;
-          updated_at?: string;
-        };
+          course_id?: string
+          created_at?: string
+          description_en?: string | null
+          description_ja?: string | null
+          id?: string
+          position?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          title_en?: string
+          title_ja?: string
+          updated_at?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "course_stages_course_id_fkey";
-            columns: ["course_id"];
-            isOneToOne: false;
-            referencedRelation: "courses";
-            referencedColumns: ["id"];
+            foreignKeyName: "course_stages_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       courses: {
         Row: {
-          access_duration_days: number | null;
-          access_type: Database["public"]["Enums"]["access_type"];
-          cover_url: string | null;
-          created_at: string;
-          description_en: string | null;
-          description_ja: string | null;
-          id: string;
-          price_jpy: number;
-          slug: string;
-          status: Database["public"]["Enums"]["course_status"];
-          thumbnail_url: string | null;
-          title_en: string;
-          title_ja: string;
-          updated_at: string;
-        };
+          access_duration_days: number | null
+          access_type: Database["public"]["Enums"]["access_type"]
+          cover_url: string | null
+          created_at: string
+          description_en: string | null
+          description_ja: string | null
+          id: string
+          price_jpy: number
+          slug: string
+          status: Database["public"]["Enums"]["course_status"]
+          thumbnail_url: string | null
+          title_en: string
+          title_ja: string
+          updated_at: string
+        }
         Insert: {
-          access_duration_days?: number | null;
-          access_type?: Database["public"]["Enums"]["access_type"];
-          cover_url?: string | null;
-          created_at?: string;
-          description_en?: string | null;
-          description_ja?: string | null;
-          id?: string;
-          price_jpy?: number;
-          slug: string;
-          status?: Database["public"]["Enums"]["course_status"];
-          thumbnail_url?: string | null;
-          title_en: string;
-          title_ja: string;
-          updated_at?: string;
-        };
+          access_duration_days?: number | null
+          access_type?: Database["public"]["Enums"]["access_type"]
+          cover_url?: string | null
+          created_at?: string
+          description_en?: string | null
+          description_ja?: string | null
+          id?: string
+          price_jpy?: number
+          slug: string
+          status?: Database["public"]["Enums"]["course_status"]
+          thumbnail_url?: string | null
+          title_en: string
+          title_ja: string
+          updated_at?: string
+        }
         Update: {
-          access_duration_days?: number | null;
-          access_type?: Database["public"]["Enums"]["access_type"];
-          cover_url?: string | null;
-          created_at?: string;
-          description_en?: string | null;
-          description_ja?: string | null;
-          id?: string;
-          price_jpy?: number;
-          slug?: string;
-          status?: Database["public"]["Enums"]["course_status"];
-          thumbnail_url?: string | null;
-          title_en?: string;
-          title_ja?: string;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
+          access_duration_days?: number | null
+          access_type?: Database["public"]["Enums"]["access_type"]
+          cover_url?: string | null
+          created_at?: string
+          description_en?: string | null
+          description_ja?: string | null
+          id?: string
+          price_jpy?: number
+          slug?: string
+          status?: Database["public"]["Enums"]["course_status"]
+          thumbnail_url?: string | null
+          title_en?: string
+          title_ja?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       enrollments: {
         Row: {
-          course_id: string;
-          created_at: string;
-          enrolled_at: string;
-          expires_at: string | null;
-          id: string;
-          order_id: string | null;
-          status: Database["public"]["Enums"]["enrollment_status"];
-          updated_at: string;
-          user_id: string;
-        };
+          course_id: string
+          created_at: string
+          enrolled_at: string
+          expires_at: string | null
+          id: string
+          order_id: string | null
+          status: Database["public"]["Enums"]["enrollment_status"]
+          updated_at: string
+          user_id: string
+        }
         Insert: {
-          course_id: string;
-          created_at?: string;
-          enrolled_at?: string;
-          expires_at?: string | null;
-          id?: string;
-          order_id?: string | null;
-          status?: Database["public"]["Enums"]["enrollment_status"];
-          updated_at?: string;
-          user_id: string;
-        };
+          course_id: string
+          created_at?: string
+          enrolled_at?: string
+          expires_at?: string | null
+          id?: string
+          order_id?: string | null
+          status?: Database["public"]["Enums"]["enrollment_status"]
+          updated_at?: string
+          user_id: string
+        }
         Update: {
-          course_id?: string;
-          created_at?: string;
-          enrolled_at?: string;
-          expires_at?: string | null;
-          id?: string;
-          order_id?: string | null;
-          status?: Database["public"]["Enums"]["enrollment_status"];
-          updated_at?: string;
-          user_id?: string;
-        };
+          course_id?: string
+          created_at?: string
+          enrolled_at?: string
+          expires_at?: string | null
+          id?: string
+          order_id?: string | null
+          status?: Database["public"]["Enums"]["enrollment_status"]
+          updated_at?: string
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "enrollments_course_id_fkey";
-            columns: ["course_id"];
-            isOneToOne: false;
-            referencedRelation: "courses";
-            referencedColumns: ["id"];
+            foreignKeyName: "enrollments_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "enrollments_order_id_fkey";
-            columns: ["order_id"];
-            isOneToOne: false;
-            referencedRelation: "orders";
-            referencedColumns: ["id"];
+            foreignKeyName: "enrollments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       faq_items: {
         Row: {
-          answer_en: string;
-          answer_ja: string;
-          category: string | null;
-          created_at: string;
-          id: string;
-          position: number;
-          published: boolean;
-          question_en: string;
-          question_ja: string;
-          updated_at: string;
-        };
+          answer_en: string
+          answer_ja: string
+          category: string | null
+          created_at: string
+          id: string
+          position: number
+          published: boolean
+          question_en: string
+          question_ja: string
+          updated_at: string
+        }
         Insert: {
-          answer_en: string;
-          answer_ja: string;
-          category?: string | null;
-          created_at?: string;
-          id?: string;
-          position?: number;
-          published?: boolean;
-          question_en: string;
-          question_ja: string;
-          updated_at?: string;
-        };
+          answer_en: string
+          answer_ja: string
+          category?: string | null
+          created_at?: string
+          id?: string
+          position?: number
+          published?: boolean
+          question_en: string
+          question_ja: string
+          updated_at?: string
+        }
         Update: {
-          answer_en?: string;
-          answer_ja?: string;
-          category?: string | null;
-          created_at?: string;
-          id?: string;
-          position?: number;
-          published?: boolean;
-          question_en?: string;
-          question_ja?: string;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
+          answer_en?: string
+          answer_ja?: string
+          category?: string | null
+          created_at?: string
+          id?: string
+          position?: number
+          published?: boolean
+          question_en?: string
+          question_ja?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       lesson_progress: {
         Row: {
-          completed: boolean;
-          completed_at: string | null;
-          created_at: string;
-          id: string;
-          last_watched_at: string;
-          lesson_id: string;
-          progress_percentage: number;
-          progress_seconds: number;
-          updated_at: string;
-          user_id: string;
-        };
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          id: string
+          last_watched_at: string
+          lesson_id: string
+          progress_percentage: number
+          progress_seconds: number
+          updated_at: string
+          user_id: string
+        }
         Insert: {
-          completed?: boolean;
-          completed_at?: string | null;
-          created_at?: string;
-          id?: string;
-          last_watched_at?: string;
-          lesson_id: string;
-          progress_percentage?: number;
-          progress_seconds?: number;
-          updated_at?: string;
-          user_id: string;
-        };
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          last_watched_at?: string
+          lesson_id: string
+          progress_percentage?: number
+          progress_seconds?: number
+          updated_at?: string
+          user_id: string
+        }
         Update: {
-          completed?: boolean;
-          completed_at?: string | null;
-          created_at?: string;
-          id?: string;
-          last_watched_at?: string;
-          lesson_id?: string;
-          progress_percentage?: number;
-          progress_seconds?: number;
-          updated_at?: string;
-          user_id?: string;
-        };
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          last_watched_at?: string
+          lesson_id?: string
+          progress_percentage?: number
+          progress_seconds?: number
+          updated_at?: string
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "lesson_progress_lesson_id_fkey";
-            columns: ["lesson_id"];
-            isOneToOne: false;
-            referencedRelation: "lessons";
-            referencedColumns: ["id"];
+            foreignKeyName: "lesson_progress_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       lesson_resources: {
         Row: {
-          created_at: string;
-          file_url: string;
-          id: string;
-          lesson_id: string;
-          position: number;
-          resource_type: Database["public"]["Enums"]["resource_type"];
-          title_en: string;
-          title_ja: string;
-        };
+          created_at: string
+          file_url: string
+          id: string
+          lesson_id: string
+          position: number
+          resource_type: Database["public"]["Enums"]["resource_type"]
+          title_en: string
+          title_ja: string
+        }
         Insert: {
-          created_at?: string;
-          file_url: string;
-          id?: string;
-          lesson_id: string;
-          position?: number;
-          resource_type?: Database["public"]["Enums"]["resource_type"];
-          title_en: string;
-          title_ja: string;
-        };
+          created_at?: string
+          file_url: string
+          id?: string
+          lesson_id: string
+          position?: number
+          resource_type?: Database["public"]["Enums"]["resource_type"]
+          title_en: string
+          title_ja: string
+        }
         Update: {
-          created_at?: string;
-          file_url?: string;
-          id?: string;
-          lesson_id?: string;
-          position?: number;
-          resource_type?: Database["public"]["Enums"]["resource_type"];
-          title_en?: string;
-          title_ja?: string;
-        };
+          created_at?: string
+          file_url?: string
+          id?: string
+          lesson_id?: string
+          position?: number
+          resource_type?: Database["public"]["Enums"]["resource_type"]
+          title_en?: string
+          title_ja?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "lesson_resources_lesson_id_fkey";
-            columns: ["lesson_id"];
-            isOneToOne: false;
-            referencedRelation: "lessons";
-            referencedColumns: ["id"];
+            foreignKeyName: "lesson_resources_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       lessons: {
         Row: {
-          cloudflare_video_uid: string | null;
-          created_at: string;
-          description_en: string | null;
-          description_ja: string | null;
-          duration_seconds: number;
-          id: string;
-          is_preview: boolean;
-          lesson_type: Database["public"]["Enums"]["lesson_type"];
-          module_id: string;
-          position: number;
-          status: Database["public"]["Enums"]["content_status"];
-          title_en: string;
-          title_ja: string;
-          updated_at: string;
-        };
+          cloudflare_video_uid: string | null
+          created_at: string
+          description_en: string | null
+          description_ja: string | null
+          duration_seconds: number
+          id: string
+          is_preview: boolean
+          lesson_type: Database["public"]["Enums"]["lesson_type"]
+          module_id: string
+          position: number
+          status: Database["public"]["Enums"]["content_status"]
+          title_en: string
+          title_ja: string
+          updated_at: string
+        }
         Insert: {
-          cloudflare_video_uid?: string | null;
-          created_at?: string;
-          description_en?: string | null;
-          description_ja?: string | null;
-          duration_seconds?: number;
-          id?: string;
-          is_preview?: boolean;
-          lesson_type?: Database["public"]["Enums"]["lesson_type"];
-          module_id: string;
-          position?: number;
-          status?: Database["public"]["Enums"]["content_status"];
-          title_en: string;
-          title_ja: string;
-          updated_at?: string;
-        };
+          cloudflare_video_uid?: string | null
+          created_at?: string
+          description_en?: string | null
+          description_ja?: string | null
+          duration_seconds?: number
+          id?: string
+          is_preview?: boolean
+          lesson_type?: Database["public"]["Enums"]["lesson_type"]
+          module_id: string
+          position?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          title_en: string
+          title_ja: string
+          updated_at?: string
+        }
         Update: {
-          cloudflare_video_uid?: string | null;
-          created_at?: string;
-          description_en?: string | null;
-          description_ja?: string | null;
-          duration_seconds?: number;
-          id?: string;
-          is_preview?: boolean;
-          lesson_type?: Database["public"]["Enums"]["lesson_type"];
-          module_id?: string;
-          position?: number;
-          status?: Database["public"]["Enums"]["content_status"];
-          title_en?: string;
-          title_ja?: string;
-          updated_at?: string;
-        };
+          cloudflare_video_uid?: string | null
+          created_at?: string
+          description_en?: string | null
+          description_ja?: string | null
+          duration_seconds?: number
+          id?: string
+          is_preview?: boolean
+          lesson_type?: Database["public"]["Enums"]["lesson_type"]
+          module_id?: string
+          position?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          title_en?: string
+          title_ja?: string
+          updated_at?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "lessons_module_id_fkey";
-            columns: ["module_id"];
-            isOneToOne: false;
-            referencedRelation: "modules";
-            referencedColumns: ["id"];
+            foreignKeyName: "lessons_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "modules"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       modules: {
         Row: {
-          course_id: string;
-          created_at: string;
-          description_en: string | null;
-          description_ja: string | null;
-          id: string;
-          position: number;
-          release_at: string | null;
-          release_type: Database["public"]["Enums"]["release_type"];
-          stage_id: string | null;
-          status: Database["public"]["Enums"]["content_status"];
-          thumbnail_url: string | null;
-          title_en: string;
-          title_ja: string;
-          updated_at: string;
-        };
+          course_id: string
+          created_at: string
+          description_en: string | null
+          description_ja: string | null
+          id: string
+          position: number
+          release_at: string | null
+          release_type: Database["public"]["Enums"]["release_type"]
+          stage_id: string | null
+          status: Database["public"]["Enums"]["content_status"]
+          thumbnail_url: string | null
+          title_en: string
+          title_ja: string
+          updated_at: string
+        }
         Insert: {
-          course_id: string;
-          created_at?: string;
-          description_en?: string | null;
-          description_ja?: string | null;
-          id?: string;
-          position?: number;
-          release_at?: string | null;
-          release_type?: Database["public"]["Enums"]["release_type"];
-          stage_id?: string | null;
-          status?: Database["public"]["Enums"]["content_status"];
-          thumbnail_url?: string | null;
-          title_en: string;
-          title_ja: string;
-          updated_at?: string;
-        };
+          course_id: string
+          created_at?: string
+          description_en?: string | null
+          description_ja?: string | null
+          id?: string
+          position?: number
+          release_at?: string | null
+          release_type?: Database["public"]["Enums"]["release_type"]
+          stage_id?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          thumbnail_url?: string | null
+          title_en: string
+          title_ja: string
+          updated_at?: string
+        }
         Update: {
-          course_id?: string;
-          created_at?: string;
-          description_en?: string | null;
-          description_ja?: string | null;
-          id?: string;
-          position?: number;
-          release_at?: string | null;
-          release_type?: Database["public"]["Enums"]["release_type"];
-          stage_id?: string | null;
-          status?: Database["public"]["Enums"]["content_status"];
-          thumbnail_url?: string | null;
-          title_en?: string;
-          title_ja?: string;
-          updated_at?: string;
-        };
+          course_id?: string
+          created_at?: string
+          description_en?: string | null
+          description_ja?: string | null
+          id?: string
+          position?: number
+          release_at?: string | null
+          release_type?: Database["public"]["Enums"]["release_type"]
+          stage_id?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          thumbnail_url?: string | null
+          title_en?: string
+          title_ja?: string
+          updated_at?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "modules_course_id_fkey";
-            columns: ["course_id"];
-            isOneToOne: false;
-            referencedRelation: "courses";
-            referencedColumns: ["id"];
+            foreignKeyName: "modules_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "modules_stage_id_fkey";
-            columns: ["stage_id"];
-            isOneToOne: false;
-            referencedRelation: "course_stages";
-            referencedColumns: ["id"];
+            foreignKeyName: "modules_stage_id_fkey"
+            columns: ["stage_id"]
+            isOneToOne: false
+            referencedRelation: "course_stages"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       orders: {
         Row: {
-          amount: number;
-          course_id: string;
-          created_at: string;
-          currency: string;
-          customer_email: string | null;
-          environment: Database["public"]["Enums"]["payment_environment"];
-          id: string;
-          paid_at: string | null;
-          provider: string;
-          provider_checkout_id: string | null;
-          provider_payment_id: string | null;
-          status: Database["public"]["Enums"]["order_status"];
-          updated_at: string;
-          user_id: string;
-        };
+          amount: number
+          course_id: string
+          created_at: string
+          currency: string
+          customer_email: string | null
+          environment: Database["public"]["Enums"]["payment_environment"]
+          id: string
+          paid_at: string | null
+          provider: string
+          provider_checkout_id: string | null
+          provider_payment_id: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          updated_at: string
+          user_id: string
+        }
         Insert: {
-          amount?: number;
-          course_id: string;
-          created_at?: string;
-          currency?: string;
-          customer_email?: string | null;
-          environment?: Database["public"]["Enums"]["payment_environment"];
-          id?: string;
-          paid_at?: string | null;
-          provider?: string;
-          provider_checkout_id?: string | null;
-          provider_payment_id?: string | null;
-          status?: Database["public"]["Enums"]["order_status"];
-          updated_at?: string;
-          user_id: string;
-        };
+          amount?: number
+          course_id: string
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          environment?: Database["public"]["Enums"]["payment_environment"]
+          id?: string
+          paid_at?: string | null
+          provider?: string
+          provider_checkout_id?: string | null
+          provider_payment_id?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          updated_at?: string
+          user_id: string
+        }
         Update: {
-          amount?: number;
-          course_id?: string;
-          created_at?: string;
-          currency?: string;
-          customer_email?: string | null;
-          environment?: Database["public"]["Enums"]["payment_environment"];
-          id?: string;
-          paid_at?: string | null;
-          provider?: string;
-          provider_checkout_id?: string | null;
-          provider_payment_id?: string | null;
-          status?: Database["public"]["Enums"]["order_status"];
-          updated_at?: string;
-          user_id?: string;
-        };
+          amount?: number
+          course_id?: string
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          environment?: Database["public"]["Enums"]["payment_environment"]
+          id?: string
+          paid_at?: string | null
+          provider?: string
+          provider_checkout_id?: string | null
+          provider_payment_id?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          updated_at?: string
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: "orders_course_id_fkey";
-            columns: ["course_id"];
-            isOneToOne: false;
-            referencedRelation: "courses";
-            referencedColumns: ["id"];
+            foreignKeyName: "orders_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       payment_events: {
         Row: {
-          attempts: number;
-          created_at: string;
-          environment: Database["public"]["Enums"]["payment_environment"];
-          event_type: string;
-          id: string;
-          payload: Json;
-          processed: boolean;
-          processed_at: string | null;
-          processing_error: string | null;
-          provider: string;
-          provider_event_id: string;
-        };
+          attempts: number
+          created_at: string
+          environment: Database["public"]["Enums"]["payment_environment"]
+          event_type: string
+          id: string
+          payload: Json
+          processed: boolean
+          processed_at: string | null
+          processing_error: string | null
+          provider: string
+          provider_event_id: string
+        }
         Insert: {
-          attempts?: number;
-          created_at?: string;
-          environment?: Database["public"]["Enums"]["payment_environment"];
-          event_type: string;
-          id?: string;
-          payload?: Json;
-          processed?: boolean;
-          processed_at?: string | null;
-          processing_error?: string | null;
-          provider: string;
-          provider_event_id: string;
-        };
+          attempts?: number
+          created_at?: string
+          environment?: Database["public"]["Enums"]["payment_environment"]
+          event_type: string
+          id?: string
+          payload?: Json
+          processed?: boolean
+          processed_at?: string | null
+          processing_error?: string | null
+          provider: string
+          provider_event_id: string
+        }
         Update: {
-          attempts?: number;
-          created_at?: string;
-          environment?: Database["public"]["Enums"]["payment_environment"];
-          event_type?: string;
-          id?: string;
-          payload?: Json;
-          processed?: boolean;
-          processed_at?: string | null;
-          processing_error?: string | null;
-          provider?: string;
-          provider_event_id?: string;
-        };
-        Relationships: [];
-      };
+          attempts?: number
+          created_at?: string
+          environment?: Database["public"]["Enums"]["payment_environment"]
+          event_type?: string
+          id?: string
+          payload?: Json
+          processed?: boolean
+          processed_at?: string | null
+          processing_error?: string | null
+          provider?: string
+          provider_event_id?: string
+        }
+        Relationships: []
+      }
       platform_settings: {
         Row: {
-          is_public: boolean;
-          key: string;
-          updated_at: string;
-          updated_by: string | null;
-          value: Json;
-        };
+          is_public: boolean
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
         Insert: {
-          is_public?: boolean;
-          key: string;
-          updated_at?: string;
-          updated_by?: string | null;
-          value?: Json;
-        };
+          is_public?: boolean
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
         Update: {
-          is_public?: boolean;
-          key?: string;
-          updated_at?: string;
-          updated_by?: string | null;
-          value?: Json;
-        };
-        Relationships: [];
-      };
+          is_public?: boolean
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
-          avatar_url: string | null;
-          communication_preferences: Json;
-          created_at: string;
-          full_name: string;
-          id: string;
-          marketing_consent: boolean;
-          preferred_language: Database["public"]["Enums"]["preferred_language"];
-          updated_at: string;
-        };
+          avatar_url: string | null
+          communication_preferences: Json
+          created_at: string
+          full_name: string
+          id: string
+          marketing_consent: boolean
+          preferred_language: Database["public"]["Enums"]["preferred_language"]
+          updated_at: string
+        }
         Insert: {
-          avatar_url?: string | null;
-          communication_preferences?: Json;
-          created_at?: string;
-          full_name?: string;
-          id: string;
-          marketing_consent?: boolean;
-          preferred_language?: Database["public"]["Enums"]["preferred_language"];
-          updated_at?: string;
-        };
+          avatar_url?: string | null
+          communication_preferences?: Json
+          created_at?: string
+          full_name?: string
+          id: string
+          marketing_consent?: boolean
+          preferred_language?: Database["public"]["Enums"]["preferred_language"]
+          updated_at?: string
+        }
         Update: {
-          avatar_url?: string | null;
-          communication_preferences?: Json;
-          created_at?: string;
-          full_name?: string;
-          id?: string;
-          marketing_consent?: boolean;
-          preferred_language?: Database["public"]["Enums"]["preferred_language"];
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
+          avatar_url?: string | null
+          communication_preferences?: Json
+          created_at?: string
+          full_name?: string
+          id?: string
+          marketing_consent?: boolean
+          preferred_language?: Database["public"]["Enums"]["preferred_language"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       stream_videos: {
         Row: {
-          cloudflare_uid: string;
-          created_at: string;
-          duration_seconds: number | null;
-          id: string;
-          meta: Json;
-          preview_url: string | null;
-          ready_to_stream: boolean;
-          require_signed_urls: boolean;
-          status: string;
-          thumbnail_url: string | null;
-          title: string | null;
-          updated_at: string;
-          uploaded_by: string | null;
-        };
+          cloudflare_uid: string
+          created_at: string
+          duration_seconds: number | null
+          id: string
+          meta: Json
+          preview_url: string | null
+          ready_to_stream: boolean
+          require_signed_urls: boolean
+          status: string
+          thumbnail_url: string | null
+          title: string | null
+          updated_at: string
+          uploaded_by: string | null
+        }
         Insert: {
-          cloudflare_uid: string;
-          created_at?: string;
-          duration_seconds?: number | null;
-          id?: string;
-          meta?: Json;
-          preview_url?: string | null;
-          ready_to_stream?: boolean;
-          require_signed_urls?: boolean;
-          status?: string;
-          thumbnail_url?: string | null;
-          title?: string | null;
-          updated_at?: string;
-          uploaded_by?: string | null;
-        };
+          cloudflare_uid: string
+          created_at?: string
+          duration_seconds?: number | null
+          id?: string
+          meta?: Json
+          preview_url?: string | null
+          ready_to_stream?: boolean
+          require_signed_urls?: boolean
+          status?: string
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string
+          uploaded_by?: string | null
+        }
         Update: {
-          cloudflare_uid?: string;
-          created_at?: string;
-          duration_seconds?: number | null;
-          id?: string;
-          meta?: Json;
-          preview_url?: string | null;
-          ready_to_stream?: boolean;
-          require_signed_urls?: boolean;
-          status?: string;
-          thumbnail_url?: string | null;
-          title?: string | null;
-          updated_at?: string;
-          uploaded_by?: string | null;
-        };
-        Relationships: [];
-      };
+          cloudflare_uid?: string
+          created_at?: string
+          duration_seconds?: number | null
+          id?: string
+          meta?: Json
+          preview_url?: string | null
+          ready_to_stream?: boolean
+          require_signed_urls?: boolean
+          status?: string
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
       stream_webhook_events: {
         Row: {
-          cloudflare_uid: string | null;
-          event_id: string | null;
-          event_type: string | null;
-          id: string;
-          payload: Json;
-          received_at: string;
-        };
+          cloudflare_uid: string | null
+          event_id: string | null
+          event_type: string | null
+          id: string
+          payload: Json
+          received_at: string
+        }
         Insert: {
-          cloudflare_uid?: string | null;
-          event_id?: string | null;
-          event_type?: string | null;
-          id?: string;
-          payload: Json;
-          received_at?: string;
-        };
+          cloudflare_uid?: string | null
+          event_id?: string | null
+          event_type?: string | null
+          id?: string
+          payload: Json
+          received_at?: string
+        }
         Update: {
-          cloudflare_uid?: string | null;
-          event_id?: string | null;
-          event_type?: string | null;
-          id?: string;
-          payload?: Json;
-          received_at?: string;
-        };
-        Relationships: [];
-      };
+          cloudflare_uid?: string | null
+          event_id?: string | null
+          event_type?: string | null
+          id?: string
+          payload?: Json
+          received_at?: string
+        }
+        Relationships: []
+      }
       support_requests: {
         Row: {
-          attachment_url: string | null;
-          category: Database["public"]["Enums"]["support_category"];
-          created_at: string;
-          id: string;
-          message: string;
-          responded_at: string | null;
-          response: string | null;
-          status: Database["public"]["Enums"]["support_status"];
-          subject: string;
-          updated_at: string;
-          user_id: string;
-        };
+          attachment_url: string | null
+          category: Database["public"]["Enums"]["support_category"]
+          created_at: string
+          id: string
+          message: string
+          responded_at: string | null
+          response: string | null
+          status: Database["public"]["Enums"]["support_status"]
+          subject: string
+          updated_at: string
+          user_id: string
+        }
         Insert: {
-          attachment_url?: string | null;
-          category?: Database["public"]["Enums"]["support_category"];
-          created_at?: string;
-          id?: string;
-          message: string;
-          responded_at?: string | null;
-          response?: string | null;
-          status?: Database["public"]["Enums"]["support_status"];
-          subject: string;
-          updated_at?: string;
-          user_id: string;
-        };
+          attachment_url?: string | null
+          category?: Database["public"]["Enums"]["support_category"]
+          created_at?: string
+          id?: string
+          message: string
+          responded_at?: string | null
+          response?: string | null
+          status?: Database["public"]["Enums"]["support_status"]
+          subject: string
+          updated_at?: string
+          user_id: string
+        }
         Update: {
-          attachment_url?: string | null;
-          category?: Database["public"]["Enums"]["support_category"];
-          created_at?: string;
-          id?: string;
-          message?: string;
-          responded_at?: string | null;
-          response?: string | null;
-          status?: Database["public"]["Enums"]["support_status"];
-          subject?: string;
-          updated_at?: string;
-          user_id?: string;
-        };
-        Relationships: [];
-      };
+          attachment_url?: string | null
+          category?: Database["public"]["Enums"]["support_category"]
+          created_at?: string
+          id?: string
+          message?: string
+          responded_at?: string | null
+          response?: string | null
+          status?: Database["public"]["Enums"]["support_status"]
+          subject?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       testimonials: {
         Row: {
-          avatar_url: string | null;
-          content_en: string;
-          content_ja: string;
-          created_at: string;
-          id: string;
-          name: string;
-          occupation_en: string | null;
-          occupation_ja: string | null;
-          position: number;
-          published: boolean;
-          rating: number | null;
-          updated_at: string;
-          video_url: string | null;
-        };
+          avatar_url: string | null
+          content_en: string
+          content_ja: string
+          created_at: string
+          id: string
+          name: string
+          occupation_en: string | null
+          occupation_ja: string | null
+          position: number
+          published: boolean
+          rating: number | null
+          updated_at: string
+          video_url: string | null
+        }
         Insert: {
-          avatar_url?: string | null;
-          content_en: string;
-          content_ja: string;
-          created_at?: string;
-          id?: string;
-          name: string;
-          occupation_en?: string | null;
-          occupation_ja?: string | null;
-          position?: number;
-          published?: boolean;
-          rating?: number | null;
-          updated_at?: string;
-          video_url?: string | null;
-        };
+          avatar_url?: string | null
+          content_en: string
+          content_ja: string
+          created_at?: string
+          id?: string
+          name: string
+          occupation_en?: string | null
+          occupation_ja?: string | null
+          position?: number
+          published?: boolean
+          rating?: number | null
+          updated_at?: string
+          video_url?: string | null
+        }
         Update: {
-          avatar_url?: string | null;
-          content_en?: string;
-          content_ja?: string;
-          created_at?: string;
-          id?: string;
-          name?: string;
-          occupation_en?: string | null;
-          occupation_ja?: string | null;
-          position?: number;
-          published?: boolean;
-          rating?: number | null;
-          updated_at?: string;
-          video_url?: string | null;
-        };
-        Relationships: [];
-      };
+          avatar_url?: string | null
+          content_en?: string
+          content_ja?: string
+          created_at?: string
+          id?: string
+          name?: string
+          occupation_en?: string | null
+          occupation_ja?: string | null
+          position?: number
+          published?: boolean
+          rating?: number | null
+          updated_at?: string
+          video_url?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
-          created_at: string;
-          id: string;
-          role: Database["public"]["Enums"]["app_role"];
-          user_id: string;
-        };
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
         Insert: {
-          created_at?: string;
-          id?: string;
-          role: Database["public"]["Enums"]["app_role"];
-          user_id: string;
-        };
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
         Update: {
-          created_at?: string;
-          id?: string;
-          role?: Database["public"]["Enums"]["app_role"];
-          user_id?: string;
-        };
-        Relationships: [];
-      };
-    };
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+    }
     Views: {
-      [_ in never]: never;
-    };
+      [_ in never]: never
+    }
     Functions: {
       can_access_lesson: {
-        Args: { _lesson_id: string; _uid: string };
-        Returns: boolean;
-      };
+        Args: { _lesson_id: string; _uid: string }
+        Returns: boolean
+      }
       fulfill_paid_order: {
         Args: {
-          _amount: number;
-          _currency: string;
-          _customer_email?: string;
-          _environment: Database["public"]["Enums"]["payment_environment"];
-          _order_id: string;
-          _provider_checkout_id: string;
-          _provider_payment_id: string;
-        };
-        Returns: Json;
-      };
+          _amount: number
+          _currency: string
+          _customer_email?: string
+          _environment: Database["public"]["Enums"]["payment_environment"]
+          _order_id: string
+          _provider_checkout_id: string
+          _provider_payment_id: string
+        }
+        Returns: Json
+      }
       get_course_progress: {
-        Args: { _course_id: string; _uid: string };
+        Args: { _course_id: string; _uid: string }
         Returns: {
-          completed_lessons: number;
-          last_lesson_id: string;
-          last_watched_at: string;
-          percentage: number;
-          total_lessons: number;
-        }[];
-      };
+          completed_lessons: number
+          last_lesson_id: string
+          last_watched_at: string
+          percentage: number
+          total_lessons: number
+        }[]
+      }
       get_next_lesson: {
-        Args: { _course_id: string; _uid: string };
-        Returns: string;
-      };
+        Args: { _course_id: string; _uid: string }
+        Returns: string
+      }
       grant_enrollment: {
-        Args: { _course_id: string; _order_id?: string; _user_id: string };
-        Returns: string;
-      };
+        Args: { _course_id: string; _order_id?: string; _user_id: string }
+        Returns: string
+      }
       has_active_enrollment: {
-        Args: { _course_id: string; _uid: string };
-        Returns: boolean;
-      };
+        Args: { _course_id: string; _uid: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
-          _role: Database["public"]["Enums"]["app_role"];
-          _user_id: string;
-        };
-        Returns: boolean;
-      };
-      is_admin: { Args: { _uid: string }; Returns: boolean };
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin: { Args: { _uid: string }; Returns: boolean }
       is_certificate_eligible: {
-        Args: { _course_id: string; _uid: string };
-        Returns: boolean;
-      };
-      is_module_released: { Args: { _module_id: string }; Returns: boolean };
+        Args: { _course_id: string; _uid: string }
+        Returns: boolean
+      }
+      is_module_released: { Args: { _module_id: string }; Returns: boolean }
       log_admin_action:
         | {
             Args: {
-              _action: string;
-              _entity_id: string;
-              _entity_type: string;
-              _new_values?: Json;
-              _old_values?: Json;
-            };
-            Returns: string;
+              _action: string
+              _entity_id: string
+              _entity_type: string
+              _new_values?: Json
+              _old_values?: Json
+            }
+            Returns: string
           }
         | {
             Args: {
-              _action: string;
-              _changed_fields?: Json;
-              _entity_id: string;
-              _entity_type: string;
-              _ip_address?: unknown;
-              _new_values?: Json;
-              _old_values?: Json;
-              _summary?: string;
-              _user_agent?: string;
-            };
-            Returns: string;
-          };
+              _action: string
+              _changed_fields?: Json
+              _entity_id: string
+              _entity_type: string
+              _ip_address?: unknown
+              _new_values?: Json
+              _old_values?: Json
+              _summary?: string
+              _user_agent?: string
+            }
+            Returns: string
+          }
       record_lesson_progress: {
-        Args: { _lesson_id: string; _position_seconds: number };
+        Args: { _lesson_id: string; _position_seconds: number }
         Returns: {
-          completed: boolean;
-          completed_at: string;
-          lesson_id: string;
-          progress_percentage: number;
-          progress_seconds: number;
-        }[];
-      };
+          completed: boolean
+          completed_at: string
+          lesson_id: string
+          progress_percentage: number
+          progress_seconds: number
+        }[]
+      }
       verify_certificate: {
-        Args: { _code: string };
+        Args: { _code: string }
         Returns: {
-          certificate_number: string;
-          course_title_en: string;
-          course_title_ja: string;
-          issued_at: string;
-          revoked_at: string;
-          status: string;
-          student_name_masked: string;
-          valid: boolean;
-        }[];
-      };
-    };
+          certificate_number: string
+          course_title_en: string
+          course_title_ja: string
+          issued_at: string
+          revoked_at: string
+          status: string
+          student_name_masked: string
+          valid: boolean
+        }[]
+      }
+    }
     Enums: {
-      access_type: "lifetime" | "limited";
-      app_role: "student" | "admin";
-      content_status: "draft" | "published" | "archived";
-      course_status: "draft" | "published" | "archived";
-      enrollment_status: "active" | "expired" | "revoked" | "refunded";
-      lesson_type: "video" | "text" | "quiz" | "file";
-      order_status: "pending" | "paid" | "failed" | "refunded" | "partially_refunded";
-      payment_environment: "sandbox" | "live";
-      preferred_language: "ja" | "en";
-      release_type: "immediate" | "date" | "after_previous";
-      resource_type: "pdf" | "link" | "download" | "other";
-      support_category: "payment" | "access" | "content" | "video" | "account" | "other";
-      support_status: "open" | "in_progress" | "resolved" | "closed";
-    };
+      access_type: "lifetime" | "limited"
+      app_role: "student" | "admin"
+      content_status: "draft" | "published" | "archived"
+      course_status: "draft" | "published" | "archived"
+      enrollment_status: "active" | "expired" | "revoked" | "refunded"
+      lesson_type: "video" | "text" | "quiz" | "file"
+      order_status:
+        | "pending"
+        | "paid"
+        | "failed"
+        | "refunded"
+        | "partially_refunded"
+      payment_environment: "sandbox" | "live"
+      preferred_language: "ja" | "en"
+      release_type: "immediate" | "date" | "after_previous"
+      resource_type: "pdf" | "link" | "download" | "other"
+      support_category:
+        | "payment"
+        | "access"
+        | "content"
+        | "video"
+        | "account"
+        | "other"
+      support_status: "open" | "in_progress" | "resolved" | "closed"
+    }
     CompositeTypes: {
-      [_ in never]: never;
-    };
-  };
-};
+      [_ in never]: never
+    }
+  }
+}
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">];
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R;
+      Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R;
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
       }
       ? R
       : never
-    : never;
+    : never
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I;
+      Insert: infer I
     }
     ? I
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I;
+        Insert: infer I
       }
       ? I
       : never
-    : never;
+    : never
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U;
+      Update: infer U
     }
     ? U
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U;
+        Update: infer U
       }
       ? U
       : never
-    : never;
+    : never
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never;
+    : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never;
+    : never
 
 export const Constants = {
   public: {
@@ -1113,13 +1132,26 @@ export const Constants = {
       course_status: ["draft", "published", "archived"],
       enrollment_status: ["active", "expired", "revoked", "refunded"],
       lesson_type: ["video", "text", "quiz", "file"],
-      order_status: ["pending", "paid", "failed", "refunded", "partially_refunded"],
+      order_status: [
+        "pending",
+        "paid",
+        "failed",
+        "refunded",
+        "partially_refunded",
+      ],
       payment_environment: ["sandbox", "live"],
       preferred_language: ["ja", "en"],
       release_type: ["immediate", "date", "after_previous"],
       resource_type: ["pdf", "link", "download", "other"],
-      support_category: ["payment", "access", "content", "video", "account", "other"],
+      support_category: [
+        "payment",
+        "access",
+        "content",
+        "video",
+        "account",
+        "other",
+      ],
       support_status: ["open", "in_progress", "resolved", "closed"],
     },
   },
-} as const;
+} as const
