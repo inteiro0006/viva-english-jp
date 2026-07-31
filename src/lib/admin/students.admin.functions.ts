@@ -296,14 +296,16 @@ export const deleteUserAccount = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ userId: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
     await assertAdmin(context);
-    if (data.userId === context.userId) throw new Error("cannot_delete_self");
+    if (data.userId === context.userId) {
+      return { ok: false as const, reason: "cannot_delete_self" as const };
+    }
 
     const { data: isAdmin, error: roleErr } = await context.supabase.rpc("has_role", {
       _user_id: data.userId,
       _role: "admin",
     });
     if (roleErr) throw new Error(roleErr.message);
-    if (isAdmin) throw new Error("cannot_delete_admin");
+    if (isAdmin) return { ok: false as const, reason: "cannot_delete_admin" as const };
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: userRes } = await supabaseAdmin.auth.admin.getUserById(data.userId);
@@ -319,5 +321,5 @@ export const deleteUserAccount = createServerFn({ method: "POST" })
       oldValues: { email },
       summary: "Account permanently deleted",
     });
-    return { ok: true };
+    return { ok: true as const };
   });
