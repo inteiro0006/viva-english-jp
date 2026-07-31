@@ -26,6 +26,11 @@ export const getNextLesson = createServerFn({ method: "GET" })
     return lessonId as string | null;
   });
 
+/**
+ * Records watch position. The database derives the percentage from the real
+ * lesson duration and owns the `completed` flag (>= 90% watched), so clients
+ * cannot fake progress or unlock a certificate.
+ */
 export const upsertLessonProgress = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) =>
@@ -33,23 +38,15 @@ export const upsertLessonProgress = createServerFn({ method: "POST" })
       .object({
         lessonId: z.string().uuid(),
         progressSeconds: z.number().int().min(0),
-        progressPercentage: z.number().min(0).max(100),
       })
       .parse(data),
   )
   .handler(async ({ context, data }) => {
-    const { error } = await context.supabase
-      .from("lesson_progress")
-      .upsert(
-        {
-          user_id: context.userId,
-          lesson_id: data.lessonId,
-          progress_seconds: data.progressSeconds,
-          progress_percentage: data.progressPercentage,
-          last_watched_at: new Date().toISOString(),
-        },
-        { onConflict: "user_id,lesson_id" },
-      );
+    const { data: rows, error } = await context.supabase.rpc("record_lesson_progress", {
+      _lesson_id: data.lessonId,
+      _position_seconds: data.progressSeconds,
+    });
     if (error) throw new Error(error.message);
-    return { ok: true };
+    return rows?.[0] ?? { ok: true };
   });
+
