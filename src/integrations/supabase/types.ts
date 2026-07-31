@@ -874,6 +874,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_lesson: {
+        Args: { _lesson_id: string; _uid: string }
+        Returns: boolean
+      }
       fulfill_paid_order: {
         Args: {
           _amount: number
@@ -946,6 +950,16 @@ export type Database = {
             }
             Returns: string
           }
+      record_lesson_progress: {
+        Args: { _lesson_id: string; _position_seconds: number }
+        Returns: {
+          completed: boolean
+          completed_at: string
+          lesson_id: string
+          progress_percentage: number
+          progress_seconds: number
+        }[]
+      }
       verify_certificate: {
         Args: { _code: string }
         Returns: {
