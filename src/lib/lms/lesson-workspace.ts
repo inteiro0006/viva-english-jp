@@ -110,11 +110,15 @@ export function useLessonWorkspace(userId: string | undefined, lessonId: string 
       if (!moduleRes.data) return { state: "not_found" };
       const mod = moduleRes.data as ModuleRow;
 
-      // Client-side release gate (RLS on modules does not check release_at)
-      const now = new Date();
-      if (mod.release_type === "date" && mod.release_at && new Date(mod.release_at) > now) {
-        return { state: "no_access" };
-      }
+      // Authoritative access gate (published chain + module release + preview/enrollment/admin),
+      // evaluated in the database — never trusted to the client.
+      const accessRes = await supabase.rpc("can_access_lesson", {
+        _uid: userId,
+        _lesson_id: lesson.id,
+      });
+      if (accessRes.error) throw new Error(accessRes.error.message);
+      if (accessRes.data !== true) return { state: "no_access" };
+
 
       const courseRes = await supabase
         .from("courses")
