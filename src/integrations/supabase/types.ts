@@ -532,13 +532,20 @@ export type Database = {
           created_at: string
           currency: string
           customer_email: string | null
+          discount_amount: number
           environment: Database["public"]["Enums"]["payment_environment"]
           id: string
           paid_at: string | null
           provider: string
           provider_checkout_id: string | null
           provider_payment_id: string | null
+          refunded_amount: number
           status: Database["public"]["Enums"]["order_status"]
+          stripe_price_id: string | null
+          stripe_product_id: string | null
+          subtotal_amount: number | null
+          tax_amount: number
+          total_amount: number | null
           updated_at: string
           user_id: string
         }
@@ -548,13 +555,20 @@ export type Database = {
           created_at?: string
           currency?: string
           customer_email?: string | null
+          discount_amount?: number
           environment?: Database["public"]["Enums"]["payment_environment"]
           id?: string
           paid_at?: string | null
           provider?: string
           provider_checkout_id?: string | null
           provider_payment_id?: string | null
+          refunded_amount?: number
           status?: Database["public"]["Enums"]["order_status"]
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
+          subtotal_amount?: number | null
+          tax_amount?: number
+          total_amount?: number | null
           updated_at?: string
           user_id: string
         }
@@ -564,13 +578,20 @@ export type Database = {
           created_at?: string
           currency?: string
           customer_email?: string | null
+          discount_amount?: number
           environment?: Database["public"]["Enums"]["payment_environment"]
           id?: string
           paid_at?: string | null
           provider?: string
           provider_checkout_id?: string | null
           provider_payment_id?: string | null
+          refunded_amount?: number
           status?: Database["public"]["Enums"]["order_status"]
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
+          subtotal_amount?: number | null
+          tax_amount?: number
+          total_amount?: number | null
           updated_at?: string
           user_id?: string
         }
@@ -584,6 +605,36 @@ export type Database = {
           },
         ]
       }
+      payment_customers: {
+        Row: {
+          created_at: string
+          environment: Database["public"]["Enums"]["payment_environment"]
+          id: string
+          provider: string
+          provider_customer_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          environment: Database["public"]["Enums"]["payment_environment"]
+          id?: string
+          provider?: string
+          provider_customer_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          environment?: Database["public"]["Enums"]["payment_environment"]
+          id?: string
+          provider?: string
+          provider_customer_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       payment_events: {
         Row: {
           attempts: number
@@ -591,12 +642,17 @@ export type Database = {
           environment: Database["public"]["Enums"]["payment_environment"]
           event_type: string
           id: string
+          last_attempt_at: string | null
+          livemode: boolean | null
           payload: Json
           processed: boolean
           processed_at: string | null
           processing_error: string | null
+          processing_started_at: string | null
           provider: string
           provider_event_id: string
+          status: Database["public"]["Enums"]["payment_event_status"]
+          unhandled: boolean
         }
         Insert: {
           attempts?: number
@@ -604,12 +660,17 @@ export type Database = {
           environment?: Database["public"]["Enums"]["payment_environment"]
           event_type: string
           id?: string
+          last_attempt_at?: string | null
+          livemode?: boolean | null
           payload?: Json
           processed?: boolean
           processed_at?: string | null
           processing_error?: string | null
+          processing_started_at?: string | null
           provider: string
           provider_event_id: string
+          status?: Database["public"]["Enums"]["payment_event_status"]
+          unhandled?: boolean
         }
         Update: {
           attempts?: number
@@ -617,12 +678,17 @@ export type Database = {
           environment?: Database["public"]["Enums"]["payment_environment"]
           event_type?: string
           id?: string
+          last_attempt_at?: string | null
+          livemode?: boolean | null
           payload?: Json
           processed?: boolean
           processed_at?: string | null
           processing_error?: string | null
+          processing_started_at?: string | null
           provider?: string
           provider_event_id?: string
+          status?: Database["public"]["Enums"]["payment_event_status"]
+          unhandled?: boolean
         }
         Relationships: []
       }
@@ -682,6 +748,62 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      refund_requests: {
+        Row: {
+          created_at: string
+          currency: string
+          environment: Database["public"]["Enums"]["payment_environment"]
+          id: string
+          idempotency_key: string
+          order_id: string
+          processing_error: string | null
+          provider_refund_id: string | null
+          reason: string | null
+          requested_amount: number
+          requested_by: string | null
+          status: Database["public"]["Enums"]["refund_request_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          environment: Database["public"]["Enums"]["payment_environment"]
+          id?: string
+          idempotency_key: string
+          order_id: string
+          processing_error?: string | null
+          provider_refund_id?: string | null
+          reason?: string | null
+          requested_amount: number
+          requested_by?: string | null
+          status?: Database["public"]["Enums"]["refund_request_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          environment?: Database["public"]["Enums"]["payment_environment"]
+          id?: string
+          idempotency_key?: string
+          order_id?: string
+          processing_error?: string | null
+          provider_refund_id?: string | null
+          reason?: string | null
+          requested_amount?: number
+          requested_by?: string | null
+          status?: Database["public"]["Enums"]["refund_request_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "refund_requests_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       stream_videos: {
         Row: {
@@ -874,22 +996,71 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      apply_refund_outcome: {
+        Args: {
+          _environment: Database["public"]["Enums"]["payment_environment"]
+          _order_id: string
+          _provider_refund_id?: string
+          _refund_status?: string
+          _refunded_total: number
+        }
+        Returns: Json
+      }
       can_access_lesson: {
         Args: { _lesson_id: string; _uid: string }
         Returns: boolean
       }
-      fulfill_paid_order: {
+      claim_payment_event: {
         Args: {
-          _amount: number
-          _currency: string
-          _customer_email?: string
           _environment: Database["public"]["Enums"]["payment_environment"]
-          _order_id: string
-          _provider_checkout_id: string
-          _provider_payment_id: string
+          _event_type: string
+          _livemode?: boolean
+          _lock_seconds?: number
+          _payload: Json
+          _provider: string
+          _provider_event_id: string
         }
         Returns: Json
       }
+      complete_payment_event: {
+        Args: {
+          _error?: string
+          _event_id: string
+          _status: Database["public"]["Enums"]["payment_event_status"]
+          _unhandled?: boolean
+        }
+        Returns: undefined
+      }
+      fulfill_paid_order:
+        | {
+            Args: {
+              _amount: number
+              _currency: string
+              _customer_email?: string
+              _environment: Database["public"]["Enums"]["payment_environment"]
+              _order_id: string
+              _provider_checkout_id: string
+              _provider_payment_id: string
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              _amount: number
+              _currency: string
+              _customer_email?: string
+              _discount?: number
+              _environment: Database["public"]["Enums"]["payment_environment"]
+              _order_id: string
+              _provider_checkout_id: string
+              _provider_payment_id: string
+              _stripe_price_id?: string
+              _stripe_product_id?: string
+              _subtotal?: number
+              _tax?: number
+            }
+            Returns: Json
+          }
       get_course_progress: {
         Args: { _course_id: string; _uid: string }
         Returns: {
@@ -903,6 +1074,47 @@ export type Database = {
       get_next_lesson: {
         Args: { _course_id: string; _uid: string }
         Returns: string
+      }
+      get_or_create_pending_order: {
+        Args: {
+          _course_id: string
+          _currency: string
+          _customer_email?: string
+          _environment: Database["public"]["Enums"]["payment_environment"]
+          _stripe_price_id: string
+          _stripe_product_id: string
+          _subtotal: number
+          _user_id: string
+        }
+        Returns: {
+          amount: number
+          course_id: string
+          created_at: string
+          currency: string
+          customer_email: string | null
+          discount_amount: number
+          environment: Database["public"]["Enums"]["payment_environment"]
+          id: string
+          paid_at: string | null
+          provider: string
+          provider_checkout_id: string | null
+          provider_payment_id: string | null
+          refunded_amount: number
+          status: Database["public"]["Enums"]["order_status"]
+          stripe_price_id: string | null
+          stripe_product_id: string | null
+          subtotal_amount: number | null
+          tax_amount: number
+          total_amount: number | null
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       grant_enrollment: {
         Args: { _course_id: string; _order_id?: string; _user_id: string }
@@ -954,6 +1166,13 @@ export type Database = {
             }
             Returns: string
           }
+      payments_duplicate_diagnostics: {
+        Args: never
+        Returns: {
+          duplicate_count: number
+          scope: string
+        }[]
+      }
       record_lesson_progress: {
         Args: { _lesson_id: string; _position_seconds: number }
         Returns: {
@@ -992,7 +1211,20 @@ export type Database = {
         | "refunded"
         | "partially_refunded"
       payment_environment: "sandbox" | "live"
+      payment_event_status:
+        | "pending"
+        | "processing"
+        | "processed"
+        | "failed"
+        | "ignored"
       preferred_language: "ja" | "en"
+      refund_request_status:
+        | "requested"
+        | "processing"
+        | "pending"
+        | "succeeded"
+        | "failed"
+        | "canceled"
       release_type: "immediate" | "date" | "after_previous"
       resource_type: "pdf" | "link" | "download" | "other"
       support_category:
@@ -1144,7 +1376,22 @@ export const Constants = {
         "partially_refunded",
       ],
       payment_environment: ["sandbox", "live"],
+      payment_event_status: [
+        "pending",
+        "processing",
+        "processed",
+        "failed",
+        "ignored",
+      ],
       preferred_language: ["ja", "en"],
+      refund_request_status: [
+        "requested",
+        "processing",
+        "pending",
+        "succeeded",
+        "failed",
+        "canceled",
+      ],
       release_type: ["immediate", "date", "after_previous"],
       resource_type: ["pdf", "link", "download", "other"],
       support_category: [
