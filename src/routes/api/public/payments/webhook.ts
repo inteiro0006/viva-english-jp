@@ -3,73 +3,81 @@ import { type StripeEnv, verifyWebhook } from "@/lib/stripe.server";
 import {
   getStripeAdminClient,
   dispatchStripeEvent,
+  isPermanentFailure,
   sanitizeError,
   type StripeEventLike,
 } from "@/lib/payments/stripe-handlers.server";
 
-const UNIQUE_VIOLATION = "23505";
+type ClaimResult = {
+  action: "claimed" | "already_processed" | "locked";
+  event_id: string;
+  attempts?: number;
+};
 
 /**
- * Insert the event row. Returns `duplicate: true` ONLY on a real unique-key
- * violation — every other error is propagated so Stripe retries.
+ * Reserve the event for processing.
+ *
+ * `claim_payment_event` inserts-or-locks the row atomically, so two concurrent
+ * deliveries of the same event can never both run the handlers.
  */
-async function recordEvent(
-  event: StripeEventLike,
-  environment: StripeEnv,
-): Promise<{ duplicate: boolean }> {
-  const { error } = await getStripeAdminClient()
-    .from("payment_events")
-    .insert({
-      provider: "stripe",
-      environment,
-      provider_event_id: event.id,
-      event_type: event.type,
-      payload: event as never,
-      processed: false,
-    });
-  if (!error) return { duplicate: false };
-  if (error.code === UNIQUE_VIOLATION) return { duplicate: true };
-  throw new Error(error.message);
+async function claimEvent(event: StripeEventLike, environment: StripeEnv): Promise<ClaimResult> {
+  const { data, error } = await getStripeAdminClient().rpc("claim_payment_event", {
+    _provider: "stripe",
+    _environment: environment,
+    _provider_event_id: event.id,
+    _event_type: event.type,
+    _payload: event as never,
+    _livemode: event.livemode ?? environment === "live",
+  });
+  if (error) throw new Error(error.message);
+  return data as unknown as ClaimResult;
 }
 
-async function finish(eventId: string, environment: StripeEnv, err?: unknown) {
-  const admin = getStripeAdminClient();
-  const { data: current } = await admin
-    .from("payment_events")
-    .select("attempts")
-    .eq("provider", "stripe")
-    .eq("environment", environment)
-    .eq("provider_event_id", eventId)
-    .maybeSingle();
-
-  await admin
-    .from("payment_events")
-    .update({
-      processed: !err,
-      processed_at: err ? null : new Date().toISOString(),
-      processing_error: err ? sanitizeError(err) : null,
-      attempts: (current?.attempts ?? 0) + 1,
-    })
-    .eq("provider", "stripe")
-    .eq("environment", environment)
-    .eq("provider_event_id", eventId);
+async function completeEvent(
+  eventId: string,
+  outcome: { status: "processed" | "failed" | "ignored"; unhandled?: boolean; error?: unknown },
+) {
+  const { error } = await getStripeAdminClient().rpc("complete_payment_event", {
+    _event_id: eventId,
+    _status: outcome.status,
+    _unhandled: outcome.unhandled,
+    _error: outcome.error ? sanitizeError(outcome.error) : undefined,
+  });
+  if (error) console.error("[webhook] could not finalize event:", error.message);
 }
 
 async function processEvent(environment: StripeEnv, req: Request) {
-  // 1. Signature + freshness are verified before anything else.
+  // 1. Signature, freshness and payload shape are verified before anything else.
   const event = (await verifyWebhook(req, environment)) as StripeEventLike;
 
-  // 2. Real idempotency on (provider, environment, provider_event_id).
-  const { duplicate } = await recordEvent(event, environment);
-  if (duplicate) return;
+  // 2. The event's own livemode flag must match the endpoint environment.
+  const expectLive = environment === "live";
+  if (event.livemode !== undefined && event.livemode !== expectLive) {
+    console.error("[webhook] livemode mismatch", { id: event.id, livemode: event.livemode });
+    return { status: 400 as const, body: "Environment mismatch" };
+  }
+
+  // 3. Atomic claim => real idempotency, including under concurrency.
+  const claim = await claimEvent(event, environment);
+  if (claim.action !== "claimed") {
+    return { status: 200 as const, body: { received: true, claim: claim.action } };
+  }
 
   try {
     const { handled } = await dispatchStripeEvent(event, environment);
-    if (!handled) console.log("Unhandled Stripe event:", event.type);
-    // 3. Marked processed only after every operation succeeded.
-    await finish(event.id, environment);
+    await completeEvent(claim.event_id, {
+      status: handled ? "processed" : "ignored",
+      unhandled: !handled,
+    });
+    return { status: 200 as const, body: { received: true, handled } };
   } catch (err) {
-    await finish(event.id, environment, err);
+    await completeEvent(claim.event_id, { status: "failed", error: err });
+    // Validation failures are permanent: retrying cannot change the outcome,
+    // so acknowledge instead of letting Stripe retry for three days.
+    if (isPermanentFailure(err)) {
+      console.error("[webhook] permanent validation failure:", sanitizeError(err));
+      return { status: 200 as const, body: { received: true, rejected: true } };
+    }
     throw err;
   }
 }
@@ -89,17 +97,18 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
         }
 
         try {
-          await processEvent(rawEnv, request);
-          return Response.json({ received: true });
+          const result = await processEvent(rawEnv, request);
+          if (result.status === 400) return new Response(result.body as string, { status: 400 });
+          return Response.json(result.body);
         } catch (err) {
           const message = err instanceof Error ? err.message : String(err);
-          // Signature problems are permanent -> 400 (no retry).
-          if (/signature|timestamp|Missing signature/i.test(message)) {
-            console.error("Stripe webhook signature error:", message);
+          // Signature/payload problems are permanent -> 400 (no retry).
+          if (/signature|timestamp|Missing signature|Invalid webhook payload/i.test(message)) {
+            console.error("Stripe webhook rejected:", sanitizeError(message));
             return new Response("Invalid signature", { status: 400 });
           }
           // Everything else is potentially transient -> 5xx so Stripe retries.
-          console.error("Stripe webhook processing error:", message);
+          console.error("Stripe webhook processing error:", sanitizeError(message));
           return new Response("Webhook processing failed", { status: 500 });
         }
       },

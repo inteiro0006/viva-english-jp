@@ -1,14 +1,17 @@
 // Shared Stripe event handlers. Used by both the public webhook and the admin
-// "reprocess" tool so reprocessing is identical to production.
+// "reprocess" / reconciliation tools so reprocessing is identical to production.
 // SERVER-ONLY: never import from client-reachable modules at module scope.
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import type { PaymentEnvironment } from "./payments.config.server";
+import { createStripeClient } from "@/lib/stripe.server";
+import { verifyCheckoutSession, PaymentVerificationError } from "./session-validation.server";
 
 type StripeObject = Record<string, unknown>;
 export type StripeEventLike = {
   id: string;
   type: string;
+  livemode?: boolean;
   data: { object: StripeObject };
 };
 
@@ -36,71 +39,141 @@ function meta(obj: StripeObject): Record<string, string> {
 /** Sanitized message safe to persist / show to an admin. */
 export function sanitizeError(err: unknown): string {
   const raw = err instanceof Error ? err.message : String(err);
-  return raw.replace(/(sk|rk|whsec)_[A-Za-z0-9_]+/g, "«redacted»").slice(0, 500);
+  return raw.replace(/(sk|rk|whsec|pk)_[A-Za-z0-9_]+/g, "«redacted»").slice(0, 500);
+}
+
+/** Permanent problems must not be retried forever by Stripe. */
+export function isPermanentFailure(err: unknown): boolean {
+  return err instanceof PaymentVerificationError;
+}
+
+/**
+ * Fulfill a paid Checkout Session.
+ *
+ * The webhook snapshot is only used to learn the session id — every amount,
+ * price, product and identity check is made against a fresh Stripe read.
+ */
+export async function fulfillCheckoutSession(
+  sessionId: string,
+  environment: PaymentEnvironment,
+): Promise<{ fulfilled: boolean; reason?: string }> {
+  const db = getStripeAdminClient();
+  const stripe = createStripeClient(environment);
+
+  const verified = await verifyCheckoutSession({ stripe, db, environment, sessionId });
+  if (!verified.paymentIntentId) {
+    throw new PaymentVerificationError("missing_payment_intent");
+  }
+
+  const { error } = await db.rpc("fulfill_paid_order", {
+    _order_id: verified.orderId,
+    _environment: environment,
+    _provider_checkout_id: verified.sessionId,
+    _provider_payment_id: verified.paymentIntentId,
+    _amount: verified.financials.total,
+    _currency: verified.financials.currency,
+    _customer_email: verified.customerEmail ?? undefined,
+    _subtotal: verified.financials.subtotal,
+    _tax: verified.financials.tax,
+    _discount: verified.financials.discount,
+    _stripe_price_id: verified.priceId ?? undefined,
+    _stripe_product_id: verified.productId ?? undefined,
+  });
+  if (error) throw new Error(error.message);
+  return { fulfilled: true };
 }
 
 export async function handleCheckoutCompleted(
   session: StripeObject,
   environment: PaymentEnvironment,
 ) {
-  if (session.mode !== "payment") return;
-  if (session.payment_status !== "paid") return;
-
-  const m = meta(session);
-  const orderId = str(m.orderId);
-  if (!orderId) throw new Error("Missing orderId metadata on session");
-
-  const paymentIntent = str(session.payment_intent);
-  const customerDetails = (session.customer_details ?? {}) as StripeObject;
-
-  const { error } = await getStripeAdminClient().rpc("fulfill_paid_order", {
-    _order_id: orderId,
-    _environment: environment,
-    _provider_checkout_id: str(session.id) ?? "",
-    _provider_payment_id: paymentIntent ?? null,
-    _amount: Number(session.amount_total ?? 0),
-    _currency: String(session.currency ?? "jpy"),
-    _customer_email: str(customerDetails.email) ?? null,
-  } as never);
-  if (error) throw new Error(error.message);
+  const sessionId = str(session.id);
+  if (!sessionId) throw new PaymentVerificationError("missing_session_id");
+  // Deferred methods (Konbini / bank transfer) arrive unpaid; the async
+  // success event re-runs this handler once the funds settle.
+  if (session.payment_status === "unpaid") return;
+  await fulfillCheckoutSession(sessionId, environment);
 }
 
+/** Recompute the refunded total for a charge and settle it atomically. */
 export async function handleRefund(charge: StripeObject, environment: PaymentEnvironment) {
   const paymentIntentId = str(charge.payment_intent);
   if (!paymentIntentId) return;
 
-  const admin = getStripeAdminClient();
-  const { data: order, error } = await admin
+  const db = getStripeAdminClient();
+  const { data: order, error } = await db
     .from("orders")
-    .select("id, user_id, course_id, environment, amount, status")
+    .select("id, environment, status")
     .eq("provider_payment_id", paymentIntentId)
+    .eq("environment", environment)
     .maybeSingle();
   if (error) throw new Error(error.message);
   if (!order) return;
-  if (order.environment !== environment) throw new Error("environment_mismatch");
 
-  const chargeAmount = Number(charge.amount ?? order.amount ?? 0);
-  const refunded = Number(charge.amount_refunded ?? 0);
-  const fullyRefunded =
-    charge.refunded === true || (chargeAmount > 0 && refunded >= chargeAmount) || refunded === 0;
+  const refundedTotal = Number(charge.amount_refunded ?? 0);
+  const { error: rpcErr } = await db.rpc("apply_refund_outcome", {
+    _order_id: order.id,
+    _environment: environment,
+    _refunded_total: refundedTotal,
+    _refund_status: "succeeded",
+  });
+  if (rpcErr) throw new Error(rpcErr.message);
+}
 
-  const nextStatus = fullyRefunded ? "refunded" : "partially_refunded";
-  if (order.status !== nextStatus) {
-    const { error: orderErr } = await admin
-      .from("orders")
-      .update({ status: nextStatus })
-      .eq("id", order.id);
-    if (orderErr) throw new Error(orderErr.message);
+/** `refund.*` events carry the refund object; reconcile the request row too. */
+export async function handleRefundEvent(refund: StripeObject, environment: PaymentEnvironment) {
+  const refundId = str(refund.id);
+  const paymentIntentId = str(refund.payment_intent);
+  const status = str(refund.status) ?? "pending";
+  const db = getStripeAdminClient();
+
+  if (refundId) {
+    const { error } = await db
+      .from("refund_requests")
+      .update({
+        status:
+          status === "succeeded"
+            ? "succeeded"
+            : status === "failed" || status === "canceled"
+              ? (status as "failed" | "canceled")
+              : "pending",
+        processing_error: status === "failed" ? "provider_reported_failure" : null,
+      })
+      .eq("provider_refund_id", refundId)
+      .eq("environment", environment);
+    if (error) throw new Error(error.message);
   }
 
-  // Access is revoked only when the payment was fully refunded.
-  if (fullyRefunded) {
-    const { error: enrollErr } = await admin
-      .from("enrollments")
-      .update({ status: "refunded" })
-      .eq("order_id", order.id);
-    if (enrollErr) throw new Error(enrollErr.message);
-  }
+  if (!paymentIntentId || status !== "succeeded") return;
+
+  // Recompute the authoritative refunded total from Stripe, never from the
+  // single event amount (multiple partial refunds may exist).
+  const stripe = createStripeClient(environment);
+  const intent = await stripe.paymentIntents.retrieve(paymentIntentId, {
+    expand: ["latest_charge"],
+  });
+  const charge = intent.latest_charge;
+  const refundedTotal =
+    typeof charge === "string" || !charge ? 0 : Number(charge.amount_refunded ?? 0);
+  if (refundedTotal <= 0) return;
+
+  const { data: order, error } = await db
+    .from("orders")
+    .select("id")
+    .eq("provider_payment_id", paymentIntentId)
+    .eq("environment", environment)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!order) return;
+
+  const { error: rpcErr } = await db.rpc("apply_refund_outcome", {
+    _order_id: order.id,
+    _environment: environment,
+    _refunded_total: refundedTotal,
+    _provider_refund_id: refundId ?? undefined,
+    _refund_status: "succeeded",
+  });
+  if (rpcErr) throw new Error(rpcErr.message);
 }
 
 async function markOrderFailed(orderId: string | undefined, environment: PaymentEnvironment) {
@@ -121,24 +194,23 @@ export async function dispatchStripeEvent(
 ): Promise<{ handled: boolean }> {
   const obj = event.data.object;
   switch (event.type) {
-    // Deferred methods (Konbini / bank transfer, common in Japan) settle later:
-    // the session completes as `unpaid` and only this event confirms payment,
-    // so both events run the same idempotent fulfillment.
     case "checkout.session.completed":
     case "checkout.session.async_payment_succeeded":
       await handleCheckoutCompleted(obj, environment);
       return { handled: true };
     case "checkout.session.async_payment_failed":
-      await markOrderFailed(str(meta(obj).orderId), environment);
-      return { handled: true };
     case "checkout.session.expired":
+    case "payment_intent.payment_failed":
       await markOrderFailed(str(meta(obj).orderId), environment);
       return { handled: true };
     case "charge.refunded":
       await handleRefund(obj, environment);
       return { handled: true };
-    case "payment_intent.payment_failed":
-      await markOrderFailed(str(meta(obj).orderId), environment);
+    case "refund.created":
+    case "refund.updated":
+    case "refund.failed":
+    case "charge.refund.updated":
+      await handleRefundEvent(obj, environment);
       return { handled: true };
     default:
       return { handled: false };

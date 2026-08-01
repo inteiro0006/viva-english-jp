@@ -29,6 +29,11 @@ jobs:
       - name: Typecheck
         run: bunx tsc --noEmit
 
+      - name: Unit tests
+        run: bun run test
+
+
+
       - name: Build
         run: bun run build
         env:
