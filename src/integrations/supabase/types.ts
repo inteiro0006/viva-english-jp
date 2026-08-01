@@ -1211,6 +1211,7 @@ export type Database = {
         | "failed"
         | "refunded"
         | "partially_refunded"
+        | "canceled"
       payment_environment: "sandbox" | "live"
       payment_event_status:
         | "pending"
@@ -1375,6 +1376,7 @@ export const Constants = {
         "failed",
         "refunded",
         "partially_refunded",
+        "canceled",
       ],
       payment_environment: ["sandbox", "live"],
       payment_event_status: [
