@@ -8,7 +8,10 @@ export const listOrders = createServerFn({ method: "POST" })
   .inputValidator((d) =>
     z
       .object({
-        status: z.enum(["pending", "paid", "failed", "refunded", "partially_refunded"]).optional(),
+        status: z
+          .enum(["pending", "paid", "failed", "refunded", "partially_refunded", "canceled"])
+          .optional(),
+
         page: z.number().int().min(0).default(0),
       })
       .parse(d ?? {}),
@@ -62,16 +65,17 @@ export const getOrderDetail = createServerFn({ method: "POST" })
         .maybeSingle();
       orderWithProfile = { ...order, profiles: prof ?? null } as typeof orderWithProfile;
     }
-    const { data: events } = await context.supabase
-      .from("payment_events")
-      .select("*")
-      .or(
-        [order?.provider_checkout_id ? `payload->>orderId.eq.${order?.id}` : null]
-          .filter(Boolean)
-          .join(",") || "id.eq.00000000-0000-0000-0000-000000000000",
-      )
-      .order("created_at", { ascending: false })
-      .limit(50);
+    // Events are linked through the Stripe object metadata written at checkout.
+    const { data: events, error: eventsErr } = order
+      ? await context.supabase
+          .from("payment_events")
+          .select("*")
+          .eq("environment", order.environment)
+          .filter("payload->data->object->metadata->>orderId", "eq", order.id)
+          .order("created_at", { ascending: false })
+          .limit(50)
+      : { data: [], error: null };
+    if (eventsErr) throw new Error(eventsErr.message);
     return { order: orderWithProfile, events: events ?? [] };
   });
 
@@ -80,9 +84,11 @@ export const getOrderDetail = createServerFn({ method: "POST" })
  * Calls the Stripe refund API for a paid order (full or partial) and audits it.
  *
  * Double-refund safety has three layers:
- *  1. a `refund_requests` row whose unique `idempotency_key` encodes
- *     (order, amount) — a duplicate click reuses the existing request;
- *  2. the same key is sent to Stripe as its idempotency key;
+ *  1. an in-flight `refund_requests` row for the same order short-circuits a
+ *     duplicate click (the key is per REQUEST, so two legitimate partial
+ *     refunds of the same amount are still possible later);
+ *  2. that request id is sent to Stripe as its idempotency key, so a retried
+ *     network call resolves to the same Stripe refund;
  *  3. the refundable balance is recomputed from Stripe before requesting.
  * Order/enrollment status is settled by the refund webhooks, which remain the
  * single source of truth for fulfillment state.
@@ -113,51 +119,58 @@ export const initiateRefund = createServerFn({ method: "POST" })
 
     const environment = order.environment === "live" ? "live" : "sandbox";
     const { createStripeRefund, getRefundedTotal } = await import("@/lib/payments/refunds.server");
+    const { assertRefundAmount, refundIdempotencyKey, refundableBalance } =
+      await import("@/lib/payments/order-state");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     // Authoritative refundable balance straight from Stripe.
     const { charged, refunded } = await getRefundedTotal(environment, order.provider_payment_id);
-    const remaining = Math.max(charged - refunded, 0);
+    const remaining = refundableBalance(charged, refunded);
     if (remaining <= 0) throw new Error("already_fully_refunded");
     const requestedAmount = data.amount ?? remaining;
-    if (requestedAmount > remaining) throw new Error("amount_exceeds_refundable");
+    try {
+      assertRefundAmount(requestedAmount, charged, refunded);
+    } catch {
+      throw new Error("amount_exceeds_refundable");
+    }
 
-    const idempotencyKey = `refund:${order.id}:${requestedAmount}`;
-
-    const { data: existing } = await supabaseAdmin
+    // A refund already being processed for this order blocks a duplicate click
+    // without collapsing two legitimate refunds of the same value.
+    const { data: inFlight, error: inFlightErr } = await supabaseAdmin
       .from("refund_requests")
       .select("id, status, provider_refund_id, requested_amount")
-      .eq("idempotency_key", idempotencyKey)
-      .maybeSingle();
-
-    if (existing?.provider_refund_id && existing.status === "succeeded") {
+      .eq("order_id", order.id)
+      .in("status", ["requested", "processing"])
+      .order("created_at", { ascending: false })
+      .limit(1);
+    if (inFlightErr) throw new Error(inFlightErr.message);
+    if (inFlight && inFlight.length > 0 && inFlight[0].provider_refund_id) {
       return {
         ok: true,
-        pending: false,
-        refundId: existing.provider_refund_id,
-        amount: existing.requested_amount,
-        note: "already_processed" as string | null,
+        pending: true,
+        refundId: inFlight[0].provider_refund_id,
+        amount: inFlight[0].requested_amount,
+        note: "already_in_flight" as string | null,
       };
     }
 
-    let requestId = existing?.id;
-    if (!requestId) {
-      const { data: created, error: reqErr } = await supabaseAdmin
-        .from("refund_requests")
-        .insert({
-          order_id: order.id,
-          environment,
-          requested_amount: requestedAmount,
-          currency: order.currency,
-          reason: data.reason ?? null,
-          requested_by: context.userId,
-          idempotency_key: idempotencyKey,
-          status: "processing",
-        })
-        .select("id")
-        .single();
-      if (reqErr || !created) throw new Error("refund_request_failed");
-      requestId = created.id;
+    // One request row == one Stripe idempotency key.
+    const requestId = inFlight?.[0]?.id ?? crypto.randomUUID();
+    const idempotencyKey = refundIdempotencyKey(order.id, requestId);
+
+    if (!inFlight || inFlight.length === 0) {
+      const { error: reqErr } = await supabaseAdmin.from("refund_requests").insert({
+        id: requestId,
+        order_id: order.id,
+        environment,
+        requested_amount: requestedAmount,
+        currency: order.currency,
+        reason: data.reason ?? null,
+        requested_by: context.userId,
+        idempotency_key: idempotencyKey,
+        status: "processing",
+      });
+      if (reqErr) throw new Error("refund_request_failed");
     }
 
     let refund;
@@ -191,7 +204,7 @@ export const initiateRefund = createServerFn({ method: "POST" })
       throw e;
     }
 
-    await supabaseAdmin
+    const { error: settleErr } = await supabaseAdmin
       .from("refund_requests")
       .update({
         provider_refund_id: refund.refundId,
@@ -199,6 +212,8 @@ export const initiateRefund = createServerFn({ method: "POST" })
         processing_error: null,
       })
       .eq("id", requestId);
+    // The refund exists on Stripe; a bookkeeping failure must be visible.
+    if (settleErr) console.error("[refund] could not persist refund result:", settleErr.message);
 
     await logAdminAction(context.supabase, {
       action: "order.refunded",
