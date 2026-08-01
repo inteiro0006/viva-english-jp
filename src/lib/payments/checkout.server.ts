@@ -5,10 +5,14 @@ import type { Database } from "@/integrations/supabase/types";
 import { createStripeClient, getStripeErrorMessage } from "@/lib/stripe.server";
 import {
   CHECKOUT_COURSE_SLUG,
-  COURSE_PRICE_LOOKUP_KEY,
+  assertClientTokenMatches,
   getCheckoutReturnUrl,
   resolvePaymentEnvironment,
+  type PaymentEnvironment,
 } from "./payments.config.server";
+import { resolveCoursePrice, PriceConfigError } from "./price.server";
+import { resolveCustomerForUser } from "./customers.server";
+import { checkoutIdempotencyKey } from "./order-state";
 import type { CheckoutErrorCode, CheckoutResult } from "./checkout.functions";
 
 let _admin: SupabaseClient<Database> | null = null;
@@ -28,36 +32,35 @@ function fail(code: CheckoutErrorCode, detail?: unknown): CheckoutResult {
   return { error: code };
 }
 
-async function resolveCustomer(
-  stripe: ReturnType<typeof createStripeClient>,
-  options: { email?: string; userId: string },
-): Promise<string> {
-  if (!/^[a-zA-Z0-9_-]+$/.test(options.userId)) throw new Error("Invalid userId");
+/** In-memory rate limit (per instance) — cheap guard against click storms. */
+const RATE_LIMIT_WINDOW_MS = 10_000;
+const RATE_LIMIT_MAX = 5;
+const attempts = new Map<string, number[]>();
 
-  const found = await stripe.customers.search({
-    query: `metadata['userId']:'${options.userId}'`,
-    limit: 1,
-  });
-  if (found.data.length) return found.data[0].id;
+export function rateLimited(key: string, now = Date.now()): boolean {
+  const recent = (attempts.get(key) ?? []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+  recent.push(now);
+  attempts.set(key, recent);
+  if (attempts.size > 5000) attempts.clear();
+  return recent.length > RATE_LIMIT_MAX;
+}
 
-  if (options.email) {
-    const existing = await stripe.customers.list({ email: options.email, limit: 1 });
-    if (existing.data.length) {
-      const c = existing.data[0];
-      if (c.metadata?.userId !== options.userId) {
-        await stripe.customers.update(c.id, {
-          metadata: { ...c.metadata, userId: options.userId },
-        });
-      }
-      return c.id;
-    }
-  }
-
-  const created = await stripe.customers.create({
-    ...(options.email && { email: options.email }),
-    metadata: { userId: options.userId },
-  });
-  return created.id;
+/** Public price for display — the same Stripe price the checkout charges. */
+export async function getCoursePriceForDisplay(): Promise<{
+  amount: number;
+  currency: string;
+  productName: string;
+  environment: PaymentEnvironment;
+}> {
+  const environment = resolvePaymentEnvironment();
+  const stripe = createStripeClient(environment);
+  const price = await resolveCoursePrice(stripe);
+  return {
+    amount: price.unitAmount,
+    currency: price.currency,
+    productName: price.productName,
+    environment,
+  };
 }
 
 export async function createCheckoutSessionForUser(args: {
@@ -67,14 +70,18 @@ export async function createCheckoutSessionForUser(args: {
 }): Promise<CheckoutResult> {
   const { userId, email, origin } = args;
 
-  let environment: "sandbox" | "live";
+  let environment: PaymentEnvironment;
   let returnUrl: string;
   try {
     environment = resolvePaymentEnvironment();
+    // Publishable token and server credentials must belong to the same env.
+    assertClientTokenMatches(environment);
     returnUrl = getCheckoutReturnUrl(origin);
   } catch (err) {
     return fail("not_configured", err);
   }
+
+  if (rateLimited(`${environment}:${userId}`)) return fail("rate_limited");
 
   const db = admin();
 
@@ -88,7 +95,7 @@ export async function createCheckoutSessionForUser(args: {
   if (courseErr) return fail("course_unavailable", courseErr.message);
   if (!course) return fail("course_unavailable");
 
-  // Block duplicate purchase.
+  // Block duplicate purchase — only a genuinely ACTIVE enrollment blocks.
   const { data: active, error: enrollErr } = await db
     .from("enrollments")
     .select("id")
@@ -102,35 +109,35 @@ export async function createCheckoutSessionForUser(args: {
   try {
     const stripe = createStripeClient(environment);
 
-    const prices = await stripe.prices.list({
-      lookup_keys: [COURSE_PRICE_LOOKUP_KEY],
-      active: true,
+    let price;
+    try {
+      price = await resolveCoursePrice(stripe);
+    } catch (err) {
+      if (err instanceof PriceConfigError) return fail("price_unavailable", err.reason);
+      throw err;
+    }
+
+    // Atomically get-or-create the single pending order for this purchase.
+    const { data: orderRow, error: orderErr } = await db.rpc("get_or_create_pending_order", {
+      _user_id: userId,
+      _course_id: course.id,
+      _environment: environment,
+      _subtotal: price.unitAmount,
+      _currency: price.currency,
+      _stripe_price_id: price.priceId,
+      _stripe_product_id: price.productId,
+      _customer_email: email ?? null,
     });
-    if (!prices.data.length) return fail("price_unavailable");
-    const price = prices.data[0];
-    const amount = price.unit_amount ?? 0;
-    const currency = (price.currency ?? "jpy").toLowerCase();
-    if (amount <= 0) return fail("price_unavailable");
+    if (orderErr) return fail("order_failed", orderErr.message);
+    const order = (Array.isArray(orderRow) ? orderRow[0] : orderRow) as
+      | Database["public"]["Tables"]["orders"]["Row"]
+      | null;
+    if (!order) return fail("order_failed");
 
-    // Reuse a still-open pending order/session instead of leaking abandoned
-    // Checkout sessions on every page load.
-    const { data: pending } = await db
-      .from("orders")
-      .select("id, provider_checkout_id, amount, currency")
-      .eq("user_id", userId)
-      .eq("course_id", course.id)
-      .eq("status", "pending")
-      .eq("environment", environment)
-      .eq("amount", amount)
-      .eq("currency", currency)
-      .not("provider_checkout_id", "is", null)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (pending?.provider_checkout_id) {
+    // Reuse a still-open session for this order instead of leaking sessions.
+    if (order.provider_checkout_id) {
       try {
-        const existing = await stripe.checkout.sessions.retrieve(pending.provider_checkout_id);
+        const existing = await stripe.checkout.sessions.retrieve(order.provider_checkout_id);
         if (existing.status === "open" && existing.client_secret) {
           return { clientSecret: existing.client_secret };
         }
@@ -139,47 +146,42 @@ export async function createCheckoutSessionForUser(args: {
       }
     }
 
-    const customerId = await resolveCustomer(stripe, { email, userId });
+    const customerId = await resolveCustomerForUser({
+      stripe,
+      db,
+      userId,
+      environment,
+      email,
+    });
 
-    // Pending order first: it is the reconciliation source of truth.
-    const { data: order, error: orderErr } = await db
-      .from("orders")
-      .insert({
-        user_id: userId,
-        course_id: course.id,
-        amount,
-        currency,
-        customer_email: email ?? null,
-        provider: "stripe",
-        environment,
-        status: "pending",
-      })
-      .select("id")
-      .single();
-    if (orderErr || !order) return fail("order_failed", orderErr?.message);
+    // Same order id => same idempotency key, so an indeterminate network
+    // failure can be retried without creating a second session or order.
+    const idempotencyKey = checkoutIdempotencyKey(order.id, price.priceId);
 
     const session = await stripe.checkout.sessions.create(
       {
-        line_items: [{ price: price.id, quantity: 1 }],
+        line_items: [{ price: price.priceId, quantity: 1 }],
         mode: "payment",
         ui_mode: "embedded_page",
         return_url: returnUrl,
         customer: customerId,
         automatic_tax: { enabled: true },
         payment_intent_data: {
-          description: "Eigo Academy",
+          description: price.productName,
           metadata: { userId, courseId: course.id, orderId: order.id, environment },
         },
         metadata: { userId, courseId: course.id, orderId: order.id, environment },
       },
-      { idempotencyKey: `checkout:${order.id}` },
+      { idempotencyKey },
     );
 
     const { error: updateErr } = await db
       .from("orders")
       .update({ provider_checkout_id: session.id })
       .eq("id", order.id);
-    if (updateErr) return fail("order_failed", updateErr.message);
+    // A failure here is recoverable: the webhook attaches the session id after
+    // full validation, so do not abort a paid-capable session.
+    if (updateErr) console.error("[checkout] could not persist session id:", updateErr.message);
 
     if (!session.client_secret) return fail("checkout_failed");
     return { clientSecret: session.client_secret };
