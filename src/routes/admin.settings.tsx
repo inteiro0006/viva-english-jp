@@ -90,6 +90,7 @@ function AdminSettingsPage() {
                 value={local[k]}
                 onChange={(v) => setLocal((s) => ({ ...s, [k]: v }))}
                 onSave={() => mut.mutate({ key: k, value: local[k] })}
+                onSaveValue={(v) => mut.mutate({ key: k, value: v })}
                 saving={mut.isPending}
               />
             ))}
@@ -105,14 +106,17 @@ function SettingField({
   value,
   onChange,
   onSave,
+  onSaveValue,
   saving,
 }: {
   keyName: string;
   value: unknown;
   onChange: (v: unknown) => void;
   onSave: () => void;
+  onSaveValue: (v: unknown) => void;
   saving: boolean;
 }) {
+
   const { t } = useTranslation();
   const isLong =
     keyName.startsWith("terms_") ||
