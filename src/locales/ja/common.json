@@ -959,7 +959,8 @@
         "platform": "プラットフォーム",
         "institutional": "コーポレート文言",
         "legal": "法務",
-        "playback": "再生"
+        "playback": "再生",
+        "payments": "決済（テストモード）"
       },
       "keys": {
         "platform_name": "プラットフォーム名",
@@ -971,7 +972,9 @@
         "terms_en": "利用規約(英語)",
         "privacy_ja": "プライバシーポリシー(日本語)",
         "privacy_en": "プライバシーポリシー(英語)",
-        "video_completion_threshold": "動画完了しきい値(%)"
+        "video_completion_threshold": "動画完了しきい値(%)",
+        "payments.sandbox_grants_access": "テスト決済で受講権を付与する",
+        "payments.sandbox_grants_access_hint": "テスト決済のみに影響します。本番決済は常に付与されます。"
       }
     },
     "audit_": {

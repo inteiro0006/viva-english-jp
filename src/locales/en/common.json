@@ -959,7 +959,8 @@
         "platform": "Platform",
         "institutional": "Institutional copy",
         "legal": "Legal",
-        "playback": "Playback"
+        "playback": "Playback",
+        "payments": "Payments (test mode)"
       },
       "keys": {
         "platform_name": "Platform name",
@@ -971,7 +972,9 @@
         "terms_en": "Terms of Service (English)",
         "privacy_ja": "Privacy Policy (Japanese)",
         "privacy_en": "Privacy Policy (English)",
-        "video_completion_threshold": "Video completion threshold (%)"
+        "video_completion_threshold": "Video completion threshold (%)",
+        "payments.sandbox_grants_access": "Sandbox payments grant course access",
+        "payments.sandbox_grants_access_hint": "Only affects test payments. Live payments always grant access."
       }
     },
     "audit_": {
