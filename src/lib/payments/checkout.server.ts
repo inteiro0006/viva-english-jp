@@ -165,6 +165,11 @@ export async function createCheckoutSessionForUser(args: {
         ui_mode: "embedded_page",
         return_url: returnUrl,
         customer: customerId,
+        // Stripe Tax needs a billing address on the Customer. Collect it in
+        // Checkout and persist it back, otherwise session creation fails with
+        // "Automatic tax calculation ... requires a valid address".
+        billing_address_collection: "required",
+        customer_update: { address: "auto", name: "auto" },
         automatic_tax: { enabled: true },
         payment_intent_data: {
           description: price.productName,
