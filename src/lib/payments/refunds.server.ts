@@ -12,7 +12,11 @@ export type RefundResult = {
 
 /**
  * Creates a refund on Stripe for the given payment intent.
- * Omit `amount` for a full refund; pass a positive integer (minor units) for a partial one.
+ *
+ * `idempotencyKey` MUST be stable per refund request row: two concurrent
+ * clicks then resolve to the SAME Stripe refund instead of two refunds.
+ * Omit `amount` for a full refund; pass a positive integer (minor units) for
+ * a partial one.
  */
 export async function createStripeRefund(params: {
   environment: StripeEnv;
@@ -20,17 +24,21 @@ export async function createStripeRefund(params: {
   amount?: number;
   reason?: string;
   orderId: string;
+  idempotencyKey: string;
 }): Promise<RefundResult> {
   const stripe = createStripeClient(params.environment);
   try {
-    const refund = await stripe.refunds.create({
-      payment_intent: params.paymentIntentId,
-      ...(params.amount ? { amount: params.amount } : {}),
-      metadata: {
-        orderId: params.orderId,
-        ...(params.reason ? { adminReason: params.reason.slice(0, 400) } : {}),
+    const refund = await stripe.refunds.create(
+      {
+        payment_intent: params.paymentIntentId,
+        ...(params.amount ? { amount: params.amount } : {}),
+        metadata: {
+          orderId: params.orderId,
+          ...(params.reason ? { adminReason: params.reason.slice(0, 400) } : {}),
+        },
       },
-    });
+      { idempotencyKey: params.idempotencyKey },
+    );
     return {
       refundId: refund.id,
       status: refund.status ?? null,
@@ -41,4 +49,23 @@ export async function createStripeRefund(params: {
   } catch (error) {
     throw new Error(getStripeErrorMessage(error));
   }
+}
+
+/** Authoritative refunded total for a payment intent (all refunds combined). */
+export async function getRefundedTotal(
+  environment: StripeEnv,
+  paymentIntentId: string,
+): Promise<{ charged: number; refunded: number }> {
+  const stripe = createStripeClient(environment);
+  const intent = await stripe.paymentIntents.retrieve(paymentIntentId, {
+    expand: ["latest_charge"],
+  });
+  const charge = intent.latest_charge;
+  if (typeof charge === "string" || !charge) {
+    return { charged: Number(intent.amount_received ?? 0), refunded: 0 };
+  }
+  return {
+    charged: Number(charge.amount ?? 0),
+    refunded: Number(charge.amount_refunded ?? 0),
+  };
 }
