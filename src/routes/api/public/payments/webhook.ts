@@ -7,6 +7,11 @@ import {
   sanitizeError,
   type StripeEventLike,
 } from "@/lib/payments/stripe-handlers.server";
+import {
+  decideFromClaim,
+  decideFromFailure,
+  isSignatureFailure,
+} from "@/lib/payments/webhook-policy";
 
 type ClaimResult = {
   action: "claimed" | "already_processed" | "locked";
