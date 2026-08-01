@@ -43,7 +43,23 @@ export const createCourseCheckoutSession = createServerFn({ method: "POST" })
     });
   });
 
+/**
+ * Authoritative price for display. Resolved from the Stripe price the checkout
+ * actually charges, so the page can never advertise a stale amount.
+ */
+export const getCoursePrice = createServerFn({ method: "GET" }).handler(async () => {
+  const { getCoursePriceForDisplay } = await import("./checkout.server");
+  try {
+    const price = await getCoursePriceForDisplay();
+    return { amount: price.amount, currency: price.currency, productName: price.productName };
+  } catch (err) {
+    console.error("[checkout] price unavailable for display:", err);
+    return null;
+  }
+});
+
 /** Read-only status poll for the success page (own orders only, via RLS). */
+
 export const getCheckoutOrderStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => z.object({ sessionId: z.string().min(1).max(255) }).parse(data))
