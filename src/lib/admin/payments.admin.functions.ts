@@ -180,12 +180,36 @@ export const reprocessPaymentEvent = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     if (!row) throw new Error("not_found");
 
-    const { dispatchStripeEvent, getStripeAdminClient, sanitizeError } =
-      await import("@/lib/payments/stripe-handlers.server");
+    const { dispatchStripeEvent, getStripeAdminClient, sanitizeError } = await import(
+      "@/lib/payments/stripe-handlers.server"
+    );
     const admin = getStripeAdminClient();
     const payload = row.payload as {
+      livemode?: boolean;
       data?: { object?: Record<string, unknown> };
     } | null;
+
+    // The stored event must belong to the environment it claims, otherwise a
+    // sandbox event could be replayed against live credentials.
+    const expectLive = row.environment === "live";
+    if (payload?.livemode !== undefined && payload.livemode !== expectLive) {
+      throw new Error("environment_mismatch");
+    }
+
+    // Reuse the SAME atomic claim the webhook uses, so a reprocess can never
+    // run concurrently with a live delivery of the same event.
+    const { data: claimRaw, error: claimErr } = await admin.rpc("claim_payment_event", {
+      _provider: row.provider,
+      _environment: row.environment,
+      _provider_event_id: row.provider_event_id,
+      _event_type: row.event_type,
+      _payload: row.payload as never,
+      _livemode: payload?.livemode ?? expectLive,
+      _lock_seconds: 0,
+    });
+    if (claimErr) throw new Error(claimErr.message);
+    const claim = claimRaw as unknown as { action: string; event_id: string };
+    if (claim.action === "locked") throw new Error("event_locked");
 
     let handled = false;
     let processingError: string | null = null;
@@ -194,6 +218,7 @@ export const reprocessPaymentEvent = createServerFn({ method: "POST" })
         {
           id: row.provider_event_id,
           type: row.event_type,
+          livemode: payload?.livemode ?? expectLive,
           data: {
             object: payload?.data?.object ?? ((payload ?? {}) as Record<string, unknown>),
           },
@@ -205,15 +230,14 @@ export const reprocessPaymentEvent = createServerFn({ method: "POST" })
       processingError = sanitizeError(err);
     }
 
-    await admin
-      .from("payment_events")
-      .update({
-        processed: !processingError,
-        processed_at: processingError ? null : new Date().toISOString(),
-        processing_error: processingError,
-        attempts: (row.attempts ?? 0) + 1,
-      })
-      .eq("id", row.id);
+    const { error: completeErr } = await admin.rpc("complete_payment_event", {
+      _event_id: claim.event_id,
+      _status: processingError ? "failed" : handled ? "processed" : "ignored",
+      _unhandled: !handled,
+      _error: processingError ?? undefined,
+    });
+    if (completeErr) console.error("[reprocess] could not finalize event:", completeErr.message);
+
 
     await logAdminAction(context.supabase, {
       action: "payment_event.reprocess",
