@@ -8,7 +8,11 @@ import {
   type StripeEventLike,
 } from "@/lib/payments/stripe-handlers.server";
 
-type ClaimOutcome = "claimed" | "duplicate" | "in_progress";
+type ClaimResult = {
+  action: "claimed" | "already_processed" | "locked";
+  event_id: string;
+  attempts?: number;
+};
 
 /**
  * Reserve the event for processing.
@@ -16,10 +20,7 @@ type ClaimOutcome = "claimed" | "duplicate" | "in_progress";
  * `claim_payment_event` inserts-or-locks the row atomically, so two concurrent
  * deliveries of the same event can never both run the handlers.
  */
-async function claimEvent(
-  event: StripeEventLike,
-  environment: StripeEnv,
-): Promise<ClaimOutcome> {
+async function claimEvent(event: StripeEventLike, environment: StripeEnv): Promise<ClaimResult> {
   const { data, error } = await getStripeAdminClient().rpc("claim_payment_event", {
     _provider: "stripe",
     _environment: environment,
@@ -29,21 +30,18 @@ async function claimEvent(
     _livemode: event.livemode ?? environment === "live",
   });
   if (error) throw new Error(error.message);
-  const outcome = (Array.isArray(data) ? data[0] : data) as ClaimOutcome | null;
-  return outcome ?? "duplicate";
+  return data as unknown as ClaimResult;
 }
 
 async function completeEvent(
-  event: StripeEventLike,
-  environment: StripeEnv,
-  outcome: { status: "processed" | "failed" | "ignored"; error?: unknown },
+  eventId: string,
+  outcome: { status: "processed" | "failed" | "ignored"; unhandled?: boolean; error?: unknown },
 ) {
   const { error } = await getStripeAdminClient().rpc("complete_payment_event", {
-    _provider: "stripe",
-    _environment: environment,
-    _provider_event_id: event.id,
+    _event_id: eventId,
     _status: outcome.status,
-    _processing_error: outcome.error ? sanitizeError(outcome.error) : undefined,
+    _unhandled: outcome.unhandled,
+    _error: outcome.error ? sanitizeError(outcome.error) : undefined,
   });
   if (error) console.error("[webhook] could not finalize event:", error.message);
 }
@@ -61,14 +59,19 @@ async function processEvent(environment: StripeEnv, req: Request) {
 
   // 3. Atomic claim => real idempotency, including under concurrency.
   const claim = await claimEvent(event, environment);
-  if (claim !== "claimed") return { status: 200 as const, body: { received: true, claim } };
+  if (claim.action !== "claimed") {
+    return { status: 200 as const, body: { received: true, claim: claim.action } };
+  }
 
   try {
     const { handled } = await dispatchStripeEvent(event, environment);
-    await completeEvent(event, environment, { status: handled ? "processed" : "ignored" });
+    await completeEvent(claim.event_id, {
+      status: handled ? "processed" : "ignored",
+      unhandled: !handled,
+    });
     return { status: 200 as const, body: { received: true, handled } };
   } catch (err) {
-    await completeEvent(event, environment, { status: "failed", error: err });
+    await completeEvent(claim.event_id, { status: "failed", error: err });
     // Validation failures are permanent: retrying cannot change the outcome,
     // so acknowledge instead of letting Stripe retry for three days.
     if (isPermanentFailure(err)) {
