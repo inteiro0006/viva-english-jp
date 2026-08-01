@@ -63,7 +63,12 @@ function AdminSettingsPage() {
       keys: ["terms_ja", "terms_en", "privacy_ja", "privacy_en"],
     },
     { title: t("admin.settings_.groups.playback"), keys: ["video_completion_threshold"] },
+    {
+      title: t("admin.settings_.groups.payments"),
+      keys: ["payments.sandbox_grants_access"],
+    },
   ];
+
 
   return (
     <div className="space-y-4">
