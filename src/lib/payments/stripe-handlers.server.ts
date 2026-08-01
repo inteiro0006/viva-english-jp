@@ -61,12 +61,15 @@ export async function fulfillCheckoutSession(
   const stripe = createStripeClient(environment);
 
   const verified = await verifyCheckoutSession({ stripe, db, environment, sessionId });
+  if (!verified.paymentIntentId) {
+    throw new PaymentVerificationError("missing_payment_intent");
+  }
 
   const { error } = await db.rpc("fulfill_paid_order", {
     _order_id: verified.orderId,
     _environment: environment,
     _provider_checkout_id: verified.sessionId,
-    _provider_payment_id: verified.paymentIntentId ?? undefined,
+    _provider_payment_id: verified.paymentIntentId,
     _amount: verified.financials.total,
     _currency: verified.financials.currency,
     _customer_email: verified.customerEmail ?? undefined,
