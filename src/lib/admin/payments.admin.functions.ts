@@ -308,12 +308,23 @@ export const manualEnrollment = createServerFn({ method: "POST" })
       .single();
     if (error) throw new Error(error.message);
 
+    let orderMarkedPaid = false;
     if (data.orderId && data.markOrderPaid) {
-      await admin
+      // A manual override may only close an OPEN order, and must belong to the
+      // same user/course. It can never re-open a refunded or canceled order.
+      const { data: updated, error: orderErr } = await admin
         .from("orders")
         .update({ status: "paid", paid_at: new Date().toISOString() })
-        .eq("id", data.orderId);
+        .eq("id", data.orderId)
+        .eq("user_id", data.userId)
+        .eq("course_id", data.courseId)
+        .in("status", ["pending", "failed"])
+        .select("id");
+      if (orderErr) throw new Error(orderErr.message);
+      orderMarkedPaid = (updated ?? []).length > 0;
+      if (!orderMarkedPaid) throw new Error("order_not_markable_paid");
     }
+
 
     await logAdminAction(context.supabase, {
       action: "enrollment.manual_create",
