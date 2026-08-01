@@ -78,8 +78,14 @@ export const getOrderDetail = createServerFn({ method: "POST" })
 /**
  * initiateRefund
  * Calls the Stripe refund API for a paid order (full or partial) and audits it.
- * Order/enrollment status is settled by the `charge.refunded` webhook, which is
- * the single source of truth for fulfillment state.
+ *
+ * Double-refund safety has three layers:
+ *  1. a `refund_requests` row whose unique `idempotency_key` encodes
+ *     (order, amount) — a duplicate click reuses the existing request;
+ *  2. the same key is sent to Stripe as its idempotency key;
+ *  3. the refundable balance is recomputed from Stripe before requesting.
+ * Order/enrollment status is settled by the refund webhooks, which remain the
+ * single source of truth for fulfillment state.
  */
 export const initiateRefund = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -104,32 +110,97 @@ export const initiateRefund = createServerFn({ method: "POST" })
       throw new Error("only_paid_orders_refundable");
     }
     if (!order.provider_payment_id) throw new Error("missing_payment_intent");
-    if (data.amount && data.amount > order.amount) throw new Error("amount_exceeds_order");
 
-    const { createStripeRefund } = await import("@/lib/payments/refunds.server");
+    const environment = order.environment === "live" ? "live" : "sandbox";
+    const { createStripeRefund, getRefundedTotal } = await import(
+      "@/lib/payments/refunds.server"
+    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Authoritative refundable balance straight from Stripe.
+    const { charged, refunded } = await getRefundedTotal(environment, order.provider_payment_id);
+    const remaining = Math.max(charged - refunded, 0);
+    if (remaining <= 0) throw new Error("already_fully_refunded");
+    const requestedAmount = data.amount ?? remaining;
+    if (requestedAmount > remaining) throw new Error("amount_exceeds_refundable");
+
+    const idempotencyKey = `refund:${order.id}:${requestedAmount}`;
+
+    const { data: existing } = await supabaseAdmin
+      .from("refund_requests")
+      .select("id, status, provider_refund_id, requested_amount")
+      .eq("idempotency_key", idempotencyKey)
+      .maybeSingle();
+
+    if (existing?.provider_refund_id && existing.status === "succeeded") {
+      return {
+        ok: true,
+        pending: false,
+        refundId: existing.provider_refund_id,
+        amount: existing.requested_amount,
+        note: "already_processed" as string | null,
+      };
+    }
+
+    let requestId = existing?.id;
+    if (!requestId) {
+      const { data: created, error: reqErr } = await supabaseAdmin
+        .from("refund_requests")
+        .insert({
+          order_id: order.id,
+          environment,
+          requested_amount: requestedAmount,
+          currency: order.currency,
+          reason: data.reason ?? null,
+          requested_by: context.userId,
+          idempotency_key: idempotencyKey,
+          status: "processing",
+        })
+        .select("id")
+        .single();
+      if (reqErr || !created) throw new Error("refund_request_failed");
+      requestId = created.id;
+    }
+
     let refund;
     try {
       refund = await createStripeRefund({
-        environment: order.environment === "live" ? "live" : "sandbox",
+        environment,
         paymentIntentId: order.provider_payment_id,
-        amount: data.amount,
+        // Full refunds omit the amount so Stripe refunds the exact remainder.
+        amount: requestedAmount === remaining ? undefined : requestedAmount,
         reason: data.reason,
         orderId: order.id,
+        idempotencyKey,
       });
     } catch (e) {
+      const message = e instanceof Error ? e.message : "refund_failed";
+      await supabaseAdmin
+        .from("refund_requests")
+        .update({ status: "failed", processing_error: message.slice(0, 500) })
+        .eq("id", requestId);
       await logAdminAction(context.supabase, {
         action: "order.refund_failed",
         entityType: "order",
         entityId: order.id,
         oldValues: { status: order.status },
         newValues: {
-          error: e instanceof Error ? e.message : "refund_failed",
-          amount: data.amount ?? order.amount,
+          error: message,
+          amount: requestedAmount,
           reason: data.reason ?? null,
         },
       });
       throw e;
     }
+
+    await supabaseAdmin
+      .from("refund_requests")
+      .update({
+        provider_refund_id: refund.refundId,
+        status: refund.status === "succeeded" ? "succeeded" : "pending",
+        processing_error: null,
+      })
+      .eq("id", requestId);
 
     await logAdminAction(context.supabase, {
       action: "order.refunded",
@@ -141,7 +212,7 @@ export const initiateRefund = createServerFn({ method: "POST" })
         refund_status: refund.status,
         amount: refund.amount,
         currency: refund.currency,
-        partial: Boolean(data.amount && data.amount < order.amount),
+        partial: requestedAmount < remaining,
         reason: data.reason ?? null,
       },
     });
