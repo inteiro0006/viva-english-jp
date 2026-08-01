@@ -126,7 +126,7 @@ export async function createCheckoutSessionForUser(args: {
       _currency: price.currency,
       _stripe_price_id: price.priceId,
       _stripe_product_id: price.productId,
-      _customer_email: email ?? null,
+      _customer_email: email ?? undefined,
     });
     if (orderErr) return fail("order_failed", orderErr.message);
     const order = (Array.isArray(orderRow) ? orderRow[0] : orderRow) as
