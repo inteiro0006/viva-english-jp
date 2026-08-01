@@ -145,6 +145,13 @@ export function refundIdempotencyKey(orderId: string, requestId: string): string
 }
 
 /** Stable idempotency key for a checkout session, keyed on the pending order. */
+/**
+ * Stripe caches the response for an idempotency key for 24h — including 4xx
+ * errors. Bump CHECKOUT_CONFIG_VERSION whenever the session payload changes so
+ * a fixed configuration is not shadowed by a cached failure.
+ */
+export const CHECKOUT_CONFIG_VERSION = "v2";
+
 export function checkoutIdempotencyKey(orderId: string, attemptKey: string): string {
-  return `checkout:${orderId}:${attemptKey}`;
+  return `checkout:${CHECKOUT_CONFIG_VERSION}:${orderId}:${attemptKey}`;
 }
