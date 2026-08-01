@@ -12,7 +12,6 @@ import { getStripe, isPaymentsConfigured } from "@/lib/stripe";
 import { createCourseCheckoutSession, getCoursePrice } from "@/lib/payments/checkout.functions";
 import { COURSE_PRICE_JPY, formatJpy } from "@/config/site";
 
-
 export const Route = createFileRoute("/checkout")({
   head: () => ({
     meta: [
@@ -51,7 +50,6 @@ function CheckoutPage() {
       mounted = false;
     };
   }, []);
-
 
   useEffect(() => {
     let mounted = true;

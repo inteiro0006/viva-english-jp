@@ -76,7 +76,6 @@ export const getOrderDetail = createServerFn({ method: "POST" })
     return { order: orderWithProfile, events: events ?? [] };
   });
 
-
 /**
  * initiateRefund
  * Calls the Stripe refund API for a paid order (full or partial) and audits it.
@@ -117,9 +116,8 @@ export const initiateRefund = createServerFn({ method: "POST" })
 
     const environment = order.environment === "live" ? "live" : "sandbox";
     const { createStripeRefund, getRefundedTotal } = await import("@/lib/payments/refunds.server");
-    const { assertRefundAmount, refundIdempotencyKey, refundableBalance } = await import(
-      "@/lib/payments/order-state"
-    );
+    const { assertRefundAmount, refundIdempotencyKey, refundableBalance } =
+      await import("@/lib/payments/order-state");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     // Authoritative refundable balance straight from Stripe.
@@ -213,7 +211,6 @@ export const initiateRefund = createServerFn({ method: "POST" })
       .eq("id", requestId);
     // The refund exists on Stripe; a bookkeeping failure must be visible.
     if (settleErr) console.error("[refund] could not persist refund result:", settleErr.message);
-
 
     await logAdminAction(context.supabase, {
       action: "order.refunded",
