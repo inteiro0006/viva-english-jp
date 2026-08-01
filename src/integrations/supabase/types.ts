@@ -1183,6 +1183,7 @@ export type Database = {
           progress_seconds: number
         }[]
       }
+      sandbox_grants_access: { Args: never; Returns: boolean }
       verify_certificate: {
         Args: { _code: string }
         Returns: {

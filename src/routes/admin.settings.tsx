@@ -11,6 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
+
 
 export const Route = createFileRoute("/admin/settings")({
   component: AdminSettingsPage,
@@ -63,7 +65,12 @@ function AdminSettingsPage() {
       keys: ["terms_ja", "terms_en", "privacy_ja", "privacy_en"],
     },
     { title: t("admin.settings_.groups.playback"), keys: ["video_completion_threshold"] },
+    {
+      title: t("admin.settings_.groups.payments"),
+      keys: ["payments.sandbox_grants_access"],
+    },
   ];
+
 
   return (
     <div className="space-y-4">
@@ -85,6 +92,7 @@ function AdminSettingsPage() {
                 value={local[k]}
                 onChange={(v) => setLocal((s) => ({ ...s, [k]: v }))}
                 onSave={() => mut.mutate({ key: k, value: local[k] })}
+                onSaveValue={(v) => mut.mutate({ key: k, value: v })}
                 saving={mut.isPending}
               />
             ))}
@@ -100,20 +108,49 @@ function SettingField({
   value,
   onChange,
   onSave,
+  onSaveValue,
   saving,
 }: {
   keyName: string;
   value: unknown;
   onChange: (v: unknown) => void;
   onSave: () => void;
+  onSaveValue: (v: unknown) => void;
   saving: boolean;
 }) {
+
   const { t } = useTranslation();
   const isLong =
     keyName.startsWith("terms_") ||
     keyName.startsWith("privacy_") ||
     keyName.startsWith("institutional_");
   const isNumber = keyName === "display_price_jpy" || keyName === "video_completion_threshold";
+  const isBoolean = keyName === "payments.sandbox_grants_access";
+
+  if (isBoolean) {
+    const checked = value === true || value === "true";
+    return (
+      <div className="flex items-start justify-between gap-4">
+        <div className="space-y-0.5">
+          <Label htmlFor={keyName}>
+            {t(`admin.settings_.keys.${keyName}`, { defaultValue: keyName })}
+          </Label>
+          <p className="text-xs text-muted-foreground">
+            {t(`admin.settings_.keys.${keyName}_hint`, { defaultValue: "" })}
+          </p>
+        </div>
+        <Switch
+          id={keyName}
+          checked={checked}
+          disabled={saving}
+          onCheckedChange={(v: boolean) => {
+            onChange(v);
+            onSaveValue(v);
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-1.5">
@@ -121,6 +158,7 @@ function SettingField({
         {t(`admin.settings_.keys.${keyName}`, { defaultValue: keyName })}
       </Label>
       <div className="flex gap-2">
+
         {isLong ? (
           <Textarea
             id={keyName}
