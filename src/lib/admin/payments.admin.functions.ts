@@ -330,7 +330,7 @@ export const manualEnrollment = createServerFn({ method: "POST" })
       action: "enrollment.manual_create",
       entityType: "enrollment",
       entityId: inserted.id,
-      newValues: { ...data },
+      newValues: { ...data, orderMarkedPaid },
       summary: data.note ?? `Manual enrollment for user ${data.userId} in course ${data.courseId}`,
     });
 
