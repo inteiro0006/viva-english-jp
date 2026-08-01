@@ -143,7 +143,7 @@ function SettingField({
           id={keyName}
           checked={checked}
           disabled={saving}
-          onCheckedChange={(v) => {
+          onCheckedChange={(v: boolean) => {
             onChange(v);
             onSaveValue(v);
           }}
