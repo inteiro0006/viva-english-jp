@@ -30,7 +30,28 @@ function CheckoutPage() {
   const [authChecked, setAuthChecked] = useState(false);
   const [authed, setAuthed] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const priceLabel = formatJpy(COURSE_PRICE_JPY);
+  // Display price comes from Stripe (source of truth); the static config value
+  // is only a fallback while the request is in flight.
+  const [livePrice, setLivePrice] = useState<{ amount: number; currency: string } | null>(null);
+  const priceLabel =
+    livePrice && livePrice.currency === "jpy"
+      ? formatJpy(livePrice.amount)
+      : formatJpy(COURSE_PRICE_JPY);
+
+  useEffect(() => {
+    let mounted = true;
+    getCoursePrice()
+      .then((price) => {
+        if (mounted && price) setLivePrice({ amount: price.amount, currency: price.currency });
+      })
+      .catch(() => {
+        /* falls back to the configured display price */
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
 
   useEffect(() => {
     let mounted = true;
