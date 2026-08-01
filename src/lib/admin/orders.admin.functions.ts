@@ -62,18 +62,20 @@ export const getOrderDetail = createServerFn({ method: "POST" })
         .maybeSingle();
       orderWithProfile = { ...order, profiles: prof ?? null } as typeof orderWithProfile;
     }
-    const { data: events } = await context.supabase
-      .from("payment_events")
-      .select("*")
-      .or(
-        [order?.provider_checkout_id ? `payload->>orderId.eq.${order?.id}` : null]
-          .filter(Boolean)
-          .join(",") || "id.eq.00000000-0000-0000-0000-000000000000",
-      )
-      .order("created_at", { ascending: false })
-      .limit(50);
+    // Events are linked through the Stripe object metadata written at checkout.
+    const { data: events, error: eventsErr } = order
+      ? await context.supabase
+          .from("payment_events")
+          .select("*")
+          .eq("environment", order.environment)
+          .filter("payload->data->object->metadata->>orderId", "eq", order.id)
+          .order("created_at", { ascending: false })
+          .limit(50)
+      : { data: [], error: null };
+    if (eventsErr) throw new Error(eventsErr.message);
     return { order: orderWithProfile, events: events ?? [] };
   });
+
 
 /**
  * initiateRefund
