@@ -9,8 +9,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { getStripe, isPaymentsConfigured } from "@/lib/stripe";
-import { createCourseCheckoutSession } from "@/lib/payments/checkout.functions";
+import { createCourseCheckoutSession, getCoursePrice } from "@/lib/payments/checkout.functions";
 import { COURSE_PRICE_JPY, formatJpy } from "@/config/site";
+
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
