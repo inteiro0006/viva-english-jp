@@ -12,6 +12,7 @@ export type CheckoutErrorCode =
   | "price_unavailable"
   | "order_failed"
   | "checkout_failed"
+  | "rate_limited"
   | "not_configured";
 
 export type CheckoutResult = { clientSecret: string } | { error: CheckoutErrorCode };
