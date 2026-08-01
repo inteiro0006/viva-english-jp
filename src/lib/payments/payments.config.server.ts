@@ -123,6 +123,8 @@ export function getAllowedOrigins(): string[] {
  */
 export function isAllowedOrigin(origin: string): boolean {
   if (typeof origin !== "string" || origin.length === 0 || origin.length > 255) return false;
+  // Reject whitespace, backslashes and any control character (C0 + DEL).
+  // eslint-disable-next-line no-control-regex
   if (/[\s\\\u0000-\u001f\u007f]/.test(origin)) return false;
   const normalized = normalizeOrigin(origin);
   if (!normalized) return false;
