@@ -8,7 +8,10 @@ export const listOrders = createServerFn({ method: "POST" })
   .inputValidator((d) =>
     z
       .object({
-        status: z.enum(["pending", "paid", "failed", "refunded", "partially_refunded"]).optional(),
+        status: z
+          .enum(["pending", "paid", "failed", "refunded", "partially_refunded", "canceled"])
+          .optional(),
+
         page: z.number().int().min(0).default(0),
       })
       .parse(d ?? {}),
