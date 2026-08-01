@@ -46,7 +46,9 @@ async function completeEvent(
   if (error) console.error("[webhook] could not finalize event:", error.message);
 }
 
-async function processEvent(environment: StripeEnv, req: Request) {
+type ProcessResult = { status: number; body: string | Record<string, unknown> };
+
+async function processEvent(environment: StripeEnv, req: Request): Promise<ProcessResult> {
   // 1. Signature, freshness and payload shape are verified before anything else.
   const event = (await verifyWebhook(req, environment)) as StripeEventLike;
 
@@ -54,13 +56,16 @@ async function processEvent(environment: StripeEnv, req: Request) {
   const expectLive = environment === "live";
   if (event.livemode !== undefined && event.livemode !== expectLive) {
     console.error("[webhook] livemode mismatch", { id: event.id, livemode: event.livemode });
-    return { status: 400 as const, body: "Environment mismatch" };
+    return { status: 400, body: "Environment mismatch" };
   }
 
   // 3. Atomic claim => real idempotency, including under concurrency.
   const claim = await claimEvent(event, environment);
-  if (claim.action !== "claimed") {
-    return { status: 200 as const, body: { received: true, claim: claim.action } };
+  const claimDecision = decideFromClaim(claim.action);
+  if (claimDecision.kind === "respond") {
+    // `locked` intentionally answers 409 so Stripe redelivers instead of the
+    // event being lost when the lock holder dies mid-flight.
+    return { status: claimDecision.status, body: claimDecision.body };
   }
 
   try {
@@ -69,14 +74,13 @@ async function processEvent(environment: StripeEnv, req: Request) {
       status: handled ? "processed" : "ignored",
       unhandled: !handled,
     });
-    return { status: 200 as const, body: { received: true, handled } };
+    return { status: 200, body: { received: true, handled } };
   } catch (err) {
     await completeEvent(claim.event_id, { status: "failed", error: err });
-    // Validation failures are permanent: retrying cannot change the outcome,
-    // so acknowledge instead of letting Stripe retry for three days.
-    if (isPermanentFailure(err)) {
+    const decision = decideFromFailure(isPermanentFailure(err));
+    if (decision.kind === "respond" && decision.status === 200) {
       console.error("[webhook] permanent validation failure:", sanitizeError(err));
-      return { status: 200 as const, body: { received: true, rejected: true } };
+      return { status: decision.status, body: decision.body };
     }
     throw err;
   }
@@ -90,20 +94,23 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
         if (rawEnv !== "sandbox" && rawEnv !== "live") {
           return new Response("Invalid environment", { status: 400 });
         }
-        // A sandbox webhook must never be honoured by a live deployment.
+        // A sandbox webhook must never be honoured by a live deployment, and a
+        // live webhook must never be honoured by a sandbox deployment.
         const configured = process.env.PAYMENTS_ENVIRONMENT?.trim().toLowerCase();
-        if (configured === "live" && rawEnv === "sandbox") {
-          return new Response("Sandbox webhook rejected", { status: 400 });
+        if ((configured === "live" || configured === "sandbox") && configured !== rawEnv) {
+          console.error("[webhook] environment mismatch with deployment", { rawEnv, configured });
+          return new Response("Webhook environment rejected", { status: 400 });
         }
 
         try {
           const result = await processEvent(rawEnv, request);
-          if (result.status === 400) return new Response(result.body as string, { status: 400 });
-          return Response.json(result.body);
+          if (typeof result.body === "string") {
+            return new Response(result.body, { status: result.status });
+          }
+          return Response.json(result.body, { status: result.status });
         } catch (err) {
           const message = err instanceof Error ? err.message : String(err);
-          // Signature/payload problems are permanent -> 400 (no retry).
-          if (/signature|timestamp|Missing signature|Invalid webhook payload/i.test(message)) {
+          if (isSignatureFailure(message)) {
             console.error("Stripe webhook rejected:", sanitizeError(message));
             return new Response("Invalid signature", { status: 400 });
           }
@@ -115,3 +122,4 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
     },
   },
 });
+
