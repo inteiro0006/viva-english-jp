@@ -119,6 +119,32 @@ function SettingField({
     keyName.startsWith("privacy_") ||
     keyName.startsWith("institutional_");
   const isNumber = keyName === "display_price_jpy" || keyName === "video_completion_threshold";
+  const isBoolean = keyName === "payments.sandbox_grants_access";
+
+  if (isBoolean) {
+    const checked = value === true || value === "true";
+    return (
+      <div className="flex items-start justify-between gap-4">
+        <div className="space-y-0.5">
+          <Label htmlFor={keyName}>
+            {t(`admin.settings_.keys.${keyName}`, { defaultValue: keyName })}
+          </Label>
+          <p className="text-xs text-muted-foreground">
+            {t(`admin.settings_.keys.${keyName}_hint`, { defaultValue: "" })}
+          </p>
+        </div>
+        <Switch
+          id={keyName}
+          checked={checked}
+          disabled={saving}
+          onCheckedChange={(v) => {
+            onChange(v);
+            onSaveValue(v);
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-1.5">
@@ -126,6 +152,7 @@ function SettingField({
         {t(`admin.settings_.keys.${keyName}`, { defaultValue: keyName })}
       </Label>
       <div className="flex gap-2">
+
         {isLong ? (
           <Textarea
             id={keyName}
