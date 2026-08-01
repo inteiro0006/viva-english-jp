@@ -33,9 +33,9 @@ describe("order transitions", () => {
 
 describe("validateFinancials", () => {
   it("accepts an exact match", () => {
-    expect(
-      validateFinancials(jpy(), { expectedSubtotal: 49800, expectedCurrency: "jpy" }),
-    ).toEqual({ ok: true });
+    expect(validateFinancials(jpy(), { expectedSubtotal: 49800, expectedCurrency: "jpy" })).toEqual(
+      { ok: true },
+    );
   });
 
   it("accepts exclusive tax on top of the price", () => {
@@ -116,9 +116,7 @@ describe("refunds", () => {
 
 describe("idempotency keys", () => {
   it("is stable for the same order and attempt", () => {
-    expect(checkoutIdempotencyKey("o1", "price_1")).toBe(
-      checkoutIdempotencyKey("o1", "price_1"),
-    );
+    expect(checkoutIdempotencyKey("o1", "price_1")).toBe(checkoutIdempotencyKey("o1", "price_1"));
     expect(checkoutIdempotencyKey("o1", "price_1")).not.toBe(
       checkoutIdempotencyKey("o2", "price_1"),
     );

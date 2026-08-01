@@ -149,7 +149,9 @@ export async function handleRefundEvent(refund: StripeObject, environment: Payme
   // Recompute the authoritative refunded total from Stripe, never from the
   // single event amount (multiple partial refunds may exist).
   const stripe = createStripeClient(environment);
-  const intent = await stripe.paymentIntents.retrieve(paymentIntentId, { expand: ["latest_charge"] });
+  const intent = await stripe.paymentIntents.retrieve(paymentIntentId, {
+    expand: ["latest_charge"],
+  });
   const charge = intent.latest_charge;
   const refundedTotal =
     typeof charge === "string" || !charge ? 0 : Number(charge.amount_refunded ?? 0);

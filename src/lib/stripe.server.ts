@@ -98,10 +98,7 @@ export function parseStripeEvent(body: string): StripeWebhookEvent {
   return e as StripeWebhookEvent;
 }
 
-export async function verifyWebhook(
-  req: Request,
-  env: StripeEnv,
-): Promise<StripeWebhookEvent> {
+export async function verifyWebhook(req: Request, env: StripeEnv): Promise<StripeWebhookEvent> {
   const signature = req.headers.get("stripe-signature");
   const body = await req.text();
   const secret =

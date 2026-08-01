@@ -128,7 +128,11 @@ export async function verifyCheckoutSession(args: {
   const paymentIntent = session.payment_intent;
   const paymentIntentId =
     typeof paymentIntent === "string" ? paymentIntent : (paymentIntent?.id ?? null);
-  if (order.provider_payment_id && paymentIntentId && order.provider_payment_id !== paymentIntentId) {
+  if (
+    order.provider_payment_id &&
+    paymentIntentId &&
+    order.provider_payment_id !== paymentIntentId
+  ) {
     throw new PaymentVerificationError("payment_intent_mismatch");
   }
 

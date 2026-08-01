@@ -112,9 +112,7 @@ export const initiateRefund = createServerFn({ method: "POST" })
     if (!order.provider_payment_id) throw new Error("missing_payment_intent");
 
     const environment = order.environment === "live" ? "live" : "sandbox";
-    const { createStripeRefund, getRefundedTotal } = await import(
-      "@/lib/payments/refunds.server"
-    );
+    const { createStripeRefund, getRefundedTotal } = await import("@/lib/payments/refunds.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     // Authoritative refundable balance straight from Stripe.
