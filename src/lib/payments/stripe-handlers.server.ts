@@ -110,13 +110,26 @@ export async function handleRefund(charge: StripeObject, environment: PaymentEnv
   if (error) throw new Error(error.message);
   if (!order) return;
 
-  const refundedTotal = Number(charge.amount_refunded ?? 0);
+  // NEVER trust the event snapshot for money: re-read the charge from Stripe
+  // and use its authoritative accumulated refunded total.
+  const stripe = createStripeClient(environment);
+  const intent = await stripe.paymentIntents.retrieve(paymentIntentId, {
+    expand: ["latest_charge"],
+  });
+  const latestCharge = intent.latest_charge;
+  const refundedTotal =
+    typeof latestCharge === "string" || !latestCharge
+      ? 0
+      : Number(latestCharge.amount_refunded ?? 0);
+  if (refundedTotal <= 0) return;
+
   const { error: rpcErr } = await db.rpc("apply_refund_outcome", {
     _order_id: order.id,
     _environment: environment,
     _refunded_total: refundedTotal,
     _refund_status: "succeeded",
   });
+
   if (rpcErr) throw new Error(rpcErr.message);
 }
 
