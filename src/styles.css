@@ -151,6 +151,21 @@
   --destructive-foreground: var(--urgent-foreground);
   --teal: oklch(0.55 0.08 220);
   --teal-foreground: oklch(0.99 0.005 100);
+  --lms-surface: oklch(0.19 0.02 210);
+  --lms-accent: oklch(0.5 0.08 214);
+  --lms-accent-strong: oklch(0.42 0.07 214);
+  --lms-accent-foreground: oklch(0.98 0.005 100);
+  --lms-cta: oklch(0.66 0.15 128);
+  --lms-cta-hover: oklch(0.6 0.15 128);
+  --lms-cta-foreground: oklch(0.14 0.02 130);
+  --lms-link: oklch(0.75 0.08 214);
+  --lms-tile-1: oklch(0.55 0.15 25);
+  --lms-tile-2: oklch(0.45 0.08 220);
+  --lms-tile-3: oklch(0.5 0.08 214);
+  --lms-tile-4: oklch(0.55 0.05 200);
+  --lms-tile-5: oklch(0.58 0.06 160);
+  --lms-tile-6: oklch(0.6 0.09 135);
+
   --secondary: oklch(0.26 0.02 210);
   --secondary-foreground: oklch(0.97 0.005 100);
   --muted: oklch(0.26 0.02 210);
