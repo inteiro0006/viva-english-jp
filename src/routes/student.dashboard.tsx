@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { PlayCircle, Lock, CheckCircle2, BookOpen, Play, LifeBuoy, Mail } from "lucide-react";
+import { Lock, CheckCircle2, BookOpen, Play, LifeBuoy, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -686,6 +686,3 @@ function DashboardError({ onRetry }: { onRetry: () => void }) {
     </div>
   );
 }
-
-// Keep PlayCircle import referenced for lesson CTA fallback styling parity.
-export const __unusedIcons = { PlayCircle };
