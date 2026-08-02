@@ -38,6 +38,15 @@
   --color-urgent-foreground: var(--urgent-foreground);
   --color-teal: var(--teal);
   --color-teal-foreground: var(--teal-foreground);
+  --color-lms-surface: var(--lms-surface);
+  --color-lms-accent: var(--lms-accent);
+  --color-lms-accent-strong: var(--lms-accent-strong);
+  --color-lms-accent-foreground: var(--lms-accent-foreground);
+  --color-lms-cta: var(--lms-cta);
+  --color-lms-cta-hover: var(--lms-cta-hover);
+  --color-lms-cta-foreground: var(--lms-cta-foreground);
+  --color-lms-link: var(--lms-link);
+
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
