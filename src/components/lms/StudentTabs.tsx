@@ -24,10 +24,7 @@ export function StudentTabs({ className }: { className?: string }) {
   return (
     <nav
       aria-label={t("nav.dashboard")}
-      className={[
-        "rounded-md border border-border bg-card shadow-sm",
-        className ?? "",
-      ].join(" ")}
+      className={["rounded-md border border-border bg-card shadow-sm", className ?? ""].join(" ")}
     >
       <ul className="flex gap-1 overflow-x-auto px-2 sm:px-4">
         {tabs.map((tab) => (

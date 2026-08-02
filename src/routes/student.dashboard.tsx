@@ -120,9 +120,7 @@ function EnrolledDashboard({ data }: { data: Extract<DashboardData, { state: "en
     data.profile?.full_name?.trim() || (lang.startsWith("ja") ? "ゲスト" : "friend");
 
   const visibleModules =
-    activeStageId === "all"
-      ? moduleViews
-      : moduleViews.filter((m) => m.stage_id === activeStageId);
+    activeStageId === "all" ? moduleViews : moduleViews.filter((m) => m.stage_id === activeStageId);
 
   return (
     <div className="flex flex-col gap-6">
@@ -210,8 +208,7 @@ function EnrolledDashboard({ data }: { data: Extract<DashboardData, { state: "en
                       : "hover:bg-[color:var(--lms-accent-strong)]/60",
                   ].join(" ")}
                 >
-                  {t("student.dashboard.stageLabel", { n: idx + 1 })}:{" "}
-                  {pickLang(s, "title", lang)}
+                  {t("student.dashboard.stageLabel", { n: idx + 1 })}: {pickLang(s, "title", lang)}
                 </button>
               );
             })}
@@ -365,7 +362,6 @@ function StartHereBlock({
                 {t("student.dashboard.openModule")}
               </Link>
             </Button>
-
           </div>
         </div>
       </div>
@@ -513,7 +509,12 @@ function ModulesGrid({ modules, courseSlug }: { modules: ModuleView[]; courseSlu
               aria-hidden
             >
               {m.thumbnail_url ? (
-                <img src={m.thumbnail_url} alt="" className="size-full object-cover" loading="lazy" />
+                <img
+                  src={m.thumbnail_url}
+                  alt=""
+                  className="size-full object-cover"
+                  loading="lazy"
+                />
               ) : (
                 <span className="text-3xl font-bold text-[color:var(--lms-accent-foreground)] opacity-90">
                   {m.position + 1}
