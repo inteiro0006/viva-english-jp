@@ -588,7 +588,15 @@
       "reviewLessons": "Review lessons",
       "certificateSoon": "Certificate coming soon",
       "errorTitle": "We couldn't load your dashboard",
-      "errorRetry": "Try again"
+      "errorRetry": "Try again",
+      "startHere": "Start here",
+      "pctComplete": "{{pct}}% complete",
+      "stageLabel": "Step {{n}}",
+      "lessonLabel": "Lesson",
+      "moduleLabelShort": "Module",
+      "lessonsAvailable": "{{count}} lessons",
+      "contactTitle": "Talk to us",
+      "contactDesc": "Questions about your studies or your account? Send us a message."
     },
     "course": {
       "errorTitle": "We couldn't load this course",

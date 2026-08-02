@@ -38,6 +38,15 @@
   --color-urgent-foreground: var(--urgent-foreground);
   --color-teal: var(--teal);
   --color-teal-foreground: var(--teal-foreground);
+  --color-lms-surface: var(--lms-surface);
+  --color-lms-accent: var(--lms-accent);
+  --color-lms-accent-strong: var(--lms-accent-strong);
+  --color-lms-accent-foreground: var(--lms-accent-foreground);
+  --color-lms-cta: var(--lms-cta);
+  --color-lms-cta-hover: var(--lms-cta-hover);
+  --color-lms-cta-foreground: var(--lms-cta-foreground);
+  --color-lms-link: var(--lms-link);
+
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -84,6 +93,24 @@
   --teal: oklch(0.38 0.06 220);
   --teal-foreground: oklch(0.99 0.005 100);
 
+  /* LMS student dashboard surface tokens */
+  --lms-surface: oklch(0.95 0.002 240);
+  --lms-accent: oklch(0.63 0.09 214);
+  --lms-accent-strong: oklch(0.55 0.09 214);
+  --lms-accent-foreground: oklch(0.99 0.005 100);
+  --lms-cta: oklch(0.74 0.16 128);
+  --lms-cta-hover: oklch(0.68 0.16 128);
+  --lms-cta-foreground: oklch(0.99 0.005 100);
+  --lms-link: oklch(0.58 0.09 214);
+  --lms-tile-1: oklch(0.66 0.16 25);
+  --lms-tile-2: oklch(0.55 0.08 220);
+  --lms-tile-3: oklch(0.63 0.09 214);
+  --lms-tile-4: oklch(0.78 0.06 200);
+  --lms-tile-5: oklch(0.83 0.07 160);
+  --lms-tile-6: oklch(0.85 0.1 135);
+
+
+
   --secondary: oklch(0.96 0.01 180);
   --secondary-foreground: oklch(0.2 0.02 200);
   --muted: oklch(0.96 0.008 180);
@@ -124,6 +151,21 @@
   --destructive-foreground: var(--urgent-foreground);
   --teal: oklch(0.55 0.08 220);
   --teal-foreground: oklch(0.99 0.005 100);
+  --lms-surface: oklch(0.19 0.02 210);
+  --lms-accent: oklch(0.5 0.08 214);
+  --lms-accent-strong: oklch(0.42 0.07 214);
+  --lms-accent-foreground: oklch(0.98 0.005 100);
+  --lms-cta: oklch(0.66 0.15 128);
+  --lms-cta-hover: oklch(0.6 0.15 128);
+  --lms-cta-foreground: oklch(0.14 0.02 130);
+  --lms-link: oklch(0.75 0.08 214);
+  --lms-tile-1: oklch(0.55 0.15 25);
+  --lms-tile-2: oklch(0.45 0.08 220);
+  --lms-tile-3: oklch(0.5 0.08 214);
+  --lms-tile-4: oklch(0.55 0.05 200);
+  --lms-tile-5: oklch(0.58 0.06 160);
+  --lms-tile-6: oklch(0.6 0.09 135);
+
   --secondary: oklch(0.26 0.02 210);
   --secondary-foreground: oklch(0.97 0.005 100);
   --muted: oklch(0.26 0.02 210);
