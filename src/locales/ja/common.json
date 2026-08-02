@@ -588,7 +588,15 @@
       "reviewLessons": "レッスンを復習する",
       "certificateSoon": "修了証は近日公開予定です",
       "errorTitle": "データを読み込めませんでした",
-      "errorRetry": "もう一度試す"
+      "errorRetry": "もう一度試す",
+      "startHere": "ここから始める",
+      "pctComplete": "{{pct}}% 完了",
+      "stageLabel": "ステップ {{n}}",
+      "lessonLabel": "レッスン",
+      "moduleLabelShort": "モジュール",
+      "lessonsAvailable": "{{count}} レッスン",
+      "contactTitle": "お問い合わせ",
+      "contactDesc": "学習やアカウントについてご質問がありますか？お気軽にご連絡ください。"
     },
     "course": {
       "errorTitle": "コースを読み込めませんでした",
