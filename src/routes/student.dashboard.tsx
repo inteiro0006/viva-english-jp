@@ -360,17 +360,12 @@ function StartHereBlock({
                 {started ? t("student.dashboard.continue") : t("student.dashboard.startHere")}
               </Link>
             </Button>
-            {started && (
-              <Button asChild variant="outline" className="min-h-11">
-                <Link
-                  to="/student/lesson/$lessonId"
-                  params={{ lessonId: continueLesson.lesson.id }}
-                  search={{ restart: "1" } as never}
-                >
-                  {t("student.dashboard.startFromBeginning")}
-                </Link>
-              </Button>
-            )}
+            <Button asChild variant="outline" className="min-h-11">
+              <Link to="/student/course/$courseSlug" params={{ courseSlug: data.course.slug }}>
+                {t("student.dashboard.openModule")}
+              </Link>
+            </Button>
+
           </div>
         </div>
       </div>
