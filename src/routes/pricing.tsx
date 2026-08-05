@@ -27,9 +27,9 @@ export const Route = createFileRoute("/pricing")({
     ],
     links: [
       { rel: "canonical", href: `${SITE_URL}/pricing` },
-      { rel: "alternate", hreflang: "ja", href: `${SITE_URL}/pricing?lang=ja` },
-      { rel: "alternate", hreflang: "en", href: `${SITE_URL}/pricing?lang=en` },
-      { rel: "alternate", hreflang: "x-default", href: `${SITE_URL}/pricing` },
+      { rel: "alternate", hrefLang: "ja", href: `${SITE_URL}/pricing?lang=ja` },
+      { rel: "alternate", hrefLang: "en", href: `${SITE_URL}/pricing?lang=en` },
+      { rel: "alternate", hrefLang: "x-default", href: `${SITE_URL}/pricing` },
     ],
   }),
   component: PricingPage,
