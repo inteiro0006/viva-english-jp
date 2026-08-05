@@ -444,7 +444,7 @@ function StudentDrawer({
                             : row.courses.title_ja
                           : "—"}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <div className="flex items-center text-xs text-muted-foreground">
                         <Badge
                           variant={row.status === "active" ? "default" : "outline"}
                           className="mr-2"
@@ -452,7 +452,7 @@ function StudentDrawer({
                           {row.status}
                         </Badge>
                         {new Date(row.enrolled_at).toLocaleDateString(i18n.language)}
-                      </p>
+                      </div>
                     </div>
                     {row.status === "active" && (
                       <AlertDialog>
