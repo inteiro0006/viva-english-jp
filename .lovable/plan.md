@@ -1,41 +1,42 @@
-# O erro no checkout: "not_configured"
+# Usar o produto `prod_UrvECb4YU3LiDg` no checkout do Eigo Academy
 
-## O que aconteceu
+## Situação atual (verificada)
 
-Na sua última tentativa em `/checkout`, a chamada ao servidor que cria a sessão de pagamento respondeu:
+- O checkout **não usa IDs de produto do Stripe**. Ele resolve o preço pela *lookup key* `eigo_academy_onetime` (`COURSE_PRICE_LOOKUP_KEY` em `src/lib/payments/payments.config.server.ts`) e valida: preço ativo, tipo `one_time`, moeda `jpy`, valor > 0. O produto vem do preço, não o contrário.
+- O ambiente de pagamento é resolvido só por configuração de servidor. Hoje `PAYMENTS_ENVIRONMENT` **não está definido** e `STRIPE_LIVE_API_KEY` **não existe** — foi exatamente isso que causou o erro `not_configured` no checkout.
+- O go-live do Stripe está **incompleto**: o passo 1 (vincular a conta) ainda está em andamento, e os passos seguintes (formulário de go-live, instalar o app Lovable na conta LIVE, criação das chaves live) estão bloqueados. Sem isso, não há chaves live e o modo live não pode funcionar.
+- O token publicável no build atual é `pk_test_...` (sandbox); há uma checagem que rejeita o checkout se o token do navegador não combinar com o ambiente do servidor.
 
-```text
-{"error":"not_configured"}
-```
+## Consequência prática
 
-Ou seja: o formulário de pagamento não conseguiu carregar porque o servidor considera o Stripe **não configurado** neste ambiente (preview publicado).
+Não é possível "apontar" o checkout para `prod_UrvECb4YU3LiDg` em live agora: o projeto ainda não tem acesso à conta live do Stripe. Primeiro é preciso concluir o go-live; só depois o produto/preço live fica acessível.
 
-## Causa
+## Plano
 
-A resolução do ambiente de pagamento (`resolvePaymentEnvironment`) segue estas regras:
+### Fase 1 — Concluir o go-live (você, na aba Payments)
+1. Vincular a conta Stripe (passo 1).
+2. Preencher o formulário de go-live no Stripe.
+3. Instalar o app Lovable na conta **LIVE**.
+4. As chaves live (`STRIPE_LIVE_API_KEY`, `PAYMENTS_LIVE_WEBHOOK_SECRET`) e o webhook live são criados automaticamente.
 
-1. Se `PAYMENTS_ENVIRONMENT` estiver definido (`sandbox` ou `live`), usa esse valor.
-2. Em produção (que é como o build de preview/publicado roda), **sem** `PAYMENTS_ENVIRONMENT` ela lança erro de propósito — nunca infere `live`.
-3. Só em desenvolvimento ela cai para `sandbox` quando existe `STRIPE_SANDBOX_API_KEY`.
+### Fase 2 — Ligar o produto ao checkout
+5. Garantir que o produto `prod_UrvECb4YU3LiDg` tenha um **preço ativo, único (one_time), em JPY**, com a *lookup key* `eigo_academy_onetime`. Se ele já tiver um preço com outra lookup key, duas opções:
+   - (preferida) usar `eigo_academy_onetime` no preço desse produto; ou
+   - alterar `COURSE_PRICE_LOOKUP_KEY` no código para a lookup key existente.
+6. Confirmar que o valor do preço é ¥49.800 (bate com `COURSE_PRICE_JPY` usado nas páginas de marketing). Se for diferente, ajustar `src/config/site.ts` para não haver divergência de exibição.
 
-No projeto hoje: `STRIPE_SANDBOX_API_KEY` está definido, mas `PAYMENTS_ENVIRONMENT` **não está**. Por isso funciona no sandbox local e falha no ambiente publicado, com o erro genérico `not_configured` (o motivo real fica só no log do servidor).
+### Fase 3 — Ativar o ambiente live
+7. Definir `PAYMENTS_ENVIRONMENT=live`.
+8. Garantir `VITE_PAYMENTS_CLIENT_TOKEN` com `pk_live_...` no build publicado (o `pk_test_` continua no ambiente de desenvolvimento).
+9. Definir `SITE_URL` (e, se necessário, `CHECKOUT_ALLOWED_ORIGINS`) para que a URL de retorno pós-pagamento aponte para o domínio publicado.
 
-Um segundo ponto relacionado: a chave publicável do navegador (`VITE_PAYMENTS_CLIENT_TOKEN`) existe apenas em `.env.development`; ela precisa estar presente no build publicado, senão a página mostra a mensagem de "pagamentos não configurados".
-
-## Correção proposta
-
-1. Definir o secret `PAYMENTS_ENVIRONMENT=sandbox` (para continuar validando compras de teste) ou `live` quando você quiser cobrar de verdade.
-2. Garantir `VITE_PAYMENTS_CLIENT_TOKEN` no ambiente publicado, com a chave `pk_test_...` para sandbox ou `pk_live_...` para live (elas precisam combinar com o ambiente do item 1 — há uma checagem que rejeita mistura).
-3. Para `live`, adicionar também `STRIPE_LIVE_API_KEY` e `PAYMENTS_LIVE_WEBHOOK_SECRET`.
-4. Melhorar o diagnóstico: quando o motivo for configuração ausente, exibir na página uma mensagem específica ("pagamentos indisponíveis neste ambiente") em vez do erro genérico, e registrar no log qual variável faltou.
-5. Verificar depois: abrir `/checkout` no preview e confirmar que o formulário do Stripe monta e que o log não traz mais `not_configured`.
+### Fase 4 — Verificação
+10. Abrir `/checkout` no site publicado e confirmar: o formulário monta, o preço exibido vem do Stripe (via `getCoursePrice`) e não aparece o banner de modo de teste.
+11. Confirmar nos logs do servidor que não há `not_configured` nem `price_unavailable`.
+12. Fazer uma compra real de valor mínimo (ou usar a leitura do preço + webhook) para confirmar que o pedido vira `paid` e a matrícula é liberada.
 
 ## Notas técnicas
 
-- Arquivos envolvidos: `src/lib/payments/payments.config.server.ts` (regras de ambiente), `src/lib/payments/checkout.server.ts` (retorno `not_configured`), `src/routes/checkout.tsx` (mensagem ao usuário).
-- Nada de mudança em banco, RLS ou lógica de cobrança — apenas configuração de ambiente e mensagem de erro.
-- Aviso do console sobre `hreflang` já foi corrigido no código; ele aparece porque o build do preview aberto ainda é o antigo.
-
-## Pergunta
-
-Qual ambiente você quer ativar no preview: **sandbox** (teste) ou **live** (cobrança real)?
+- Arquivos possivelmente tocados: `src/lib/payments/payments.config.server.ts` (lookup key, se necessário), `src/config/site.ts` (preço de exibição). Nenhuma mudança de esquema, RLS ou lógica de cobrança.
+- O ID `prod_UrvECb4YU3LiDg` não é gravado no código — o vínculo se dá pela lookup key do preço, o que mantém sandbox e live consistentes.
+- Enquanto o go-live não terminar, o preview continua em sandbox (`pk_test_`), que é o comportamento correto.
