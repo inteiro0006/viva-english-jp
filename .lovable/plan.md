@@ -1,48 +1,24 @@
-## Objetivo
+# Sincronizar o projeto com o GitHub
 
-Validar, ponta a ponta, que uma compra concluída no Stripe cria automaticamente a matrícula do aluno e libera o curso — sem alterar regras de negócio.
+## Situação atual (verificada)
 
-## Estado atual confirmado
+- O único remote configurado neste projeto aponta para o armazenamento interno da Lovable. Não existe remote do GitHub.
+- Portanto, **as alterações feitas aqui não estão sendo enviadas para o GitHub hoje** (nem para `inteiro0006/viva-english-jp`). Elas ficam apenas no histórico de versões da Lovable.
+- A página Admin → Sistema mostra branch e último commit apenas quando as variáveis `GITHUB_REPOSITORY` (e opcionalmente `GITHUB_TOKEN`) estiverem definidas. Ela lê a API pública do GitHub e não implica que exista sincronização.
 
-- Backend: Lovable Cloud (sem conta Supabase externa). Projeto ativo, 3 usuários.
-- `orders`: 3 registros, todos `pending`; `paid` = 0.
-- `payment_events`: 0 registros — nenhum webhook do Stripe chegou ao app até agora.
-- `enrollments`: 1 ativa (inteiro0002), concedida manualmente, sem pedido pago associado.
+## O que fazer para ter tudo no GitHub
 
-Ou seja: o caminho pagamento → webhook → matrícula nunca foi exercitado com dados reais.
+1. Você conecta na interface: menu "+" no chat → **GitHub** → **Connect project** → autorizar o Lovable GitHub App → escolher a conta/organização → **Create Repository**.
+   - Essa etapa é obrigatoriamente feita por você na UI; não pode ser feita por código.
+2. Depois de conectado, a sincronização é bidirecional e automática: cada alteração feita aqui gera commit/push no repositório, e pushes feitos no GitHub voltam para o projeto.
+3. Observação: hoje a Lovable não importa um repositório GitHub já existente. Se quiser manter o `viva-english-jp` atual, o caminho é criar o repositório novo pela conexão e depois espelhar/mover o conteúdo manualmente no GitHub.
 
-## Passos do teste
+## Verificação depois da conexão
 
-1. **Preparar sessão de teste**
-   Autenticar como um aluno sem matrícula ativa (kiharagames ou o admin) usando a sessão do preview e abrir `/checkout`.
-
-2. **Executar o checkout embutido**
-   Preencher o formulário do Stripe com o cartão de teste `4242 4242 4242 4242` (validade futura, CVC qualquer) e concluir o pagamento. Confirmar o redirecionamento para a página de retorno (`/payment/success`).
-
-3. **Verificar o webhook**
-   Consultar `payment_events` para confirmar que o evento `checkout.session.completed` chegou, foi reivindicado (`claim_payment_event`) e finalizou com status `processed` — e não `failed`/`ignored`.
-
-4. **Verificar o pedido**
-   Consultar `orders` para o novo pedido: `status = paid`, `total_amount = 49800`, `currency = jpy`, `provider_payment_id` preenchido, `environment = sandbox`.
-
-5. **Verificar a matrícula e o acesso**
-   Consultar `enrollments` (esperado `status = active`, `order_id` apontando para o pedido) e confirmar na UI que `/student/dashboard` mostra o curso liberado e os módulos conforme as regras de release.
-
-## Ponto crítico esperado
-
-Pela regra de segurança já implementada, **pagamentos em `sandbox` não liberam acesso** — `fulfill_paid_order` marca o pedido como pago mas não concede matrícula em ambiente sandbox. Portanto o passo 5 provavelmente vai mostrar pedido pago **sem** matrícula. Isso é o comportamento correto, não um bug.
-
-Se for esse o caso, apresento duas opções (sem implementar antes de você escolher):
-
-- **A — Deixar como está**: validação encerra confirmando que o pipeline funciona até o pedido pago; a liberação real só acontece em `live` após o go-live do Stripe.
-- **B — Modo de teste controlado**: adicionar uma flag em `platform_settings` (ex.: `payments.sandbox_grants_access`), desligada por padrão, que permite ao admin habilitar temporariamente a liberação em sandbox para validar a experiência completa do aluno. Auditada e sem efeito em produção.
+- Confirmo que o remote do GitHub passou a existir e que o último commit local aparece no repositório.
+- Se quiser, defino `GITHUB_REPOSITORY` (e `GITHUB_TOKEN` se o repo for privado) como secrets do projeto para que Admin → Sistema exiba branch, último commit e último push do repositório real.
 
 ## Detalhes técnicos
 
-- Diagnóstico feito com consultas de leitura (`read_query`) e navegação automatizada no preview (Playwright headless em `localhost:8080`), restaurando a sessão gerenciada do preview.
-- Nenhuma migration é necessária para o teste em si; a opção B, se escolhida, exigiria uma migration para a flag e um ajuste em `fulfill_paid_order` / `grant_enrollment`.
-- Nenhuma chave ou segredo será exibido, logado ou capturado em tela.
-
-## Entrega
-
-Relatório com: resultado de cada passo, o registro real de `payment_events`/`orders`/`enrollments` criado, evidência visual do checkout e do dashboard, e recomendação sobre a liberação em sandbox.
+- Nenhuma alteração de código é necessária para a sincronização em si.
+- O único trabalho de código possível é opcional: configurar os secrets `GITHUB_REPOSITORY` / `GITHUB_TOKEN` usados por `src/lib/admin/system.functions.ts` para popular o painel Admin → Sistema.
