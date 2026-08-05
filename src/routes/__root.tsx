@@ -13,7 +13,7 @@ import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import i18n, { initI18n } from "../lib/i18n";
+import i18n, { initI18n, syncHtmlLang } from "../lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { SITE_URL } from "@/config/site";
 
